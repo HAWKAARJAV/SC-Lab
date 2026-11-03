@@ -1,0 +1,1770 @@
+{
+ "pupil|trial|SIM-H|none|delta|acc": [
+  27.22222222222222,
+  3.4246744460938747
+ ],
+ "pupil|trial|SIM-H|none|theta|acc": [
+  27.77777777777778,
+  0.7856742013183861
+ ],
+ "pupil|trial|SIM-H|none|alpha|acc": [
+  38.888888888888886,
+  1.5713484026367746
+ ],
+ "pupil|trial|SIM-H|none|beta|acc": [
+  51.11111111111112,
+  3.4246744460938774
+ ],
+ "pupil|trial|SIM-H|none|gamma|acc": [
+  33.888888888888886,
+  2.8327886186626574
+ ],
+ "pupil|trial|SIM-H|hard|delta|acc": [
+  24.444444444444446,
+  3.1426968052735442
+ ],
+ "pupil|trial|SIM-H|hard|theta|acc": [
+  25.55555555555556,
+  2.8327886186626574
+ ],
+ "pupil|trial|SIM-H|hard|alpha|acc": [
+  70.55555555555556,
+  4.157397096415489
+ ],
+ "pupil|trial|SIM-H|hard|beta|acc": [
+  76.66666666666667,
+  0.0
+ ],
+ "pupil|trial|SIM-H|hard|gamma|acc": [
+  78.88888888888889,
+  2.8327886186626583
+ ],
+ "pupil|trial|SIM-H|fuzzy|delta|acc": [
+  25.0,
+  1.3608276348795432
+ ],
+ "pupil|trial|SIM-H|fuzzy|theta|acc": [
+  35.55555555555556,
+  4.374448818895452
+ ],
+ "pupil|trial|SIM-H|fuzzy|alpha|acc": [
+  72.22222222222221,
+  6.431020501550126
+ ],
+ "pupil|trial|SIM-H|fuzzy|beta|acc": [
+  70.55555555555554,
+  0.7856742013183886
+ ],
+ "pupil|trial|SIM-H|fuzzy|gamma|acc": [
+  71.11111111111111,
+  2.8327886186626583
+ ],
+ "pupil|trial|SIM-H|linear|delta|acc": [
+  27.777777777777775,
+  3.92837100659193
+ ],
+ "pupil|trial|SIM-H|linear|theta|acc": [
+  35.0,
+  2.357022603955158
+ ],
+ "pupil|trial|SIM-H|linear|alpha|acc": [
+  63.33333333333333,
+  1.3608276348795432
+ ],
+ "pupil|trial|SIM-H|linear|beta|acc": [
+  69.44444444444443,
+  2.0786985482077465
+ ],
+ "pupil|trial|SIM-H|linear|gamma|acc": [
+  70.55555555555554,
+  0.7856742013183886
+ ],
+ "pupil|trial|SIM-E|none|delta|acc": [
+  40.555555555555564,
+  0.7856742013183861
+ ],
+ "pupil|trial|SIM-E|none|theta|acc": [
+  42.22222222222222,
+  6.849348892187752
+ ],
+ "pupil|trial|SIM-E|none|alpha|acc": [
+  53.888888888888886,
+  3.4246744460938774
+ ],
+ "pupil|trial|SIM-E|none|beta|acc": [
+  60.555555555555564,
+  3.1426968052735442
+ ],
+ "pupil|trial|SIM-E|none|gamma|acc": [
+  48.333333333333336,
+  2.357022603955158
+ ],
+ "pupil|trial|SIM-E|hard|delta|acc": [
+  36.11111111111111,
+  4.77906959280146
+ ],
+ "pupil|trial|SIM-E|hard|theta|acc": [
+  47.22222222222223,
+  5.6655772373253175
+ ],
+ "pupil|trial|SIM-E|hard|alpha|acc": [
+  73.88888888888889,
+  0.7856742013183886
+ ],
+ "pupil|trial|SIM-E|hard|beta|acc": [
+  81.11111111111113,
+  0.7856742013183833
+ ],
+ "pupil|trial|SIM-E|hard|gamma|acc": [
+  91.66666666666666,
+  4.714045207910316
+ ],
+ "pupil|trial|SIM-E|fuzzy|delta|acc": [
+  33.33333333333333,
+  1.3608276348795432
+ ],
+ "pupil|trial|SIM-E|fuzzy|theta|acc": [
+  49.44444444444444,
+  1.5713484026367748
+ ],
+ "pupil|trial|SIM-E|fuzzy|alpha|acc": [
+  77.22222222222223,
+  0.7856742013183834
+ ],
+ "pupil|trial|SIM-E|fuzzy|beta|acc": [
+  77.77777777777779,
+  2.0786985482077465
+ ],
+ "pupil|trial|SIM-E|fuzzy|gamma|acc": [
+  90.55555555555556,
+  2.832788618662657
+ ],
+ "pupil|trial|SIM-E|linear|delta|acc": [
+  42.77777777777778,
+  2.8327886186626574
+ ],
+ "pupil|trial|SIM-E|linear|theta|acc": [
+  51.66666666666667,
+  2.3570226039551607
+ ],
+ "pupil|trial|SIM-E|linear|alpha|acc": [
+  70.55555555555554,
+  2.078698548207743
+ ],
+ "pupil|trial|SIM-E|linear|beta|acc": [
+  77.77777777777779,
+  0.7856742013183834
+ ],
+ "pupil|trial|SIM-E|linear|gamma|acc": [
+  81.1111111111111,
+  3.4246744460938725
+ ],
+ "pupil|loso|SIM-H|none|delta|acc": [
+  25.0,
+  2.357022603955158
+ ],
+ "pupil|loso|SIM-H|none|theta|acc": [
+  25.555555555555554,
+  2.0786985482077447
+ ],
+ "pupil|loso|SIM-H|none|alpha|acc": [
+  48.33333333333334,
+  2.7216552697590886
+ ],
+ "pupil|loso|SIM-H|none|beta|acc": [
+  51.66666666666667,
+  4.906533814626584
+ ],
+ "pupil|loso|SIM-H|none|gamma|acc": [
+  48.88888888888889,
+  0.7856742013183861
+ ],
+ "pupil|loso|SIM-H|hard|delta|acc": [
+  22.77777777777778,
+  4.779069592801459
+ ],
+ "pupil|loso|SIM-H|hard|theta|acc": [
+  20.555555555555557,
+  1.5713484026367734
+ ],
+ "pupil|loso|SIM-H|hard|alpha|acc": [
+  69.44444444444443,
+  0.7856742013183834
+ ],
+ "pupil|loso|SIM-H|hard|beta|acc": [
+  73.88888888888889,
+  1.5713484026367721
+ ],
+ "pupil|loso|SIM-H|hard|gamma|acc": [
+  76.11111111111111,
+  4.779069592801461
+ ],
+ "pupil|loso|SIM-H|fuzzy|delta|acc": [
+  28.888888888888893,
+  4.157397096415489
+ ],
+ "pupil|loso|SIM-H|fuzzy|theta|acc": [
+  29.444444444444446,
+  1.5713484026367721
+ ],
+ "pupil|loso|SIM-H|fuzzy|alpha|acc": [
+  67.22222222222221,
+  1.5713484026367721
+ ],
+ "pupil|loso|SIM-H|fuzzy|beta|acc": [
+  73.88888888888889,
+  1.5713484026367721
+ ],
+ "pupil|loso|SIM-H|fuzzy|gamma|acc": [
+  70.55555555555556,
+  0.7856742013183886
+ ],
+ "pupil|loso|SIM-H|linear|delta|acc": [
+  30.555555555555554,
+  1.5713484026367721
+ ],
+ "pupil|loso|SIM-H|linear|theta|acc": [
+  32.22222222222222,
+  3.1426968052735442
+ ],
+ "pupil|loso|SIM-H|linear|alpha|acc": [
+  76.66666666666666,
+  1.3608276348795432
+ ],
+ "pupil|loso|SIM-H|linear|beta|acc": [
+  71.66666666666667,
+  2.3570226039551554
+ ],
+ "pupil|loso|SIM-H|linear|gamma|acc": [
+  73.88888888888889,
+  2.078698548207748
+ ],
+ "pupil|loso|SIM-E|none|delta|acc": [
+  34.99999999999999,
+  3.60041149911548
+ ],
+ "pupil|loso|SIM-E|none|theta|acc": [
+  38.33333333333333,
+  5.931710140017397
+ ],
+ "pupil|loso|SIM-E|none|alpha|acc": [
+  50.55555555555556,
+  4.374448818895449
+ ],
+ "pupil|loso|SIM-E|none|beta|acc": [
+  60.0,
+  1.3608276348795432
+ ],
+ "pupil|loso|SIM-E|none|gamma|acc": [
+  53.333333333333336,
+  5.931710140017397
+ ],
+ "pupil|loso|SIM-E|hard|delta|acc": [
+  30.0,
+  1.3608276348795432
+ ],
+ "pupil|loso|SIM-E|hard|theta|acc": [
+  52.77777777777778,
+  3.4246744460938747
+ ],
+ "pupil|loso|SIM-E|hard|alpha|acc": [
+  73.33333333333334,
+  3.6004114991154785
+ ],
+ "pupil|loso|SIM-E|hard|beta|acc": [
+  82.22222222222223,
+  2.078698548207743
+ ],
+ "pupil|loso|SIM-E|hard|gamma|acc": [
+  92.22222222222221,
+  2.078698548207743
+ ],
+ "pupil|loso|SIM-E|fuzzy|delta|acc": [
+  38.88888888888889,
+  3.4246744460938774
+ ],
+ "pupil|loso|SIM-E|fuzzy|theta|acc": [
+  51.66666666666667,
+  4.714045207910319
+ ],
+ "pupil|loso|SIM-E|fuzzy|alpha|acc": [
+  68.33333333333333,
+  1.3608276348795432
+ ],
+ "pupil|loso|SIM-E|fuzzy|beta|acc": [
+  83.88888888888889,
+  2.0786985482077465
+ ],
+ "pupil|loso|SIM-E|fuzzy|gamma|acc": [
+  86.66666666666667,
+  2.3570226039551554
+ ],
+ "pupil|loso|SIM-E|linear|delta|acc": [
+  42.77777777777778,
+  0.7856742013183861
+ ],
+ "pupil|loso|SIM-E|linear|theta|acc": [
+  41.66666666666667,
+  2.7216552697590863
+ ],
+ "pupil|loso|SIM-E|linear|alpha|acc": [
+  66.66666666666666,
+  4.0824829046386295
+ ],
+ "pupil|loso|SIM-E|linear|beta|acc": [
+  83.33333333333334,
+  1.3608276348795432
+ ],
+ "pupil|loso|SIM-E|linear|gamma|acc": [
+  86.66666666666667,
+  1.3608276348795432
+ ],
+ "auto|trial|SIM-H|none|delta|acc": [
+  27.22222222222222,
+  3.4246744460938747
+ ],
+ "auto|trial|SIM-H|none|theta|acc": [
+  27.77777777777778,
+  0.7856742013183861
+ ],
+ "auto|trial|SIM-H|none|alpha|acc": [
+  38.888888888888886,
+  1.5713484026367746
+ ],
+ "auto|trial|SIM-H|none|beta|acc": [
+  51.11111111111112,
+  3.4246744460938774
+ ],
+ "auto|trial|SIM-H|none|gamma|acc": [
+  33.888888888888886,
+  2.8327886186626574
+ ],
+ "auto|trial|SIM-H|hard|delta|acc": [
+  24.444444444444446,
+  3.4246744460938747
+ ],
+ "auto|trial|SIM-H|hard|theta|acc": [
+  31.11111111111111,
+  1.5713484026367721
+ ],
+ "auto|trial|SIM-H|hard|alpha|acc": [
+  41.111111111111114,
+  9.558139185602919
+ ],
+ "auto|trial|SIM-H|hard|beta|acc": [
+  43.88888888888889,
+  5.6655772373253175
+ ],
+ "auto|trial|SIM-H|hard|gamma|acc": [
+  43.888888888888886,
+  9.060836905722272
+ ],
+ "auto|trial|SIM-H|fuzzy|delta|acc": [
+  22.77777777777778,
+  0.7856742013183861
+ ],
+ "auto|trial|SIM-H|fuzzy|theta|acc": [
+  31.666666666666664,
+  1.3608276348795432
+ ],
+ "auto|trial|SIM-H|fuzzy|alpha|acc": [
+  43.333333333333336,
+  4.906533814626581
+ ],
+ "auto|trial|SIM-H|fuzzy|beta|acc": [
+  43.333333333333336,
+  10.27402333828163
+ ],
+ "auto|trial|SIM-H|fuzzy|gamma|acc": [
+  43.333333333333336,
+  10.628403594282776
+ ],
+ "auto|trial|SIM-H|linear|delta|acc": [
+  21.666666666666668,
+  7.200822998230956
+ ],
+ "auto|trial|SIM-H|linear|theta|acc": [
+  28.33333333333334,
+  4.0824829046386295
+ ],
+ "auto|trial|SIM-H|linear|alpha|acc": [
+  42.22222222222222,
+  4.157397096415492
+ ],
+ "auto|trial|SIM-H|linear|beta|acc": [
+  47.77777777777778,
+  5.665577237325315
+ ],
+ "auto|trial|SIM-H|linear|gamma|acc": [
+  44.44444444444444,
+  9.060836905722272
+ ],
+ "auto|trial|SIM-E|none|delta|acc": [
+  40.555555555555564,
+  0.7856742013183861
+ ],
+ "auto|trial|SIM-E|none|theta|acc": [
+  42.22222222222222,
+  6.849348892187752
+ ],
+ "auto|trial|SIM-E|none|alpha|acc": [
+  53.888888888888886,
+  3.4246744460938774
+ ],
+ "auto|trial|SIM-E|none|beta|acc": [
+  60.555555555555564,
+  3.1426968052735442
+ ],
+ "auto|trial|SIM-E|none|gamma|acc": [
+  48.333333333333336,
+  2.357022603955158
+ ],
+ "auto|trial|SIM-E|hard|delta|acc": [
+  26.666666666666668,
+  4.0824829046386295
+ ],
+ "auto|trial|SIM-E|hard|theta|acc": [
+  36.11111111111111,
+  4.374448818895452
+ ],
+ "auto|trial|SIM-E|hard|alpha|acc": [
+  53.333333333333336,
+  7.2008229982309535
+ ],
+ "auto|trial|SIM-E|hard|beta|acc": [
+  53.888888888888886,
+  2.8327886186626583
+ ],
+ "auto|trial|SIM-E|hard|gamma|acc": [
+  52.77777777777778,
+  3.142696805273547
+ ],
+ "auto|trial|SIM-E|fuzzy|delta|acc": [
+  28.888888888888893,
+  4.157397096415489
+ ],
+ "auto|trial|SIM-E|fuzzy|theta|acc": [
+  37.22222222222222,
+  2.83278861866266
+ ],
+ "auto|trial|SIM-E|fuzzy|alpha|acc": [
+  58.88888888888889,
+  6.2853936105470884
+ ],
+ "auto|trial|SIM-E|fuzzy|beta|acc": [
+  60.0,
+  0.0
+ ],
+ "auto|trial|SIM-E|fuzzy|gamma|acc": [
+  54.44444444444445,
+  0.7856742013183886
+ ],
+ "auto|trial|SIM-E|linear|delta|acc": [
+  31.11111111111111,
+  1.5713484026367721
+ ],
+ "auto|trial|SIM-E|linear|theta|acc": [
+  38.333333333333336,
+  5.931710140017397
+ ],
+ "auto|trial|SIM-E|linear|alpha|acc": [
+  56.1111111111111,
+  6.431020501550126
+ ],
+ "auto|trial|SIM-E|linear|beta|acc": [
+  57.777777777777786,
+  2.8327886186626583
+ ],
+ "auto|trial|SIM-E|linear|gamma|acc": [
+  55.55555555555555,
+  2.078698548207747
+ ],
+ "auto|loso|SIM-H|none|delta|acc": [
+  25.0,
+  2.357022603955158
+ ],
+ "auto|loso|SIM-H|none|theta|acc": [
+  25.555555555555554,
+  2.0786985482077447
+ ],
+ "auto|loso|SIM-H|none|alpha|acc": [
+  48.33333333333334,
+  2.7216552697590886
+ ],
+ "auto|loso|SIM-H|none|beta|acc": [
+  51.66666666666667,
+  4.906533814626584
+ ],
+ "auto|loso|SIM-H|none|gamma|acc": [
+  48.88888888888889,
+  0.7856742013183861
+ ],
+ "auto|loso|SIM-H|hard|delta|acc": [
+  24.444444444444446,
+  0.7856742013183861
+ ],
+ "auto|loso|SIM-H|hard|theta|acc": [
+  28.33333333333333,
+  1.3608276348795432
+ ],
+ "auto|loso|SIM-H|hard|alpha|acc": [
+  38.33333333333333,
+  4.082482904638631
+ ],
+ "auto|loso|SIM-H|hard|beta|acc": [
+  44.44444444444445,
+  2.8327886186626574
+ ],
+ "auto|loso|SIM-H|hard|gamma|acc": [
+  46.666666666666664,
+  1.3608276348795432
+ ],
+ "auto|loso|SIM-H|fuzzy|delta|acc": [
+  25.555555555555554,
+  2.0786985482077447
+ ],
+ "auto|loso|SIM-H|fuzzy|theta|acc": [
+  23.333333333333332,
+  1.3608276348795432
+ ],
+ "auto|loso|SIM-H|fuzzy|alpha|acc": [
+  47.77777777777778,
+  4.157397096415489
+ ],
+ "auto|loso|SIM-H|fuzzy|beta|acc": [
+  43.888888888888886,
+  2.0786985482077447
+ ],
+ "auto|loso|SIM-H|fuzzy|gamma|acc": [
+  50.55555555555556,
+  4.374448818895449
+ ],
+ "auto|loso|SIM-H|linear|delta|acc": [
+  23.88888888888889,
+  2.0786985482077447
+ ],
+ "auto|loso|SIM-H|linear|theta|acc": [
+  31.666666666666664,
+  4.906533814626581
+ ],
+ "auto|loso|SIM-H|linear|alpha|acc": [
+  45.0,
+  1.3608276348795432
+ ],
+ "auto|loso|SIM-H|linear|beta|acc": [
+  49.44444444444444,
+  4.77906959280146
+ ],
+ "auto|loso|SIM-H|linear|gamma|acc": [
+  51.11111111111112,
+  2.83278861866266
+ ],
+ "auto|loso|SIM-E|none|delta|acc": [
+  34.99999999999999,
+  3.60041149911548
+ ],
+ "auto|loso|SIM-E|none|theta|acc": [
+  38.33333333333333,
+  5.931710140017397
+ ],
+ "auto|loso|SIM-E|none|alpha|acc": [
+  50.55555555555556,
+  4.374448818895449
+ ],
+ "auto|loso|SIM-E|none|beta|acc": [
+  60.0,
+  1.3608276348795432
+ ],
+ "auto|loso|SIM-E|none|gamma|acc": [
+  53.333333333333336,
+  5.931710140017397
+ ],
+ "auto|loso|SIM-E|hard|delta|acc": [
+  25.555555555555554,
+  2.0786985482077447
+ ],
+ "auto|loso|SIM-E|hard|theta|acc": [
+  39.44444444444444,
+  0.7856742013183861
+ ],
+ "auto|loso|SIM-E|hard|alpha|acc": [
+  56.111111111111114,
+  0.7856742013183834
+ ],
+ "auto|loso|SIM-E|hard|beta|acc": [
+  64.44444444444444,
+  1.5713484026367721
+ ],
+ "auto|loso|SIM-E|hard|gamma|acc": [
+  67.22222222222221,
+  0.7856742013183886
+ ],
+ "auto|loso|SIM-E|fuzzy|delta|acc": [
+  26.666666666666668,
+  0.0
+ ],
+ "auto|loso|SIM-E|fuzzy|theta|acc": [
+  40.555555555555564,
+  1.5713484026367721
+ ],
+ "auto|loso|SIM-E|fuzzy|alpha|acc": [
+  61.66666666666667,
+  3.6004114991154754
+ ],
+ "auto|loso|SIM-E|fuzzy|beta|acc": [
+  68.88888888888887,
+  0.7856742013183834
+ ],
+ "auto|loso|SIM-E|fuzzy|gamma|acc": [
+  63.888888888888886,
+  1.5713484026367721
+ ],
+ "auto|loso|SIM-E|linear|delta|acc": [
+  26.111111111111114,
+  3.92837100659193
+ ],
+ "auto|loso|SIM-E|linear|theta|acc": [
+  36.66666666666667,
+  3.6004114991154794
+ ],
+ "auto|loso|SIM-E|linear|alpha|acc": [
+  60.55555555555555,
+  5.499719409228702
+ ],
+ "auto|loso|SIM-E|linear|beta|acc": [
+  67.77777777777777,
+  2.078698548207743
+ ],
+ "auto|loso|SIM-E|linear|gamma|acc": [
+  63.33333333333333,
+  0.0
+ ],
+ "pupil|trial|SIM-H|none|allbands|acc": [
+  35.77777777777777,
+  9.166498314952374
+ ],
+ "pupil|trial|SIM-H|none|allbands|bacc": [
+  35.77777777777777,
+  9.166498314952372
+ ],
+ "pupil|trial|SIM-H|none|allbands|prec": [
+  39.09164551693174,
+  14.57813985033683
+ ],
+ "pupil|trial|SIM-H|none|allbands|rec": [
+  35.77777777777777,
+  9.166498314952372
+ ],
+ "pupil|trial|SIM-H|none|allbands|f1": [
+  32.840329201815535,
+  9.67904741322097
+ ],
+ "pupil|trial|SIM-H|hard|allbands|acc": [
+  55.222222222222214,
+  25.002715901860256
+ ],
+ "pupil|trial|SIM-H|hard|allbands|bacc": [
+  55.222222222222214,
+  25.002715901860256
+ ],
+ "pupil|trial|SIM-H|hard|allbands|prec": [
+  55.94067098733111,
+  26.367919996186984
+ ],
+ "pupil|trial|SIM-H|hard|allbands|rec": [
+  55.222222222222214,
+  25.002715901860256
+ ],
+ "pupil|trial|SIM-H|hard|allbands|f1": [
+  53.07153914522716,
+  25.045215789366033
+ ],
+ "pupil|trial|SIM-H|fuzzy|allbands|acc": [
+  54.888888888888886,
+  20.72274351444403
+ ],
+ "pupil|trial|SIM-H|fuzzy|allbands|bacc": [
+  54.8888888888889,
+  20.722743514444026
+ ],
+ "pupil|trial|SIM-H|fuzzy|allbands|prec": [
+  52.423121799529646,
+  20.441080016445547
+ ],
+ "pupil|trial|SIM-H|fuzzy|allbands|rec": [
+  54.8888888888889,
+  20.722743514444026
+ ],
+ "pupil|trial|SIM-H|fuzzy|allbands|f1": [
+  52.05581170237274,
+  20.60271457883335
+ ],
+ "pupil|trial|SIM-H|linear|allbands|acc": [
+  53.22222222222223,
+  18.292547224228155
+ ],
+ "pupil|trial|SIM-H|linear|allbands|bacc": [
+  53.22222222222223,
+  18.29254722422816
+ ],
+ "pupil|trial|SIM-H|linear|allbands|prec": [
+  52.41547242429427,
+  17.280626493792177
+ ],
+ "pupil|trial|SIM-H|linear|allbands|rec": [
+  53.22222222222223,
+  18.29254722422816
+ ],
+ "pupil|trial|SIM-H|linear|allbands|f1": [
+  50.570759563248444,
+  16.879592945279647
+ ],
+ "pupil|trial|SIM-E|none|allbands|acc": [
+  49.111111111111114,
+  8.36364856291503
+ ],
+ "pupil|trial|SIM-E|none|allbands|bacc": [
+  49.111111111111114,
+  8.363648562915028
+ ],
+ "pupil|trial|SIM-E|none|allbands|prec": [
+  52.006216745747224,
+  12.587882516056878
+ ],
+ "pupil|trial|SIM-E|none|allbands|rec": [
+  49.111111111111114,
+  8.363648562915028
+ ],
+ "pupil|trial|SIM-E|none|allbands|f1": [
+  45.75029881018241,
+  7.400946985765036
+ ],
+ "pupil|trial|SIM-E|hard|allbands|acc": [
+  65.99999999999999,
+  21.32465101099525
+ ],
+ "pupil|trial|SIM-E|hard|allbands|bacc": [
+  65.99999999999999,
+  21.32465101099525
+ ],
+ "pupil|trial|SIM-E|hard|allbands|prec": [
+  66.30531800134388,
+  24.172526605151784
+ ],
+ "pupil|trial|SIM-E|hard|allbands|rec": [
+  65.99999999999999,
+  21.32465101099525
+ ],
+ "pupil|trial|SIM-E|hard|allbands|f1": [
+  63.85847316819444,
+  22.704184949767306
+ ],
+ "pupil|trial|SIM-E|fuzzy|allbands|acc": [
+  65.66666666666666,
+  21.097656531262214
+ ],
+ "pupil|trial|SIM-E|fuzzy|allbands|bacc": [
+  65.66666666666666,
+  21.097656531262214
+ ],
+ "pupil|trial|SIM-E|fuzzy|allbands|prec": [
+  65.25155716611386,
+  24.093701672685327
+ ],
+ "pupil|trial|SIM-E|fuzzy|allbands|rec": [
+  65.66666666666666,
+  21.097656531262214
+ ],
+ "pupil|trial|SIM-E|fuzzy|allbands|f1": [
+  62.806453983071854,
+  22.068606719083256
+ ],
+ "pupil|trial|SIM-E|linear|allbands|acc": [
+  64.77777777777777,
+  15.200714733033498
+ ],
+ "pupil|trial|SIM-E|linear|allbands|bacc": [
+  64.77777777777777,
+  15.200714733033498
+ ],
+ "pupil|trial|SIM-E|linear|allbands|prec": [
+  65.00341835339961,
+  20.19019868239941
+ ],
+ "pupil|trial|SIM-E|linear|allbands|rec": [
+  64.77777777777777,
+  15.200714733033498
+ ],
+ "pupil|trial|SIM-E|linear|allbands|f1": [
+  61.038289147229996,
+  15.968482304502201
+ ],
+ "pupil|loso|SIM-H|none|allbands|acc": [
+  39.88888888888889,
+  12.329829332072068
+ ],
+ "pupil|loso|SIM-H|none|allbands|bacc": [
+  39.88888888888889,
+  12.329829332072068
+ ],
+ "pupil|loso|SIM-H|none|allbands|prec": [
+  43.15942429406276,
+  15.518192701426722
+ ],
+ "pupil|loso|SIM-H|none|allbands|rec": [
+  39.88888888888889,
+  12.329829332072068
+ ],
+ "pupil|loso|SIM-H|none|allbands|f1": [
+  36.66873219766869,
+  11.642125513057803
+ ],
+ "pupil|loso|SIM-H|hard|allbands|acc": [
+  52.55555555555556,
+  25.52316788264012
+ ],
+ "pupil|loso|SIM-H|hard|allbands|bacc": [
+  52.55555555555556,
+  25.52316788264012
+ ],
+ "pupil|loso|SIM-H|hard|allbands|prec": [
+  52.3918172213251,
+  25.406265177566205
+ ],
+ "pupil|loso|SIM-H|hard|allbands|rec": [
+  52.55555555555556,
+  25.52316788264012
+ ],
+ "pupil|loso|SIM-H|hard|allbands|f1": [
+  51.35609680909443,
+  25.569489514265737
+ ],
+ "pupil|loso|SIM-H|fuzzy|allbands|acc": [
+  53.99999999999999,
+  20.510160083886884
+ ],
+ "pupil|loso|SIM-H|fuzzy|allbands|bacc": [
+  53.99999999999999,
+  20.510160083886884
+ ],
+ "pupil|loso|SIM-H|fuzzy|allbands|prec": [
+  52.18450215799848,
+  17.93910709165793
+ ],
+ "pupil|loso|SIM-H|fuzzy|allbands|rec": [
+  53.99999999999999,
+  20.510160083886884
+ ],
+ "pupil|loso|SIM-H|fuzzy|allbands|f1": [
+  51.24814665037874,
+  19.713640644476083
+ ],
+ "pupil|loso|SIM-H|linear|allbands|acc": [
+  56.99999999999999,
+  21.0923893594085
+ ],
+ "pupil|loso|SIM-H|linear|allbands|bacc": [
+  57.00000000000001,
+  21.092389359408504
+ ],
+ "pupil|loso|SIM-H|linear|allbands|prec": [
+  58.36984166026994,
+  23.5958759177311
+ ],
+ "pupil|loso|SIM-H|linear|allbands|rec": [
+  57.00000000000001,
+  21.092389359408504
+ ],
+ "pupil|loso|SIM-H|linear|allbands|f1": [
+  54.40927193526903,
+  20.691684130781873
+ ],
+ "pupil|loso|SIM-E|none|allbands|acc": [
+  47.44444444444445,
+  10.432617417160447
+ ],
+ "pupil|loso|SIM-E|none|allbands|bacc": [
+  47.444444444444436,
+  10.432617417160445
+ ],
+ "pupil|loso|SIM-E|none|allbands|prec": [
+  50.3970883414044,
+  11.635443190504255
+ ],
+ "pupil|loso|SIM-E|none|allbands|rec": [
+  47.444444444444436,
+  10.432617417160445
+ ],
+ "pupil|loso|SIM-E|none|allbands|f1": [
+  44.34401421165817,
+  10.005795413097635
+ ],
+ "pupil|loso|SIM-E|hard|allbands|acc": [
+  66.11111111111111,
+  22.40756045249234
+ ],
+ "pupil|loso|SIM-E|hard|allbands|bacc": [
+  66.1111111111111,
+  22.40756045249234
+ ],
+ "pupil|loso|SIM-E|hard|allbands|prec": [
+  65.47265186253254,
+  24.30300076471322
+ ],
+ "pupil|loso|SIM-E|hard|allbands|rec": [
+  66.1111111111111,
+  22.40756045249234
+ ],
+ "pupil|loso|SIM-E|hard|allbands|f1": [
+  64.10046232595754,
+  23.62732535221044
+ ],
+ "pupil|loso|SIM-E|fuzzy|allbands|acc": [
+  65.88888888888889,
+  18.647476908732944
+ ],
+ "pupil|loso|SIM-E|fuzzy|allbands|bacc": [
+  65.88888888888889,
+  18.647476908732944
+ ],
+ "pupil|loso|SIM-E|fuzzy|allbands|prec": [
+  65.21809283297347,
+  21.861265468809044
+ ],
+ "pupil|loso|SIM-E|fuzzy|allbands|rec": [
+  65.88888888888889,
+  18.647476908732944
+ ],
+ "pupil|loso|SIM-E|fuzzy|allbands|f1": [
+  63.84499150350354,
+  19.600059182478905
+ ],
+ "pupil|loso|SIM-E|linear|allbands|acc": [
+  64.22222222222224,
+  19.3492909877441
+ ],
+ "pupil|loso|SIM-E|linear|allbands|bacc": [
+  64.22222222222221,
+  19.3492909877441
+ ],
+ "pupil|loso|SIM-E|linear|allbands|prec": [
+  64.22061337355456,
+  23.71820818308737
+ ],
+ "pupil|loso|SIM-E|linear|allbands|rec": [
+  64.22222222222221,
+  19.3492909877441
+ ],
+ "pupil|loso|SIM-E|linear|allbands|f1": [
+  61.807175117054555,
+  20.918413490565765
+ ],
+ "auto|trial|SIM-H|none|allbands|acc": [
+  35.77777777777777,
+  9.166498314952374
+ ],
+ "auto|trial|SIM-H|none|allbands|bacc": [
+  35.77777777777777,
+  9.166498314952372
+ ],
+ "auto|trial|SIM-H|none|allbands|prec": [
+  39.09164551693174,
+  14.57813985033683
+ ],
+ "auto|trial|SIM-H|none|allbands|rec": [
+  35.77777777777777,
+  9.166498314952372
+ ],
+ "auto|trial|SIM-H|none|allbands|f1": [
+  32.840329201815535,
+  9.67904741322097
+ ],
+ "auto|trial|SIM-H|hard|allbands|acc": [
+  36.88888888888889,
+  10.235498624823581
+ ],
+ "auto|trial|SIM-H|hard|allbands|bacc": [
+  36.888888888888886,
+  10.235498624823583
+ ],
+ "auto|trial|SIM-H|hard|allbands|prec": [
+  40.17953770640846,
+  14.270013699987013
+ ],
+ "auto|trial|SIM-H|hard|allbands|rec": [
+  36.888888888888886,
+  10.235498624823583
+ ],
+ "auto|trial|SIM-H|hard|allbands|f1": [
+  35.512805403666924,
+  10.383792918628702
+ ],
+ "auto|trial|SIM-H|fuzzy|allbands|acc": [
+  36.888888888888886,
+  10.918327552478441
+ ],
+ "auto|trial|SIM-H|fuzzy|allbands|bacc": [
+  36.888888888888886,
+  10.91832755247844
+ ],
+ "auto|trial|SIM-H|fuzzy|allbands|prec": [
+  37.49320775666273,
+  12.934604151163946
+ ],
+ "auto|trial|SIM-H|fuzzy|allbands|rec": [
+  36.888888888888886,
+  10.91832755247844
+ ],
+ "auto|trial|SIM-H|fuzzy|allbands|f1": [
+  35.00272784166077,
+  11.356284301853277
+ ],
+ "auto|trial|SIM-H|linear|allbands|acc": [
+  36.888888888888886,
+  11.908084192505632
+ ],
+ "auto|trial|SIM-H|linear|allbands|bacc": [
+  36.888888888888886,
+  11.908084192505632
+ ],
+ "auto|trial|SIM-H|linear|allbands|prec": [
+  36.67063597316824,
+  12.707386150517769
+ ],
+ "auto|trial|SIM-H|linear|allbands|rec": [
+  36.888888888888886,
+  11.908084192505632
+ ],
+ "auto|trial|SIM-H|linear|allbands|f1": [
+  35.05044641662592,
+  11.98331305825748
+ ],
+ "auto|trial|SIM-E|none|allbands|acc": [
+  49.111111111111114,
+  8.36364856291503
+ ],
+ "auto|trial|SIM-E|none|allbands|bacc": [
+  49.111111111111114,
+  8.363648562915028
+ ],
+ "auto|trial|SIM-E|none|allbands|prec": [
+  52.006216745747224,
+  12.587882516056878
+ ],
+ "auto|trial|SIM-E|none|allbands|rec": [
+  49.111111111111114,
+  8.363648562915028
+ ],
+ "auto|trial|SIM-E|none|allbands|f1": [
+  45.75029881018241,
+  7.400946985765036
+ ],
+ "auto|trial|SIM-E|hard|allbands|acc": [
+  44.55555555555556,
+  12.071801649369842
+ ],
+ "auto|trial|SIM-E|hard|allbands|bacc": [
+  44.55555555555556,
+  12.071801649369837
+ ],
+ "auto|trial|SIM-E|hard|allbands|prec": [
+  48.33223143763836,
+  17.288511511041847
+ ],
+ "auto|trial|SIM-E|hard|allbands|rec": [
+  44.55555555555556,
+  12.071801649369837
+ ],
+ "auto|trial|SIM-E|hard|allbands|f1": [
+  43.40635725839835,
+  14.077173185760833
+ ],
+ "auto|trial|SIM-E|fuzzy|allbands|acc": [
+  47.888888888888886,
+  13.04503121905704
+ ],
+ "auto|trial|SIM-E|fuzzy|allbands|bacc": [
+  47.888888888888886,
+  13.04503121905704
+ ],
+ "auto|trial|SIM-E|fuzzy|allbands|prec": [
+  50.711710698925295,
+  16.593373706610397
+ ],
+ "auto|trial|SIM-E|fuzzy|allbands|rec": [
+  47.888888888888886,
+  13.04503121905704
+ ],
+ "auto|trial|SIM-E|fuzzy|allbands|f1": [
+  46.51502360465398,
+  14.216533673876933
+ ],
+ "auto|trial|SIM-E|linear|allbands|acc": [
+  47.77777777777777,
+  11.7326178233016
+ ],
+ "auto|trial|SIM-E|linear|allbands|bacc": [
+  47.77777777777777,
+  11.732617823301599
+ ],
+ "auto|trial|SIM-E|linear|allbands|prec": [
+  51.45993950494279,
+  16.46426143899315
+ ],
+ "auto|trial|SIM-E|linear|allbands|rec": [
+  47.77777777777777,
+  11.732617823301599
+ ],
+ "auto|trial|SIM-E|linear|allbands|f1": [
+  46.578701358628486,
+  12.488103482402733
+ ],
+ "auto|loso|SIM-H|none|allbands|acc": [
+  39.88888888888889,
+  12.329829332072068
+ ],
+ "auto|loso|SIM-H|none|allbands|bacc": [
+  39.88888888888889,
+  12.329829332072068
+ ],
+ "auto|loso|SIM-H|none|allbands|prec": [
+  43.15942429406276,
+  15.518192701426722
+ ],
+ "auto|loso|SIM-H|none|allbands|rec": [
+  39.88888888888889,
+  12.329829332072068
+ ],
+ "auto|loso|SIM-H|none|allbands|f1": [
+  36.66873219766869,
+  11.642125513057803
+ ],
+ "auto|loso|SIM-H|hard|allbands|acc": [
+  36.44444444444444,
+  9.064923579720507
+ ],
+ "auto|loso|SIM-H|hard|allbands|bacc": [
+  36.44444444444444,
+  9.064923579720505
+ ],
+ "auto|loso|SIM-H|hard|allbands|prec": [
+  38.90916941961834,
+  10.57493971224225
+ ],
+ "auto|loso|SIM-H|hard|allbands|rec": [
+  36.44444444444444,
+  9.064923579720505
+ ],
+ "auto|loso|SIM-H|hard|allbands|f1": [
+  36.24114422817086,
+  9.101266800195276
+ ],
+ "auto|loso|SIM-H|fuzzy|allbands|acc": [
+  38.22222222222223,
+  11.87070260123273
+ ],
+ "auto|loso|SIM-H|fuzzy|allbands|bacc": [
+  38.22222222222223,
+  11.87070260123273
+ ],
+ "auto|loso|SIM-H|fuzzy|allbands|prec": [
+  38.5164508058157,
+  12.875985515928786
+ ],
+ "auto|loso|SIM-H|fuzzy|allbands|rec": [
+  38.22222222222223,
+  11.87070260123273
+ ],
+ "auto|loso|SIM-H|fuzzy|allbands|f1": [
+  36.12185365215979,
+  11.81056328764044
+ ],
+ "auto|loso|SIM-H|linear|allbands|acc": [
+  40.22222222222222,
+  11.202953755126646
+ ],
+ "auto|loso|SIM-H|linear|allbands|bacc": [
+  40.22222222222222,
+  11.202953755126646
+ ],
+ "auto|loso|SIM-H|linear|allbands|prec": [
+  42.74892622816982,
+  13.913138625167726
+ ],
+ "auto|loso|SIM-H|linear|allbands|rec": [
+  40.22222222222222,
+  11.202953755126646
+ ],
+ "auto|loso|SIM-H|linear|allbands|f1": [
+  37.85920638551358,
+  11.67519232313317
+ ],
+ "auto|loso|SIM-E|none|allbands|acc": [
+  47.44444444444445,
+  10.432617417160447
+ ],
+ "auto|loso|SIM-E|none|allbands|bacc": [
+  47.444444444444436,
+  10.432617417160445
+ ],
+ "auto|loso|SIM-E|none|allbands|prec": [
+  50.3970883414044,
+  11.635443190504255
+ ],
+ "auto|loso|SIM-E|none|allbands|rec": [
+  47.444444444444436,
+  10.432617417160445
+ ],
+ "auto|loso|SIM-E|none|allbands|f1": [
+  44.34401421165817,
+  10.005795413097635
+ ],
+ "auto|loso|SIM-E|hard|allbands|acc": [
+  50.555555555555564,
+  15.865950808625632
+ ],
+ "auto|loso|SIM-E|hard|allbands|bacc": [
+  50.55555555555556,
+  15.865950808625634
+ ],
+ "auto|loso|SIM-E|hard|allbands|prec": [
+  51.88164904968047,
+  20.72646760687278
+ ],
+ "auto|loso|SIM-E|hard|allbands|rec": [
+  50.55555555555556,
+  15.865950808625634
+ ],
+ "auto|loso|SIM-E|hard|allbands|f1": [
+  49.08276200942345,
+  17.354497732921967
+ ],
+ "auto|loso|SIM-E|fuzzy|allbands|acc": [
+  52.33333333333334,
+  16.190989721080925
+ ],
+ "auto|loso|SIM-E|fuzzy|allbands|bacc": [
+  52.33333333333334,
+  16.190989721080925
+ ],
+ "auto|loso|SIM-E|fuzzy|allbands|prec": [
+  54.10298386531207,
+  18.183380589630634
+ ],
+ "auto|loso|SIM-E|fuzzy|allbands|rec": [
+  52.33333333333334,
+  16.190989721080925
+ ],
+ "auto|loso|SIM-E|fuzzy|allbands|f1": [
+  50.79888276929786,
+  16.610327550479223
+ ],
+ "auto|loso|SIM-E|linear|allbands|acc": [
+  50.888888888888886,
+  16.80902168112538
+ ],
+ "auto|loso|SIM-E|linear|allbands|bacc": [
+  50.888888888888886,
+  16.809021681125383
+ ],
+ "auto|loso|SIM-E|linear|allbands|prec": [
+  54.26898851707288,
+  18.553732218157123
+ ],
+ "auto|loso|SIM-E|linear|allbands|rec": [
+  50.888888888888886,
+  16.809021681125383
+ ],
+ "auto|loso|SIM-E|linear|allbands|f1": [
+  48.9539755502288,
+  17.80114292461798
+ ],
+ "stats": {
+  "pupil|trial|SIM-H|M1-hard": {
+   "median": 0.0,
+   "mean": -0.3333333333333362,
+   "W": 41.0,
+   "p": 0.7524936490337828,
+   "wins": 6,
+   "ties": 2,
+   "losses": 7,
+   "n": 15
+  },
+  "pupil|trial|SIM-H|M1-linear": {
+   "median": 0.0,
+   "mean": 1.666666666666667,
+   "W": 34.5,
+   "p": 0.44162790228016935,
+   "wins": 7,
+   "ties": 2,
+   "losses": 6,
+   "n": 15
+  },
+  "pupil|trial|SIM-H|M1-none": {
+   "median": 18.333333333333325,
+   "mean": 19.11111111111111,
+   "W": 4.0,
+   "p": 0.002329439679834333,
+   "wins": 13,
+   "ties": 1,
+   "losses": 1,
+   "n": 15
+  },
+  "pupil|trial|SIM-E|M1-hard": {
+   "median": -1.6666666666666607,
+   "mean": -0.33333333333333154,
+   "W": 57.5,
+   "p": 0.8862414820514412,
+   "wins": 7,
+   "ties": 0,
+   "losses": 8,
+   "n": 15
+  },
+  "pupil|trial|SIM-E|M1-linear": {
+   "median": 0.0,
+   "mean": 0.8888888888888895,
+   "W": 43.5,
+   "p": 0.571512646478787,
+   "wins": 7,
+   "ties": 1,
+   "losses": 7,
+   "n": 15
+  },
+  "pupil|trial|SIM-E|M1-none": {
+   "median": 19.999999999999996,
+   "mean": 16.555555555555554,
+   "W": 10.5,
+   "p": 0.004906439458368599,
+   "wins": 11,
+   "ties": 0,
+   "losses": 4,
+   "n": 15
+  },
+  "pupil|loso|SIM-H|M1-hard": {
+   "median": 0.0,
+   "mean": 1.4444444444444442,
+   "W": 15.5,
+   "p": 0.40652926629258523,
+   "wins": 5,
+   "ties": 6,
+   "losses": 4,
+   "n": 15
+  },
+  "pupil|loso|SIM-H|M1-linear": {
+   "median": -1.6666666666666663,
+   "mean": -2.9999999999999996,
+   "W": 30.5,
+   "p": 0.09291126623645339,
+   "wins": 5,
+   "ties": 0,
+   "losses": 10,
+   "n": 15
+  },
+  "pupil|loso|SIM-H|M1-none": {
+   "median": 16.666666666666664,
+   "mean": 14.11111111111111,
+   "W": 0.0,
+   "p": 0.000973056529446685,
+   "wins": 14,
+   "ties": 1,
+   "losses": 0,
+   "n": 15
+  },
+  "pupil|loso|SIM-E|M1-hard": {
+   "median": 0.0,
+   "mean": -0.22222222222222168,
+   "W": 44.0,
+   "p": 0.9163080310833858,
+   "wins": 7,
+   "ties": 2,
+   "losses": 6,
+   "n": 15
+  },
+  "pupil|loso|SIM-E|M1-linear": {
+   "median": 1.6666666666666663,
+   "mean": 1.6666666666666663,
+   "W": 31.0,
+   "p": 0.30792498827682036,
+   "wins": 8,
+   "ties": 2,
+   "losses": 5,
+   "n": 15
+  },
+  "pupil|loso|SIM-E|M1-none": {
+   "median": 21.66666666666666,
+   "mean": 18.44444444444445,
+   "W": 0.0,
+   "p": 0.0006533107814151373,
+   "wins": 15,
+   "ties": 0,
+   "losses": 0,
+   "n": 15
+  },
+  "auto|trial|SIM-H|M1-hard": {
+   "median": 0.0,
+   "mean": 0.0,
+   "W": 45.0,
+   "p": 0.9719015254125475,
+   "wins": 7,
+   "ties": 2,
+   "losses": 6,
+   "n": 15
+  },
+  "auto|trial|SIM-H|M1-linear": {
+   "median": 0.0,
+   "mean": 4.736951571734001e-16,
+   "W": 49.0,
+   "p": 0.8255830134913295,
+   "wins": 7,
+   "ties": 1,
+   "losses": 7,
+   "n": 15
+  },
+  "auto|trial|SIM-H|M1-none": {
+   "median": 1.6666666666666663,
+   "mean": 1.1111111111111114,
+   "W": 50.5,
+   "p": 0.5850755412360854,
+   "wins": 8,
+   "ties": 0,
+   "losses": 7,
+   "n": 15
+  },
+  "auto|trial|SIM-E|M1-hard": {
+   "median": 3.3333333333333326,
+   "mean": 3.3333333333333317,
+   "W": 27.0,
+   "p": 0.10889684782109899,
+   "wins": 9,
+   "ties": 1,
+   "losses": 5,
+   "n": 15
+  },
+  "auto|trial|SIM-E|M1-linear": {
+   "median": 0.0,
+   "mean": 0.11111111111110988,
+   "W": 32.0,
+   "p": 0.9289423625149966,
+   "wins": 5,
+   "ties": 4,
+   "losses": 6,
+   "n": 15
+  },
+  "auto|trial|SIM-E|M1-none": {
+   "median": 1.6666666666666607,
+   "mean": -1.2222222222222237,
+   "W": 53.0,
+   "p": 0.6906488569095801,
+   "wins": 8,
+   "ties": 0,
+   "losses": 7,
+   "n": 15
+  },
+  "auto|loso|SIM-H|M1-hard": {
+   "median": 1.6666666666666663,
+   "mean": 1.7777777777777777,
+   "W": 37.0,
+   "p": 0.3283818897068742,
+   "wins": 8,
+   "ties": 1,
+   "losses": 6,
+   "n": 15
+  },
+  "auto|loso|SIM-H|M1-linear": {
+   "median": 0.0,
+   "mean": -2.0000000000000004,
+   "W": 18.0,
+   "p": 0.18036474105080746,
+   "wins": 4,
+   "ties": 4,
+   "losses": 7,
+   "n": 15
+  },
+  "auto|loso|SIM-H|M1-none": {
+   "median": -1.6666666666666663,
+   "mean": -1.666666666666667,
+   "W": 24.5,
+   "p": 0.13952696844257637,
+   "wins": 4,
+   "ties": 2,
+   "losses": 9,
+   "n": 15
+  },
+  "auto|loso|SIM-E|M1-hard": {
+   "median": 1.6666666666666718,
+   "mean": 1.7777777777777786,
+   "W": 25.5,
+   "p": 0.04941162039020987,
+   "wins": 10,
+   "ties": 0,
+   "losses": 5,
+   "n": 15
+  },
+  "auto|loso|SIM-E|M1-linear": {
+   "median": 1.6666666666666718,
+   "mean": 1.444444444444446,
+   "W": 28.5,
+   "p": 0.13018824300768644,
+   "wins": 9,
+   "ties": 1,
+   "losses": 5,
+   "n": 15
+  },
+  "auto|loso|SIM-E|M1-none": {
+   "median": 8.333333333333325,
+   "mean": 4.888888888888888,
+   "W": 24.0,
+   "p": 0.04080681410953809,
+   "wins": 11,
+   "ties": 0,
+   "losses": 4,
+   "n": 15
+  }
+ },
+ "mcnemar": {
+  "SIM-H": {
+   "band": "alpha",
+   "M1_only_correct": 30,
+   "M0_only_correct": 27,
+   "p_exact": 0.7913664277791806
+  },
+  "SIM-E": {
+   "band": "gamma",
+   "M1_only_correct": 12,
+   "M0_only_correct": 14,
+   "p_exact": 0.8450189828872681
+  }
+ },
+ "gate_quality": {
+  "SIM-H|pupil_y_mean": {
+   "episode_rate": 0.3933333333333333,
+   "auc": 0.9866207239088595,
+   "hard_prec": 0.9027777777777778,
+   "hard_recall": 0.9180790960451978,
+   "fuzzy_wprec": 0.786580602429189,
+   "linear_wprec": 0.7497062190215708,
+   "fuzzy_mean_w_in": 0.8356471359220026,
+   "fuzzy_mean_w_out": 0.14700232572644906
+  },
+  "SIM-H|fix_dur_mean": {
+   "episode_rate": 0.3933333333333333,
+   "auc": 0.576491070135138,
+   "hard_prec": 0.46111111111111114,
+   "hard_recall": 0.4689265536723164,
+   "fuzzy_wprec": 0.441182087773145,
+   "linear_wprec": 0.433591517720117,
+   "fuzzy_mean_w_in": 0.541861784839045,
+   "fuzzy_mean_w_out": 0.4449913709214148
+  },
+  "SIM-E|pupil_y_mean": {
+   "episode_rate": 0.4033333333333333,
+   "auc": 0.9845124685145,
+   "hard_prec": 0.9277777777777778,
+   "hard_recall": 0.9201101928374655,
+   "fuzzy_wprec": 0.7944335946826708,
+   "linear_wprec": 0.7578758669086145,
+   "fuzzy_mean_w_in": 0.8381198237460503,
+   "fuzzy_mean_w_out": 0.14659967001546775
+  },
+  "SIM-E|fix_dur_mean": {
+   "episode_rate": 0.4033333333333333,
+   "auc": 0.566461978854056,
+   "hard_prec": 0.5,
+   "hard_recall": 0.49586776859504134,
+   "fuzzy_wprec": 0.4499022668420655,
+   "linear_wprec": 0.44318660701317275,
+   "fuzzy_mean_w_in": 0.5224271833962941,
+   "fuzzy_mean_w_out": 0.43179715815725067
+  }
+ },
+ "auto_gate_choices": {
+  "SIM-H": {
+   "fix_dur_mean": 320,
+   "fix_freq": 280
+  },
+  "SIM-E": {
+   "fix_dur_mean": 420,
+   "fix_freq": 180
+  }
+ },
+ "cost": {
+  "none": {
+   "elapsed_mean_s": 11.610431492328644,
+   "eff_train_fraction": 1.0
+  },
+  "hard": {
+   "elapsed_mean_s": 11.003453934192658,
+   "eff_train_fraction": 0.41795138888888894
+  },
+  "fuzzy": {
+   "elapsed_mean_s": 11.169908388455708,
+   "eff_train_fraction": 0.45695263576838113
+  },
+  "linear": {
+   "elapsed_mean_s": 10.874778807163239,
+   "eff_train_fraction": 0.44289119136862004
+  }
+ },
+ "cm|SIM-E|gamma|hard": [
+  [
+   45,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   44,
+   1,
+   0
+  ],
+  [
+   0,
+   2,
+   31,
+   12
+  ],
+  [
+   0,
+   0,
+   0,
+   45
+  ]
+ ],
+ "cm|SIM-E|gamma|fuzzy": [
+  [
+   45,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   45,
+   0,
+   0
+  ],
+  [
+   0,
+   3,
+   29,
+   13
+  ],
+  [
+   0,
+   0,
+   1,
+   44
+  ]
+ ],
+ "previous_runs": {
+  "demo_paper_protocol": {
+   "delta": [
+    20.830000000000002,
+    2.32,
+    19.56
+   ],
+   "theta": [
+    23.61,
+    4.21,
+    21.529999999999998
+   ],
+   "alpha": [
+    43.33,
+    2.69,
+    39.85
+   ],
+   "beta": [
+    47.78,
+    4.78,
+    46.72
+   ],
+   "gamma": [
+    47.22,
+    3.4000000000000004,
+    46.739999999999995
+   ]
+  },
+  "demo_trial_protocol": {
+   "delta": [
+    26.11,
+    4.25,
+    23.32
+   ],
+   "theta": [
+    25.0,
+    2.78,
+    24.14
+   ],
+   "alpha": [
+    42.5,
+    4.78,
+    41.120000000000005
+   ],
+   "beta": [
+    45.83,
+    7.08,
+    45.71
+   ],
+   "gamma": [
+    46.67,
+    3.36,
+    44.71
+   ]
+  },
+  "demo_easy_paper_protocol": {
+   "delta": [
+    24.169999999999998,
+    5.09,
+    22.98
+   ],
+   "theta": [
+    30.830000000000002,
+    5.92,
+    28.49
+   ],
+   "alpha": [
+    50.83,
+    2.58,
+    49.88
+   ],
+   "beta": [
+    56.67,
+    3.2199999999999998,
+    55.52
+   ],
+   "gamma": [
+    54.169999999999995,
+    4.73,
+    55.00000000000001
+   ]
+  },
+  "demo_easy_pupilY_gate": {
+   "delta": [
+    33.61,
+    4.43,
+    30.8
+   ],
+   "theta": [
+    35.28,
+    5.87,
+    31.4
+   ],
+   "alpha": [
+    59.72,
+    3.17,
+    58.050000000000004
+   ],
+   "beta": [
+    75.0,
+    6.800000000000001,
+    74.77000000000001
+   ],
+   "gamma": [
+    75.83,
+    2.42,
+    74.22999999999999
+   ]
+  }
+ }
+}

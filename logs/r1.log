@@ -1,0 +1,21 @@
+Loaded 60 trials, 5 subjects, 62 channels, classes=['sad', 'happy', 'fear', 'neutral']
+Features: 900 windows x (5, 4, 62) (band, entropy, channel)  [4s]
+Gate feature: fix_dur_mean; kept 360/900 windows
+  levels=2 delta  acc=0.256±0.034  F1=0.215  AUC=0.512  (lookup-only acc=0.261)  [16s]
+  levels=2 theta  acc=0.192±0.024  F1=0.160  AUC=0.453  (lookup-only acc=0.211)  [21s]
+  levels=2 alpha  acc=0.400±0.028  F1=0.318  AUC=0.668  (lookup-only acc=0.375)  [26s]
+  levels=2 beta   acc=0.439±0.014  F1=0.368  AUC=0.681  (lookup-only acc=0.406)  [41s]
+  levels=2 gamma  acc=0.444±0.052  F1=0.398  AUC=0.701  (lookup-only acc=0.419)  [49s]
+  levels=3 delta  acc=0.208±0.023  F1=0.196  AUC=0.471  (lookup-only acc=0.233)  [59s]
+  levels=3 theta  acc=0.236±0.042  F1=0.215  AUC=0.457  (lookup-only acc=0.258)  [64s]
+  levels=3 alpha  acc=0.433±0.027  F1=0.399  AUC=0.678  (lookup-only acc=0.433)  [84s]
+  levels=3 beta   acc=0.478±0.048  F1=0.467  AUC=0.734  (lookup-only acc=0.456)  [100s]
+  levels=3 gamma  acc=0.472±0.034  F1=0.467  AUC=0.738  (lookup-only acc=0.483)  [114s]
+  levels=4 delta  acc=0.214±0.055  F1=0.208  AUC=0.472  (lookup-only acc=0.242)  [127s]
+  levels=4 theta  acc=0.233±0.018  F1=0.221  AUC=0.474  (lookup-only acc=0.214)  [136s]
+  levels=4 alpha  acc=0.419±0.034  F1=0.412  AUC=0.673  (lookup-only acc=0.428)  [149s]
+  levels=4 beta   acc=0.497±0.059  F1=0.491  AUC=0.741  (lookup-only acc=0.478)  [162s]
+  levels=4 gamma  acc=0.456±0.048  F1=0.448  AUC=0.707  (lookup-only acc=0.464)  [172s]
+Best number of fuzzy levels: 3
+Ablations done
+Done in 229s -> results/demo_paper_protocol

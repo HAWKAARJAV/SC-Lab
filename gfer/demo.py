@@ -1,0 +1,187 @@
+"""Synthetic SEED-IV-shaped demo dataset, for checking that the pipeline runs end to end.
+
+THIS IS NOT REAL DATA. Results on it say nothing about emotion recognition; they only show
+the code works and that each stage behaves as designed.
+
+Design (so that every stage has something to find):
+  * 62-channel EEG (SEED-IV montage) at 200 Hz: 1/f background + posterior alpha + 50 Hz
+    line noise + per-channel noise, mixed through a subject-specific spatial matrix.
+  * Each trial has a few "emotional episodes". During an episode:
+      - pupil diameter (Y more than X) dilates  -> the eye gate can find the episode;
+      - fixation durations change by class;
+      - channels around T7, T8, Fp2 receive a class-specific band-limited component whose
+        bandwidth / burstiness differs by class -> entropy features differ by class.
+        Strength per band: alpha > beta > gamma > theta > delta (mirrors the paper).
+    Outside episodes the EEG carries no class information, so gating should help.
+  * Distractor pupil dilations with no EEG change make the gate imperfect.
+"""
+import argparse
+import json
+import os
+
+import numpy as np
+
+from .data import Trial, save_npz
+
+SEED_IV_CHANNELS = [
+    "FP1", "FPZ", "FP2", "AF3", "AF4", "F7", "F5", "F3", "F1", "FZ", "F2", "F4", "F6", "F8",
+    "FT7", "FC5", "FC3", "FC1", "FCZ", "FC2", "FC4", "FC6", "FT8", "T7", "C5", "C3", "C1",
+    "CZ", "C2", "C4", "C6", "T8", "TP7", "CP5", "CP3", "CP1", "CPZ", "CP2", "CP4", "CP6",
+    "TP8", "P7", "P5", "P3", "P1", "PZ", "P2", "P4", "P6", "P8", "PO7", "PO5", "PO3", "POZ",
+    "PO4", "PO6", "PO8", "CB1", "O1", "OZ", "O2", "CB2",
+]
+CLASS_NAMES = ["sad", "happy", "fear", "neutral"]          # SEED-IV order differs; label ids are ours
+
+# channels that carry the emotional signature (paper's selected channels and neighbours)
+TARGET_CHANNELS = {"T7": 1.0, "T8": 1.0, "FP2": 1.0, "FT7": 0.6, "TP7": 0.6,
+                   "FT8": 0.6, "TP8": 0.6, "FP1": 0.5, "AF4": 0.5}
+# band -> (centre Hz, half-width Hz, strength); bands match db4 level-4 DWT at 128 Hz
+BANDS = {"delta": (2.5, 1.5, 0.25), "theta": (6.0, 2.0, 0.4), "alpha": (11.0, 3.0, 1.0),
+         "beta": (23.0, 7.0, 0.8), "gamma": (44.0, 12.0, 0.6)}
+# class -> (relative bandwidth, amplitude, burst modulation depth)
+CLASS_SIG = {0: (0.08, 1.2, 0.0),   # sad: narrow-band, regular  -> low entropy
+             1: (0.45, 1.0, 0.0),   # happy: medium bandwidth
+             2: (0.95, 1.2, 0.9),   # fear: broadband, bursty
+             3: (0.0, 0.0, 0.0)}    # neutral: nothing added
+PUPIL_DILATION = {0: 0.40, 1: 0.50, 2: 0.65, 3: 0.35}      # mm, added to Y during episodes
+FIX_FACTOR = {0: 1.35, 1: 1.10, 2: 0.80, 3: 1.00}          # fixation-duration multiplier
+
+
+def _pink(n, rng):
+    f = np.fft.rfftfreq(n)
+    spec = (rng.standard_normal(f.size) + 1j * rng.standard_normal(f.size))
+    spec[1:] /= np.sqrt(f[1:])
+    spec[0] = 0
+    x = np.fft.irfft(spec, n)
+    return x / x.std()
+
+
+def _bandnoise(n, fs, lo, hi, rng):
+    f = np.fft.rfftfreq(n, 1 / fs)
+    spec = rng.standard_normal(f.size) + 1j * rng.standard_normal(f.size)
+    spec[(f < lo) | (f > hi)] = 0
+    x = np.fft.irfft(spec, n)
+    s = x.std()
+    return x / s if s > 0 else x
+
+
+def _smooth_mask(n, fs, episodes, ramp_s=0.5):
+    m = np.zeros(n)
+    t = np.arange(n) / fs
+    for a, b in episodes:
+        up = np.clip((t - a) / ramp_s, 0, 1)
+        down = np.clip((b - t) / ramp_s, 0, 1)
+        m = np.maximum(m, np.minimum(up, down))
+    return m
+
+
+def _episodes(dur, rng, n_ep, len_range=(6, 10), start=4.0):
+    eps = []
+    for _ in range(200):
+        if len(eps) == n_ep:
+            break
+        L = rng.uniform(*len_range)
+        a = rng.uniform(start, dur - L)
+        if all(b0 + 1 < a or a + L + 1 < a0 for a0, b0 in eps):
+            eps.append((a, a + L))
+    return sorted(eps)
+
+
+def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, eye_fs=60.0,
+               signal_strength=1.0):
+    n = int(dur * fs)
+    C = len(SEED_IV_CHANNELS)
+    mix, pupil_base, gain = subj_params["mix"], subj_params["pupil_base"], subj_params["gain"]
+
+    # --- background EEG ---
+    src = np.stack([_pink(n, rng) for _ in range(mix.shape[1])])
+    eeg = mix @ src * 15.0
+    post = np.array([1.0 if ch.startswith(("O", "PO", "P", "CB")) else 0.3 for ch in SEED_IV_CHANNELS])
+    eeg += np.outer(post, _bandnoise(n, fs, 9, 11, rng)) * 8.0
+    eeg += rng.standard_normal((C, n)) * 3.0
+    t = np.arange(n) / fs
+    eeg += 4.0 * np.sin(2 * np.pi * 50 * t + rng.uniform(0, 6.28))[None, :]   # line noise
+    eeg += rng.normal(0, 20, (C, 1))                                           # DC offsets
+
+    # --- episodes ---
+    episodes = _episodes(dur, rng, n_ep=3)
+    distractors = _episodes(dur, rng, n_ep=2, len_range=(3, 5))
+    emask = _smooth_mask(n, fs, episodes)
+
+    bw, amp, burst = CLASS_SIG[label]
+    if amp > 0:
+        for ch, w in TARGET_CHANNELS.items():
+            ci = SEED_IV_CHANNELS.index(ch)
+            for band, (fc, hw, strength) in BANDS.items():
+                half = max(hw * bw, 0.15)
+                comp = _bandnoise(n, fs, fc - half, fc + half, rng)
+                if burst > 0:
+                    comp *= 1 + burst * np.sin(2 * np.pi * rng.uniform(2, 4) * t)
+                eeg[ci] += emask * comp * amp * strength * w * gain * 6.0 * signal_strength
+
+    # --- pupil (mm) ---
+    ne = int(dur * eye_fs)
+    te = np.arange(ne) / eye_fs
+    drift = np.convolve(rng.standard_normal(ne), np.ones(120) / 120, mode="same") * 0.6
+    ep_e = _smooth_mask(ne, eye_fs, episodes, ramp_s=1.5)
+    dis_e = _smooth_mask(ne, eye_fs, distractors, ramp_s=1.0)
+    dil = PUPIL_DILATION[label] * rng.uniform(0.85, 1.15)
+    py = pupil_base + drift + ep_e * dil + dis_e * 0.25 + rng.normal(0, 0.03, ne)
+    px = pupil_base - 0.05 + drift + ep_e * dil * 0.6 + dis_e * 0.2 + rng.normal(0, 0.03, ne)
+    for _ in range(int(dur / 4)):                       # blinks -> NaN
+        b = rng.integers(0, ne - 12)
+        py[b:b + 9] = np.nan
+        px[b:b + 9] = np.nan
+    pupil = np.column_stack([te, px, py])
+
+    # --- fixations ---
+    fix, tt = [], rng.uniform(0, 0.3)
+    while tt < dur:
+        in_ep = any(a <= tt <= b for a, b in episodes)
+        mean = 260.0 * (FIX_FACTOR[label] if in_ep else 1.0)
+        d = rng.gamma(4.0, mean / 4.0)
+        fix.append((tt, d))
+        tt += d / 1000.0 + rng.uniform(0.02, 0.06)
+    fixations = np.array(fix)
+
+    return Trial(subject, trial_id, label, eeg.astype(np.float32), fs, SEED_IV_CHANNELS,
+                 pupil, fixations), episodes
+
+
+def generate(out, n_subjects=5, trials_per_class=3, dur=60.0, seed=0, signal_strength=1.0):
+    rng = np.random.default_rng(seed)
+    os.makedirs(out, exist_ok=True)
+    C = len(SEED_IV_CHANNELS)
+    truth = {}
+    for s in range(n_subjects):
+        subj = f"S{s + 1:02d}"
+        params = {"mix": rng.normal(0, 1, (C, 8)) / np.sqrt(8),
+                  "pupil_base": rng.uniform(3.0, 4.2), "gain": rng.uniform(0.8, 1.2)}
+        labels = np.repeat(np.arange(4), trials_per_class)
+        rng.shuffle(labels)
+        for i, lab in enumerate(labels):
+            tr, eps = make_trial(subj, f"T{i + 1:02d}", int(lab), params, rng, dur=dur,
+                                  signal_strength=signal_strength)
+            save_npz(tr, out)
+            truth[f"{subj}/{tr.trial_id}"] = {"label": int(lab), "episodes": eps}
+        print(f"  {subj}: {len(labels)} trials", flush=True)
+    meta = {"dataset": "synthetic-demo", "class_names": CLASS_NAMES, "eeg_fs": 200.0,
+            "eye_fs": 60.0, "ch_names": SEED_IV_CHANNELS, "line_hz": 50.0, "signal_strength": signal_strength,
+            "note": "SYNTHETIC data for pipeline testing only"}
+    with open(os.path.join(out, "meta.json"), "w") as f:
+        json.dump(meta, f, indent=1)
+    with open(os.path.join(out, "ground_truth_episodes.json"), "w") as f:
+        json.dump(truth, f, indent=1)
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description="Generate the synthetic demo dataset")
+    ap.add_argument("--out", default="data/demo")
+    ap.add_argument("--subjects", type=int, default=5)
+    ap.add_argument("--trials-per-class", type=int, default=3)
+    ap.add_argument("--duration", type=float, default=60.0)
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--signal-strength", type=float, default=1.0,
+                    help="scale of the class-specific EEG component (1 = hard, 3 = easy)")
+    a = ap.parse_args()
+    generate(a.out, a.subjects, a.trials_per_class, a.duration, a.seed, a.signal_strength)

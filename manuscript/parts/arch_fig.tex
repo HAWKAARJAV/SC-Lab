@@ -1,0 +1,63 @@
+Figure~\ref{fig:arch} shows the common architecture of both models. The EEG branch (preprocessing, windowing, DWT band decomposition, entropy features, mRMR selection and S-FIS-GA classification) and the eye-tracking feature branch are shared. M0 and M1 differ only in the gate block, which converts the selected eye-tracking feature of each window into a weight $w_k$. In M0, $w_k \in \{0,1\}$; in M1, $w_k \in [w_{\min},1]$. The weights are applied during rule mining and when window decisions are aggregated into a trial-level prediction. Table~\ref{tab:notation} lists the notation.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=0.95cm, text width=2.05cm, fill=white},
+  gate/.style={draw, very thick, rounded corners=2pt, align=center, minimum height=1.25cm, text width=3.0cm, fill=orange!12},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  warr/.style={-{Stealth[length=2mm]}, thick, orange!70!black}]
+\def\dx{2.6}
+% row 1: EEG feature chain
+\node[box] (eeg) at (0,0) {Raw EEG\\(multichannel)};
+\node[box] (pre) at (\dx,0) {Preprocessing\\filter, re-ref., resample};
+\node[box] (win) at (2*\dx,0) {Windowing\\length $L$, step $S$};
+\node[box] (dwt) at (3*\dx,0) {DWT (db4, 4 lev.)\\5 sub-bands};
+\node[box] (ent) at (4*\dx,0) {SampEn, PermEn,\\SymbEn, PhEn};
+\node[box] (mrmr) at (5*\dx,0) {mRMR\\3 EEG features};
+% row 2: classification and aggregation
+\node[box] (fis) at (5*\dx,-1.9) {S-FIS rule mining\\+ GA tuning};
+\node[box] (sup) at (4*\dx,-1.9) {Window class\\support $\mathbf{s}_k$};
+\node[box, fill=blue!6] (agg) at (3*\dx,-1.9) {Weighted trial\\aggregation};
+\node[box] (out) at (1*\dx,-1.9) {Trial label $\hat{y}_n$};
+% row 3: eye-tracking chain
+\node[box] (et) at (0,-3.8) {Raw eye\\tracking};
+\node[box] (etp) at (\dx,-3.8) {Blink removal,\\interpolation};
+\node[box] (etf) at (2*\dx,-3.8) {Window ET\\features};
+\node[box] (etm) at (3*\dx,-3.8) {mRMR ranking\\$\rightarrow$ gating feature $f^\ast$};
+\node[gate] (g) at (4.5*\dx,-3.8) {\textbf{Gate}\\M0: crisp, $w_k\in\{0,1\}$\\M1: fuzzy, $w_k\in[w_{\min},1]$};
+% arrows
+\draw[arr] (eeg)--(pre); \draw[arr] (pre)--(win); \draw[arr] (win)--(dwt); \draw[arr] (dwt)--(ent); \draw[arr] (ent)--(mrmr);
+\draw[arr] (mrmr)--(fis); \draw[arr] (fis)--(sup); \draw[arr] (sup)--(agg); \draw[arr] (agg)--(out);
+\draw[arr] (et)--(etp); \draw[arr] (etp)--(etf); \draw[arr] (etf)--(etm); \draw[arr] (etm)--(g);
+\draw[arr, dashed, gray] (win.south) -- node[pos=0.22, right, text=black]{time-aligned windows} (etf.north);
+\draw[warr] ($(g.north)+(0.6,0)$) -- node[right]{$w_k$ (rule mining)} (fis.south);
+\draw[warr] ($(g.north)+(-0.6,0)$) -- node[left, pos=0.55]{$w_k$} (agg.south);
+\end{tikzpicture}
+\caption{Common architecture of the baseline (M0) and the proposed model (M1). All blocks are shared except the gate (shaded), which produces the window weight $w_k$ used in rule mining and in trial-level aggregation.}
+\label{fig:arch}
+\end{figure}
+
+\begin{table}[t]
+\centering\small
+\caption{Key notations}\label{tab:notation}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Notation & Description\\
+\midrule
+$n$, $k$ & Trial (stimulus presentation) index; window index within a trial\\
+$K_n$ & Number of windows in trial $n$\\
+$\mathbf{x}_{n,k}\in\mathbb{R}^{3}$ & Selected EEG entropy features of window $k$ (S-FIS inputs)\\
+$z_{n,k}$, $\tilde z_{n,k}$ & Raw and normalised gating feature $f^\ast$ of window $k$\\
+$\tau$ & Hard-gate threshold (M0)\\
+$\mu_{L},\mu_{M},\mu_{H}$ & Low/Medium/High membership functions of the gate (M1)\\
+$r_{L},r_{M},r_{H}$ & Constant consequents (relevance levels) of the gate rules\\
+$w_{n,k}$ & Window weight: $\{0,1\}$ in M0, $[w_{\min},1]$ in M1\\
+$\alpha_j(\mathbf{x})$ & Firing strength of classification rule $j$\\
+$s_{n,k,c}$ & Support of window $k$ for class $c$\\
+$S_{n,c}$ & Aggregated trial support for class $c$\\
+$C$ & Number of classes\\
+\bottomrule
+\end{tabular}
+\end{table}

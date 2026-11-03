@@ -1,0 +1,22 @@
+Loaded 60 trials, 5 subjects, 62 channels, classes=['sad', 'happy', 'fear', 'neutral']
+Extracting features for 60 trials on 8 processes (cache: cache/35906f9afc)
+  6/60 trials
+  12/60 trials
+  18/60 trials
+  24/60 trials
+  30/60 trials
+  36/60 trials
+  42/60 trials
+  48/60 trials
+  54/60 trials
+  60/60 trials
+Features: 900 windows x (5, 4, 62) (band, entropy, channel)  [889s]
+Gate feature: fix_dur_mean; kept 360/900 windows
+  levels=3 delta  acc=0.242±0.051  F1=0.230  AUC=0.507  (lookup-only acc=0.225)  [914s]
+  levels=3 theta  acc=0.308±0.059  F1=0.285  AUC=0.550  (lookup-only acc=0.300)  [966s]
+  levels=3 alpha  acc=0.508±0.026  F1=0.499  AUC=0.751  (lookup-only acc=0.478)  [1006s]
+  levels=3 beta   acc=0.567±0.032  F1=0.555  AUC=0.790  (lookup-only acc=0.567)  [1041s]
+  levels=3 gamma  acc=0.542±0.047  F1=0.550  AUC=0.773  (lookup-only acc=0.539)  [1070s]
+Best number of fuzzy levels: 3
+Ablations done
+Done in 1161s -> results/demo_easy_paper_protocol

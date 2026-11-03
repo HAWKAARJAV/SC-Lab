@@ -1,0 +1,21 @@
+# environment / caches
+.venv/
+__pycache__/
+*.pyc
+cache/
+.DS_Store
+.preview/
+
+# datasets (regenerate or download; see README)
+data/
+
+# copyrighted reference papers (cited by DOI in README)
+*.pdf
+!manuscript/**/*.pdf
+
+# LaTeX build artefacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+!logs/*.log
