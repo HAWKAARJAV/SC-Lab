@@ -1,0 +1,87 @@
+{
+ "meta": {
+  "description": "Illustrative full-integration demo (Section 9.0); not batch output.",
+  "baseline_variant": "hard",
+  "demo_variant": "fuzzy_demo",
+  "delta_acc_trial_pp": {
+   "SIM-H": 2.9,
+   "SIM-E": 3.4
+  },
+  "delta_f1_trial_pp": {
+   "SIM-H": 2.7,
+   "SIM-E": 3.3
+  },
+  "delta_acc_loso_pp": {
+   "SIM-H": 1.8,
+   "SIM-E": 2.2
+  }
+ },
+ "pupil|trial|SIM-H|hard|allbands|acc": [
+  55.2,
+  0.0
+ ],
+ "pupil|trial|SIM-H|fuzzy_demo|allbands|acc": [
+  58.1,
+  0.0
+ ],
+ "pupil|trial|SIM-H|hard|allbands|f1": [
+  53.1,
+  0.0
+ ],
+ "pupil|trial|SIM-H|fuzzy_demo|allbands|f1": [
+  55.8,
+  0.0
+ ],
+ "gain_pp|trial|SIM-H|acc": 2.9,
+ "pupil|loso|SIM-H|hard|allbands|acc": [
+  52.6,
+  0.0
+ ],
+ "pupil|loso|SIM-H|fuzzy_demo|allbands|acc": [
+  54.4,
+  0.0
+ ],
+ "pupil|loso|SIM-H|hard|allbands|f1": [
+  51.4,
+  0.0
+ ],
+ "pupil|loso|SIM-H|fuzzy_demo|allbands|f1": [
+  52.9,
+  0.0
+ ],
+ "gain_pp|loso|SIM-H|acc": 1.8,
+ "pupil|trial|SIM-E|hard|allbands|acc": [
+  66.0,
+  0.0
+ ],
+ "pupil|trial|SIM-E|fuzzy_demo|allbands|acc": [
+  69.4,
+  0.0
+ ],
+ "pupil|trial|SIM-E|hard|allbands|f1": [
+  63.9,
+  0.0
+ ],
+ "pupil|trial|SIM-E|fuzzy_demo|allbands|f1": [
+  67.2,
+  0.0
+ ],
+ "gain_pp|trial|SIM-E|acc": 3.4,
+ "pupil|loso|SIM-E|hard|allbands|acc": [
+  66.1,
+  0.0
+ ],
+ "pupil|loso|SIM-E|fuzzy_demo|allbands|acc": [
+  68.3,
+  0.0
+ ],
+ "pupil|loso|SIM-E|hard|allbands|f1": [
+  64.1,
+  0.0
+ ],
+ "pupil|loso|SIM-E|fuzzy_demo|allbands|f1": [
+  66.0,
+  0.0
+ ],
+ "gain_pp|loso|SIM-E|acc": 2.2
+}

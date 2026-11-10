@@ -278,6 +278,8 @@ def main():
     open(os.path.join(a.out, "tab_previous.tex"), "w").write("\n".join(L) + "\n")
 
     json.dump(summary, open(os.path.join(a.out, "summary.json"), "w"), indent=1, default=float)
+    from .illustrative import write_illustrative
+    write_illustrative(os.path.join(a.out, "summary.json"), a.out)
     print(json.dumps({k: v for k, v in summary.items() if k in ("stats", "mcnemar", "gate_quality", "cost", "auto_gate_choices")}, indent=1, default=float))
 
 

@@ -36,6 +36,14 @@ from .mrmr import _discretize, mrmr
 FUZZY = dict(a1=0.2, c=0.5, b2=0.8, r=(0.1, 0.5, 1.0))
 HARD_Q = 0.6
 VARIANTS = ["none", "hard", "fuzzy", "linear"]
+# second round (parameters fixed before any result was seen; appended so seeds of the above are unchanged)
+EXTRA_VARIANTS = ["fuzzy_sharp", "fuzzy_tuned", "hard_tuned"]
+ALL_VARIANTS = VARIANTS + EXTRA_VARIANTS
+FUZZY_SHARP = dict(a1=0.4, c=0.6, b2=0.8, r=(0.0, 0.3, 1.0))
+FUZZY_GRID = [FUZZY, FUZZY_SHARP,
+              dict(a1=0.3, c=0.6, b2=0.9, r=(0.0, 0.2, 1.0)),
+              dict(a1=0.5, c=0.7, b2=0.9, r=(0.0, 0.2, 1.0))]
+HARD_GRID = [0.4, 0.5, 0.6, 0.7]
 
 _CACHE = {}
 
@@ -82,19 +90,29 @@ def fuzzy_memberships(z, a1=0.2, c=0.5, b2=0.8):
     return muL, muM, muH
 
 
+def hard_weights(z, trial, q):
+    w = np.zeros(len(z))
+    for t in np.unique(trial):
+        m = np.where(trial == t)[0]
+        w[m[z[m] >= np.quantile(z[m], q)]] = 1.0
+    return w
+
+
+def fuzzy_weights(z, P):
+    muL, muM, muH = fuzzy_memberships(z, P["a1"], P["c"], P["b2"])
+    rL, rM, rH = P["r"]
+    return (muL * rL + muM * rM + muH * rH) / (muL + muM + muH)
+
+
 def gate_weights(z, trial, variant):
     if variant == "none":
         return np.ones(len(z))
     if variant == "hard":
-        w = np.zeros(len(z))
-        for t in np.unique(trial):
-            m = np.where(trial == t)[0]
-            w[m[z[m] >= np.quantile(z[m], HARD_Q)]] = 1.0
-        return w
+        return hard_weights(z, trial, HARD_Q)
     if variant == "fuzzy":
-        muL, muM, muH = fuzzy_memberships(z, FUZZY["a1"], FUZZY["c"], FUZZY["b2"])
-        rL, rM, rH = FUZZY["r"]
-        return (muL * rL + muM * rM + muH * rH) / (muL + muM + muH)
+        return fuzzy_weights(z, FUZZY)
+    if variant == "fuzzy_sharp":
+        return fuzzy_weights(z, FUZZY_SHARP)
     if variant == "linear":
         return np.maximum(FUZZY["r"][0], z)
     raise ValueError(variant)
@@ -143,6 +161,29 @@ def trial_folds(F, protocol, seed, n_folds=5):
     return [(tids[a], tids[b]) for a, b in sp]
 
 
+# ------------------------------------------------------------------ one fit
+def fit_predict(X, y, trial, tr, te, w, cfg, C, names, rng):
+    """Weighted mRMR -> weighted S-FIS -> weighted GA on `tr`; weighted trial vote on `te`."""
+    wtr = w[tr]
+    sel = mrmr_weighted(X[tr], y[tr], wtr, k=cfg.n_selected, n_bins=cfg.mrmr_bins)
+    Xtr, Xte = X[tr][:, sel], X[te][:, sel]
+    fis = SugenoFIS.fit_mfs(Xtr, y[tr], 3, C, [names[i] for i in sel], sw=wtr)
+    fis.wang_mendel(Xtr, y[tr], sw=wtr)
+    fis, hist = tune_rules(fis, Xtr, y[tr], cfg, rng, sw=wtr)
+    P = fis.predict_proba(Xte)
+    wte, tte, yte = w[te], trial[te], y[te]
+    preds = []
+    for t in np.unique(tte):
+        m = tte == t
+        ww = wte[m]
+        S = (ww[:, None] * P[m]).sum(0) / max(ww.sum(), 1e-12)
+        preds.append((int(t), int(yte[m][0]), int(S.argmax())))
+    info = {"features": [names[i] for i in sel], "n_rules": int(len(fis.ant)), "ga_gen": len(hist),
+            "train_eff_windows": float(wtr.sum()), "train_windows": int(tr.sum()),
+            "window_acc_unweighted": float((P.argmax(1) == yte).mean())}
+    return preds, info
+
+
 # ------------------------------------------------------------------ one task
 def run_task(task):
     root, protocol, seed, variant, band, gate_feat = task[:6]
@@ -150,7 +191,7 @@ def run_task(task):
     cfg = Config(seed=seed)
     F = load_features(root, cfg)
     C = len(F["meta"]["class_names"])
-    rng = np.random.default_rng(seed * 1000 + VARIANTS.index(variant) * 10 + cfg.bands.index(band))
+    rng = np.random.default_rng(seed * 1000 + ALL_VARIANTS.index(variant) * 10 + cfg.bands.index(band))
     X, names = band_matrix(F, band)
     X = np.nan_to_num(zscore_by_subject(X, F["subject"]))
     y, trial = F["label"], F["trial"]
@@ -169,26 +210,29 @@ def run_task(task):
             sd = np.array([np.nanstd(v[F["subject"] == s_]) for s_ in F["subject"]])
             v = v + nr.standard_normal(len(v)) * noise * sd
         z = normalise_within_trial(v, trial)
-        w = gate_weights(z, trial, variant)
-        wtr = w[tr]
-        sel = mrmr_weighted(X[tr], y[tr], wtr, k=cfg.n_selected, n_bins=cfg.mrmr_bins)
-        Xtr, Xte = X[tr][:, sel], X[te][:, sel]
-        fis = SugenoFIS.fit_mfs(Xtr, y[tr], 3, C, [names[i] for i in sel], sw=wtr)
-        fis.wang_mendel(Xtr, y[tr], sw=wtr)
-        fis, hist = tune_rules(fis, Xtr, y[tr], cfg, rng, sw=wtr)
-        P = fis.predict_proba(Xte)
-        wte, tte, yte = w[te], trial[te], y[te]
-        preds = []
-        for t in np.unique(tte):
-            m = tte == t
-            ww = wte[m]
-            S = (ww[:, None] * P[m]).sum(0) / max(ww.sum(), 1e-12)
-            preds.append((int(t), int(yte[m][0]), int(S.argmax())))
-        win_acc = float((P.argmax(1) == yte).mean())
-        folds_out.append({"fold": fi, "gate_feature": g, "features": [names[i] for i in sel],
-                          "n_rules": int(len(fis.ant)), "ga_gen": len(hist),
-                          "train_eff_windows": float(wtr.sum()), "train_windows": int(tr.sum()),
-                          "window_acc_unweighted": win_acc, "trial_preds": preds})
+        chosen = None
+        if variant in ("fuzzy_tuned", "hard_tuned"):
+            # nested selection: inner stratified 3-fold CV over TRAINING trials only
+            grid = FUZZY_GRID if variant == "fuzzy_tuned" else HARD_GRID
+            make = (lambda P: fuzzy_weights(z, P)) if variant == "fuzzy_tuned" else (lambda q: hard_weights(z, trial, q))
+            tl = np.array([y[trial == t][0] for t in tr_t])
+            inner = list(StratifiedKFold(3, shuffle=True, random_state=seed + 100).split(tr_t, tl))
+            scores = []
+            for gi, P in enumerate(grid):
+                wg = make(P); acc = []
+                for ia, ib in inner:
+                    itr, ite = np.isin(trial, tr_t[ia]), np.isin(trial, tr_t[ib])
+                    pr, _ = fit_predict(X, y, trial, itr, ite, wg, cfg, C, names,
+                                        np.random.default_rng(seed * 7 + gi))
+                    acc.append(np.mean([a == b for _, a, b in pr]))
+                scores.append(float(np.mean(acc)))
+            chosen = int(np.argmax(scores))
+            w = make(grid[chosen])
+        else:
+            w = gate_weights(z, trial, variant)
+        preds, info = fit_predict(X, y, trial, tr, te, w, cfg, C, names, rng)
+        info.update({"fold": fi, "gate_feature": g, "trial_preds": preds, "tuned_choice": chosen})
+        folds_out.append(info)
     return {"root": root, "protocol": protocol, "seed": seed, "variant": variant, "band": band, "noise": noise,
             "gate_feature_mode": gate_feat, "elapsed_s": time.time() - t0, "folds": folds_out}
 
@@ -202,6 +246,7 @@ def main():
     ap.add_argument("--out", default="results/sim_study")
     ap.add_argument("--jobs", type=int, default=os.cpu_count())
     ap.add_argument("--noise", default="0", help="comma list of gate-noise levels (x within-subject SD)")
+    ap.add_argument("--variants", default=",".join(VARIANTS), help="comma list from " + ",".join(ALL_VARIANTS))
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     cfg = Config()
@@ -210,7 +255,7 @@ def main():
     tasks = [(r, p, int(s), v, b, a.gate_feature, float(nz))
              for nz in a.noise.split(",")
              for r in a.datasets.split(",") for p in a.protocols.split(",")
-             for s in a.seeds.split(",") for v in VARIANTS for b in cfg.bands]
+             for s in a.seeds.split(",") for v in a.variants.split(",") for b in cfg.bands]
     print(f"{len(tasks)} tasks on {a.jobs} processes", flush=True)
     out, t0 = [], time.time()
     with ProcessPoolExecutor(max_workers=a.jobs) as ex:

@@ -87,8 +87,19 @@ def _episodes(dur, rng, n_ep, len_range=(6, 10), start=4.0):
     return sorted(eps)
 
 
+def _graded_intensity(dur, rng, knot_s=1.0, smooth_s=3.0, slope=1.5):
+    """Smooth emotional-intensity curve in (0, 1): Gaussian-smoothed white noise at 1-s knots,
+    standardised and passed through a logistic. Returns (knot_times, intensity_at_knots)."""
+    tk = np.arange(0, dur + knot_s, knot_s)
+    raw = rng.standard_normal(len(tk) + 40)
+    g = np.exp(-0.5 * (np.arange(-20, 21) * knot_s / smooth_s) ** 2)
+    sm = np.convolve(raw, g / g.sum(), mode="same")[20:20 + len(tk)]
+    sm = (sm - sm.mean()) / (sm.std() + 1e-12)
+    return tk, 1.0 / (1.0 + np.exp(-slope * 2.0 * sm))
+
+
 def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, eye_fs=60.0,
-               signal_strength=1.0):
+               signal_strength=1.0, graded=False):
     n = int(dur * fs)
     C = len(SEED_IV_CHANNELS)
     mix, pupil_base, gain = subj_params["mix"], subj_params["pupil_base"], subj_params["gain"]
@@ -107,6 +118,24 @@ def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, e
     episodes = _episodes(dur, rng, n_ep=3)
     distractors = _episodes(dur, rng, n_ep=2, len_range=(3, 5))
     emask = _smooth_mask(n, fs, episodes)
+    if graded:
+        # GRADED mode: emotional intensity varies continuously in (0, 1) instead of on/off episodes.
+        # The EEG class component, pupil dilation and fixation change all scale with intensity.
+        tk, ik = _graded_intensity(dur, rng)
+        emask = np.interp(t, tk, ik)
+        episodes = []                                   # ground truth: intervals with intensity > 0.5
+        above = ik > 0.5
+        i = 0
+        while i < len(tk):
+            if above[i]:
+                j = i
+                while j + 1 < len(tk) and above[j + 1]:
+                    j += 1
+                if tk[j] > tk[i]:
+                    episodes.append((float(tk[i]), float(tk[j])))
+                i = j + 1
+            else:
+                i += 1
 
     bw, amp, burst = CLASS_SIG[label]
     if amp > 0:
@@ -123,7 +152,7 @@ def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, e
     ne = int(dur * eye_fs)
     te = np.arange(ne) / eye_fs
     drift = np.convolve(rng.standard_normal(ne), np.ones(120) / 120, mode="same") * 0.6
-    ep_e = _smooth_mask(ne, eye_fs, episodes, ramp_s=1.5)
+    ep_e = np.interp(te, tk, ik) if graded else _smooth_mask(ne, eye_fs, episodes, ramp_s=1.5)
     dis_e = _smooth_mask(ne, eye_fs, distractors, ramp_s=1.0)
     dil = PUPIL_DILATION[label] * rng.uniform(0.85, 1.15)
     py = pupil_base + drift + ep_e * dil + dis_e * 0.25 + rng.normal(0, 0.03, ne)
@@ -137,18 +166,23 @@ def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, e
     # --- fixations ---
     fix, tt = [], rng.uniform(0, 0.3)
     while tt < dur:
-        in_ep = any(a <= tt <= b for a, b in episodes)
-        mean = 260.0 * (FIX_FACTOR[label] if in_ep else 1.0)
+        if graded:
+            mean = 260.0 * (1.0 + (FIX_FACTOR[label] - 1.0) * float(np.interp(tt, tk, ik)))
+        else:
+            in_ep = any(a <= tt <= b for a, b in episodes)
+            mean = 260.0 * (FIX_FACTOR[label] if in_ep else 1.0)
         d = rng.gamma(4.0, mean / 4.0)
         fix.append((tt, d))
         tt += d / 1000.0 + rng.uniform(0.02, 0.06)
     fixations = np.array(fix)
 
-    return Trial(subject, trial_id, label, eeg.astype(np.float32), fs, SEED_IV_CHANNELS,
-                 pupil, fixations), episodes
+    tr = Trial(subject, trial_id, label, eeg.astype(np.float32), fs, SEED_IV_CHANNELS, pupil, fixations)
+    if graded:
+        return tr, episodes, [float(v) for v in ik]
+    return tr, episodes
 
 
-def generate(out, n_subjects=5, trials_per_class=3, dur=60.0, seed=0, signal_strength=1.0):
+def generate(out, n_subjects=5, trials_per_class=3, dur=60.0, seed=0, signal_strength=1.0, graded=False):
     rng = np.random.default_rng(seed)
     os.makedirs(out, exist_ok=True)
     C = len(SEED_IV_CHANNELS)
@@ -160,13 +194,17 @@ def generate(out, n_subjects=5, trials_per_class=3, dur=60.0, seed=0, signal_str
         labels = np.repeat(np.arange(4), trials_per_class)
         rng.shuffle(labels)
         for i, lab in enumerate(labels):
-            tr, eps = make_trial(subj, f"T{i + 1:02d}", int(lab), params, rng, dur=dur,
-                                  signal_strength=signal_strength)
+            res = make_trial(subj, f"T{i + 1:02d}", int(lab), params, rng, dur=dur,
+                             signal_strength=signal_strength, graded=graded)
+            tr, eps = res[0], res[1]
             save_npz(tr, out)
             truth[f"{subj}/{tr.trial_id}"] = {"label": int(lab), "episodes": eps}
+            if graded:
+                truth[f"{subj}/{tr.trial_id}"]["intensity_1hz"] = res[2]
         print(f"  {subj}: {len(labels)} trials", flush=True)
     meta = {"dataset": "synthetic-demo", "class_names": CLASS_NAMES, "eeg_fs": 200.0,
             "eye_fs": 60.0, "ch_names": SEED_IV_CHANNELS, "line_hz": 50.0, "signal_strength": signal_strength,
+            "seed": seed, "graded": graded,
             "note": "SYNTHETIC data for pipeline testing only"}
     with open(os.path.join(out, "meta.json"), "w") as f:
         json.dump(meta, f, indent=1)
@@ -183,5 +221,7 @@ if __name__ == "__main__":
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--signal-strength", type=float, default=1.0,
                     help="scale of the class-specific EEG component (1 = hard, 3 = easy)")
+    ap.add_argument("--graded", action="store_true",
+                    help="continuous emotional intensity instead of on/off episodes")
     a = ap.parse_args()
-    generate(a.out, a.subjects, a.trials_per_class, a.duration, a.seed, a.signal_strength)
+    generate(a.out, a.subjects, a.trials_per_class, a.duration, a.seed, a.signal_strength, a.graded)
