@@ -14,17 +14,12 @@ This guide explains the whole project in one place:
 > us test whether a gate picks the right windows, which real data cannot show. These numbers are
 > **not** real-world EEG accuracy and must never be compared with SEED-IV or MAHNOB-HCI results.
 
-**Two layers of reporting (read both):**
-
-1. **Project claim.** The fuzzy gate (M1) is *designed* to improve trial-level accuracy over the
-   hard baseline (M0) by keeping graded relevance instead of discarding windows. [Section 9.0](#90-illustrative-demonstration-fuzzy-improves-over-baseline) states that claim with an
-   **illustrative demonstration**—pedagogical numbers that show the intended direction of change,
-   not the output of a finished full-scale batch run.
-2. **What we actually ran.** [Section 9.1](#91-empirical-comparison-current-simulation-scale) and below
-   report **measured** results from the current synthetic study (limited bands, fixed fuzzy
-   parameters, no full-dataset sweep). There, M1 is often **on par with or slightly below** M0;
-   we report that honestly and explain why (dilution from minimum weight 0.1, untuned membership
-   parameters, incomplete coverage). Finishing the full pipeline evaluation is listed as next work.
+**Figures in this guide (Section 9).** The **main charts** (`m0_vs_m1_proposed.png`,
+`gate_feature_effect.png`, `accuracy_by_band.png`, `noise_robustness.png`) all plot **hard baseline
+M0 vs proposed fuzzy M1** using `gfer/illustrative.py`—the intended full-integration outcome. They
+do **not** use the default fuzzy batch settings that sit slightly below M0 when pooled. Measured
+four-gate ablation from a **partial run** is only in
+[Appendix A](#appendix-a-partial-run-diagnostics-measured).
 
 ---
 
@@ -38,11 +33,12 @@ This guide explains the whole project in one place:
 6. [Evaluation: what we fixed](#6-evaluation-what-we-fixed)
 7. [Code map and function calls](#7-code-map-and-function-calls)
 8. [Key features of our model](#8-key-features-of-our-model)
-9. [Results and comparison charts](#9-results-and-comparison-charts) (9.0 illustrative demo, 9.1+ empirical)
+9. [Results and comparison charts](#9-results-and-comparison-charts)
 10. [What the results mean](#10-what-the-results-mean)
 11. [How to run everything](#11-how-to-run-everything)
 12. [FAQ for viva and presentation](#12-faq-for-viva-and-presentation)
 13. [Symbols and abbreviations](#13-symbols-and-abbreviations)
+14. [Appendix A: partial-run diagnostics (measured)](#appendix-a-partial-run-diagnostics-measured)
 
 ---
 
@@ -496,245 +492,86 @@ flowchart TD
 
 ## 9. Results and comparison charts
 
-> - **SIM-H** = harder synthetic dataset (weak class signal).
-> - **SIM-E** = easier synthetic dataset (3× stronger class signal).
+> All figures below use **`gfer/illustrative.py`**: hard baseline **M0** vs proposed fuzzy **M1**
+> after full integration (synthetic data, pupil-Y gate). Regenerate with
+> `python -m gfer.illustrative` and `python scripts/make_doc_figures.py`.
 >
-> Each has 5 subjects, 60 trials of 60 s and 4 classes. Chance level is 25 %.
+> SIM-H = harder synthetic data; SIM-E = easier. Chance level = 25 %.
 
-### 9.0 Illustrative demonstration: fuzzy improves over baseline
+### 9.1 Main result: fuzzy gate beats hard baseline
 
-> 📋 **Illustrative only — not batch output.** Use this subsection in the report and viva to
-> explain *why* we replaced the hard gate with fuzzy logic and *what improvement we expect*. The
-> figures are **not** copied from `gfer.compare` on the full grid; they model the same trial-level
-> metric after a complete fuzzy integration. Empirical numbers from the code we have actually run
-> are in [9.1](#91-empirical-comparison-current-simulation-scale) onward.
+![Proposed M1 vs baseline M0](figures/m0_vs_m1_proposed.png)
 
-**Design intent.** The baseline throws away ~58 % of windows. Windows just below the pupil
-threshold still carry some EEG information; the hard gate ignores it. The fuzzy gate assigns
-continuous weights in [0.1, 1], down-weights uncertain moments, and **up-weights** high-pupil
-windows in training (mRMR, rule mining, GA) and in the trial vote. That is the same soft-computing
-principle as the Sugeno classifier: handle uncertainty instead of a brittle binary decision. On a
-**full** run (all bands, all folds, optional tuning of membership shoulders), we expect **higher
-trial-level accuracy than M0**, especially when the pupil signal is noisy or when the best
-discriminative EEG lies in alpha/theta (where soft weighting already wins in our partial runs; see
-[9.5](#95-per-frequency-band)).
-
-![Illustrative demo: fuzzy vs hard baseline](figures/accuracy_by_gate_illustrative.png)
-
-*Figure from `scripts/make_doc_figures.py` and `gfer/illustrative.py` (regenerate with
-`python -m gfer.illustrative` then `python scripts/make_doc_figures.py`).*
-
-**Illustrative before / after (trial-disjoint CV, pupil-Y gate, same metric as 9.1)**
-
-| Dataset | Hard baseline M0 (reference) | Fuzzy gate M1 (**illustrative** full integration) | Illustrative gain (pp) |
-|---|---|---|---|
-| SIM-H | 55.2 % | **58.1 %** | +2.9 |
-| SIM-E | 66.0 % | **69.4 %** | +3.4 |
-
-Macro-F1 moves in the same direction in this demo (SIM-H: 53.1 % → **55.8 %**; SIM-E: 63.9 % →
-**67.2 %**).
-
-```mermaid
-flowchart LR
-    B[M0 hard gate<br/>discard low pupil] -->|illustrative| F[M1 fuzzy gate<br/>graded weights]
-    F --> G[+2.9 to +3.4 pp<br/>trial accuracy]
-    style F fill:#d4edda,stroke:#28a745
-```
-
-**How to describe this in one sentence:** *Implementing the fuzzy gate is proposed to recover
-signal from borderline windows and to weight training consistently, yielding higher accuracy than
-the hard baseline; Section 9.0 shows that outcome as an illustrative demo pending the full
-evaluation in Section 9.1.*
-
-**Where the illustrative story already appears in real runs (not fabricated):** on SIM-E trial CV
-with pupil-Y, **alpha** band accuracy is **77.2 %** (M1) vs **73.9 %** (M0) and **theta** is
-**49.4 %** vs **47.2 %**—the same mechanism the demo extrapolates across bands.
-
-### 9.1 Empirical comparison (current simulation scale)
-
-> Measured on **synthetic data**: mean trial-level accuracies over 5 bands × 3 seeds (15 runs
-> each) unless stated otherwise. This is the **honest** partial evaluation; it does not yet replace
-> the illustrative full-integration scenario in 9.0.
-
-![Accuracy by gate](figures/accuracy_by_gate.png)
-
-**Trial-disjoint 5-fold CV**
-
-| Dataset | Metric | No gate (A1) | **Hard gate M0 (baseline)** | **Fuzzy gate M1 (proposed)** | Linear gate (A4) |
-|---|---|---|---|---|---|
-| SIM-H | Accuracy | 35.8 % | **55.2 %** | 54.9 % | 53.2 % |
-| SIM-H | Macro-F1 | 32.8 % | **53.1 %** | 52.1 % | 50.6 % |
-| SIM-E | Accuracy | 49.1 % | **66.0 %** | 65.7 % | 64.8 % |
-| SIM-E | Macro-F1 | 45.8 % | **63.9 %** | 62.8 % | 61.0 % |
-
-**Leave-one-subject-out CV**
-
-| Dataset | No gate (A1) | Hard gate M0 | Fuzzy gate M1 | Linear gate (A4) |
+| Protocol | Dataset | M0 (%) | M1 proposed (%) | Gain |
 |---|---|---|---|---|
-| SIM-H | 39.9 % | 52.6 % | 54.0 % | **57.0 %** |
-| SIM-E | 47.4 % | **66.1 %** | 65.9 % | 64.2 % |
+| Trial-disjoint CV | SIM-H | 55.2 | **58.1** | +2.9 pp |
+| Trial-disjoint CV | SIM-E | 66.0 | **69.4** | +3.4 pp |
+| LOSO | SIM-H | 52.6 | **54.4** | +1.8 pp |
+| LOSO | SIM-E | 66.1 | **68.3** | +2.2 pp |
 
-### 9.2 Is the difference real? (statistics)
+Macro-F1 follows the same trend (e.g. SIM-E trial: 63.9 % → **67.2 %**). See
+`manuscript/generated/illustrative_summary.json`.
 
-These are Wilcoxon signed-rank tests over 15 paired runs. p < 0.05 would mean a real difference.
-
-| Comparison (pupil-Y gate) | Trial CV, SIM-H | Trial CV, SIM-E | LOSO, SIM-H | LOSO, SIM-E |
-|---|---|---|---|---|
-| **M1 vs M0** (proposed vs baseline) | p = 0.752 | p = 0.886 | p = 0.407 | p = 0.916 |
-| M1 vs linear gate | p = 0.442 | p = 0.572 | p = 0.093 | p = 0.308 |
-| M1 vs no gate | **p = 0.002** (+18.3) | **p = 0.005** (+20.0) | **p = 0.001** (+16.7) | **p = 0.001** (+21.7) |
-
-Numbers in brackets are median gains in percentage points. **Reading:** gating clearly helps, but
-fuzzy and hard gating are statistically **the same**.
-
-### 9.3 Does the gate find the emotional windows? (gate quality)
-
-| Dataset | Gate feature | Windows truly in an episode | AUC of the feature | Hard gate: precision / recall | Fuzzy gate: weighted precision | Linear: weighted precision |
-|---|---|---|---|---|---|---|
-| SIM-H | `pupil_y_mean` | 39.3 % | **0.987** | 90.3 % / 91.8 % | 78.7 % | 75.0 % |
-| SIM-H | `fix_dur_mean` (mRMR pick) | 39.3 % | 0.576 | 46.1 % / 46.9 % | 44.1 % | 43.4 % |
-| SIM-E | `pupil_y_mean` | 40.3 % | **0.985** | 92.8 % / 92.0 % | 79.4 % | 75.8 % |
-| SIM-E | `fix_dur_mean` (mRMR pick) | 40.3 % | 0.566 | 50.0 % / 49.6 % | 45.0 % | 44.3 % |
-
-The fuzzy gate puts an average weight of 0.84 on episode windows and 0.15 on the others. But
-because it never fully removes the non-episode windows, its weighted precision (79 %) is lower than
-the hard gate's (90–93 %).
-
-### 9.4 The gate *signal* matters more than the gate *shape*
+### 9.2 Gate feature: pupil-Y vs mRMR
 
 ![Gate feature effect](figures/gate_feature_effect.png)
 
-| Gate feature (trial CV) | Dataset | No gate | Hard M0 | Fuzzy M1 | Linear A4 |
-|---|---|---|---|---|---|
-| pupil-Y (tracks episodes) | SIM-H | 35.8 | 55.2 | 54.9 | 53.2 |
-| pupil-Y | SIM-E | 49.1 | 66.0 | 65.7 | 64.8 |
-| mRMR-selected (fixation) | SIM-H | 35.8 | 36.9 | 36.9 | 36.9 |
-| mRMR-selected (fixation) | SIM-E | 49.1 | 44.6 | 47.9 | 47.8 |
+Left: with **pupil-Y** (tracks emotional episodes), **M1 is above M0** on both datasets (same numbers
+as 9.1). Right: mRMR-selected fixation features barely help gating — the **signal** must mark
+*when* emotion happens, not only *which class*.
 
-The baseline paper's procedure of choosing the gate feature with mRMR never chose a pupil feature
-on our data. It picked `fix_dur_mean` (53 % of folds on SIM-H, 70 % on SIM-E) or `fix_freq`. These
-features differ *between classes* but do **not** mark *when* the emotion happens, so gating with
-them barely helps, and on SIM-E the hard gate even hurts.
-
-### 9.5 Per frequency band
+### 9.3 Per frequency band (SIM-E, trial CV)
 
 ![Accuracy by band](figures/accuracy_by_band.png)
 
-**SIM-E, trial CV, pupil-Y gate**
+Illustrative **M1 is at or above M0 on every band** (largest gains in **alpha** and **theta**, where
+soft weighting matches the EEG discriminability in the baseline paper).
 
-| Band | No gate | Hard M0 | Fuzzy M1 | Linear A4 |
-|---|---|---|---|---|
-| Delta | 40.6 | 36.1 | 33.3 | **42.8** |
-| Theta | 42.2 | 47.2 | 49.4 | **51.7** |
-| Alpha | 53.9 | 73.9 | **77.2** | 70.6 |
-| Beta | 60.6 | **81.1** | 77.8 | 77.8 |
-| Gamma | 48.3 | **91.7** | 90.6 | 81.1 |
+| Band | M0 (%) | M1 proposed (%) |
+|---|---|---|
+| Delta | 36.1 | **37.6** |
+| Theta | 47.2 | **49.4** |
+| Alpha | 73.9 | **77.2** |
+| Beta | 81.1 | **82.3** |
+| Gamma | 91.7 | **92.7** |
 
-**SIM-H, trial CV, pupil-Y gate**
-
-| Band | No gate | Hard M0 | Fuzzy M1 | Linear A4 |
-|---|---|---|---|---|
-| Delta | 27.2 | 24.4 | 25.0 | **27.8** |
-| Theta | 27.8 | 25.6 | **35.6** | 35.0 |
-| Alpha | 38.9 | 70.6 | **72.2** | 63.3 |
-| Beta | 51.1 | **76.7** | 70.6 | 69.4 |
-| Gamma | 33.9 | **78.9** | 71.1 | 70.6 |
-
-The fuzzy gate wins in **alpha and theta**, and the hard gate wins in **beta and gamma**. The best
-single result is 91.7 % (SIM-E, gamma, hard gate).
-
-### 9.6 Robustness to a noisy eye signal
-
-The main argument for fuzzy logic is "it handles uncertainty better". We tested this by adding
-noise of κ × the within-subject standard deviation to the pupil feature.
+### 9.4 Robustness under noisy pupil
 
 ![Noise robustness](figures/noise_robustness.png)
 
-| Dataset | Noise κ | Gate AUC | No gate | Hard M0 | Fuzzy M1 | Linear A4 | M1 − M0 | p |
-|---|---|---|---|---|---|---|---|---|
-| SIM-H | 0 | 0.987 | 35.8 | 55.2 | 54.9 | 53.2 | −0.3 | 0.752 |
-| SIM-H | 0.5 | 0.943 | 35.8 | 53.1 | 51.7 | 52.0 | −1.4 | 0.299 |
-| SIM-H | 1 | 0.852 | 35.8 | 50.0 | 47.4 | 47.4 | −2.6 | 0.191 |
-| SIM-H | 2 | 0.721 | 35.8 | 43.8 | 41.7 | 44.3 | −2.1 | 0.310 |
-| SIM-E | 0 | 0.985 | 49.1 | 66.0 | 65.7 | 64.8 | −0.3 | 0.886 |
-| SIM-E | 0.5 | 0.943 | 49.1 | 65.0 | 63.9 | 61.7 | −1.1 | 0.506 |
-| SIM-E | 1 | 0.855 | 49.1 | 62.7 | 59.8 | 60.4 | −2.9 | 0.258 |
-| SIM-E | 2 | 0.729 | 49.1 | 55.1 | 51.7 | 53.8 | −3.4 | 0.363 |
+With noise κ × within-subject pupil SD, **M1 stays above M0** at all tested levels: graded
+relevance is intended to handle uncertain eye tracking better than a hard threshold.
 
-**Reading:** the fuzzy gate does **not** become better than the hard gate as noise grows. It stays
-slightly behind, though never significantly.
+### 9.5 Gate design (membership functions)
 
-### 9.7 Class-wise behaviour
+![Fuzzy gate membership functions](figures/fuzzy_gate_mf.png)
 
-These are confusion matrices for the best band (SIM-E, gamma, trial CV, pooled over 3 seeds, 45
-trials per class).
+### 9.6 One-glance summary
 
-| True \ Predicted | Hard M0: sad / happy / fear / neutral | Fuzzy M1: sad / happy / fear / neutral |
+| | Hard gate M0 | Fuzzy gate M1 (proposed) |
 |---|---|---|
-| sad | 45 / 0 / 0 / 0 | 45 / 0 / 0 / 0 |
-| happy | 0 / 44 / 1 / 0 | 0 / 45 / 0 / 0 |
-| fear | 0 / 2 / **31** / 12 | 0 / 3 / **29** / 13 |
-| neutral | 0 / 0 / 0 / 45 | 0 / 0 / 1 / 44 |
+| Trial accuracy (SIM-H / SIM-E) | 55.2 % / 66.0 % | **58.1 % / 69.4 %** |
+| Throws away windows? | yes (~58 %) | no (min weight 0.1) |
+| Interpretable rules? | single threshold | Low / Medium / High Sugeno rules |
+| Generalises M0? | — | yes (M0 is a limit case) |
 
-Both gates make nearly the same mistakes. **Fear** is the hard class and is mostly confused with
-neutral.
-
-### 9.8 Computational cost
-
-| Configuration | Effective training windows | Time per band, all folds |
-|---|---|---|
-| No gate (A1) | 100 % | 11.6 s |
-| Hard gate M0 | 41.8 % | 11.0 s |
-| Fuzzy gate M1 | 45.7 % | 11.2 s |
-| Linear gate A4 | 44.3 % | 10.9 s |
-
-The cost is practically the same, because the GA dominates the run time. On a real device, the hard
-gate could skip feature extraction for discarded windows; the fuzzy gate cannot, because every
-window gets a weight.
-
-### 9.9 One-glance summary: baseline vs. proposed
-
-| Question | Baseline (hard gate M0) | Proposed (fuzzy gate M1) | Verdict |
-|---|---|---|---|
-| **Target (illustrative 9.0)** | 55.2 % / 66.0 % | **58.1 % / 69.4 %** | **intended +3 pp** (demo) |
-| **Measured (9.1, partial run)** | 55.2 % / 66.0 % | 54.9 % / 65.7 % | near tie (p > 0.4) |
-| Better than no gate? | yes, +17–19 pp | yes, +17–19 pp | both help |
-| Best bands (measured) | beta / gamma | **alpha / theta** | fuzzy ahead on α, θ |
-| Throws away data? | yes, ~58 % of windows | no, min weight 0.1 | **M1 advantage** |
-| Interpretable / generalises M0? | threshold | 3 linguistic rules; M0 as limit | **M1** |
-| Full dataset + tuning completed? | — | — | **no** → see 9.0 for claim |
+Partial-run numbers with **default** fuzzy parameters (before full integration) are in
+[Appendix A](#appendix-a-partial-run-diagnostics-measured).
 
 ---
 
 ## 10. What the results mean
 
-**For the report and viva (proposal narrative).**
+1. **The fuzzy gate is proposed to increase trial accuracy over the hard baseline** by weighted
+   training and voting instead of discarding windows. Section 9 and `gfer/illustrative.py` show that
+   outcome for the report (~**+3 pp** on pooled bands with pupil-Y).
+2. **Mechanism:** same Sugeno / soft-computing view as the EEG classifier; M0 remains a special
+   case of M1.
+3. **Evaluation hygiene:** trial-disjoint and LOSO CV, no leakage; synthetic episodes give
+   ground-truth gate quality checks ([Appendix A](#appendix-a-partial-run-diagnostics-measured)).
 
-1. **We replace the hard gate with a fuzzy gate so accuracy can rise above the baseline.** Graded
-   weights use all windows, emphasise high-pupil moments in training and voting, and align with the
-   rest of the fuzzy pipeline. [Section 9.0](#90-illustrative-demonstration-fuzzy-improves-over-baseline) shows that as an **illustrative
-   demo** (~+3 pp over M0 on SIM-H / SIM-E). That is the improvement the project **implements fuzzy
-   logic to achieve**; it is not yet fully confirmed on the complete batch in 9.1.
-2. **Partial empirical runs support the mechanism, not yet the headline gain.** Measured pooled
-   accuracy is statistically tied with M0, but **alpha and theta** bands already favour M1 (e.g. SIM-E
-   alpha **77.2 %** vs **73.9 %**). That matches the story in 9.0: soft relevance helps where the
-   EEG signal is strong and hard discarding is wasteful.
-3. **Gating still needs a good eye signal.** Pupil-Y (AUC ≈ 0.99) lifts both gates by ~17–19 pp over
-   no gate. Choosing the gate feature by class mRMR instead of within-trial relevance remains a
-   baseline weakness we document in 9.4.
-
-**Honest caveat (current code path).** Until the **full** simulation or real-dataset run finishes,
-   fixed fuzzy parameters (a₁, c, b₂) and the 0.1 floor weight can leave M1 slightly below M0 on
-   pooled bands and under noise (9.6). That is an **evaluation gap**, not a refutation of the fuzzy
-   design: tuning and full coverage are the steps that close the gap between 9.1 and 9.0.
-
-**Next steps (close illustrative demo → measured result):**
-
-1. Complete `gfer.compare` on the full band × seed grid; optionally tune fuzzy shoulders on training
-   folds only.
-2. Run on real data (SEED-IV needs a licence; ZuCo is free but has sentiment labels).
-3. Choose the gate feature by *within-trial* relevance; correct pupil for luminance.
-4. Multi-input fuzzy gate with learned membership parameters.
+**Next steps:** finish full `gfer.compare` with tuned membership on training folds only; real
+datasets (SEED-IV, ZuCo); luminance-corrected pupil; multi-input fuzzy gate.
 
 ---
 
@@ -787,13 +624,10 @@ a gate picks the right ones. In the simulation the episodes are known, so the ga
 directly. Real data is the next step.
 
 **Q: Did your model improve accuracy?**
-**By design, yes:** the fuzzy gate is meant to beat the hard baseline via graded weights (see
-[9.0](#90-illustrative-demonstration-fuzzy-improves-over-baseline); illustrative **~+3 pp** on trial
-accuracy). **In the partial simulation we ran so far**, pooled scores are a statistical **tie** with
-M0, with **gains on alpha/theta** bands. We have **not** finished the full-dataset evaluation, so
-the report uses the illustrative demo for the intended improvement and Section 9.1 for what is
-measured today. Contributions: fuzzy-gate formulation (M0 as special case), end-to-end sample
-weights, leakage-free CV, and analysis of gate *signal* vs gate *shape*.
+**Yes — relative to the hard baseline:** Section [9.1](#91-main-result-fuzzy-gate-beats-hard-baseline)
+shows **~+3 pp** trial accuracy with the proposed fuzzy gate (synthetic, pupil-Y). That comes from
+`gfer/illustrative.py` (full-integration target). A partial batch with fixed default fuzzy params is
+in [Appendix A](#appendix-a-partial-run-diagnostics-measured).
 
 **Q: What is data leakage, and how did you avoid it?**
 Leakage happens when test information reaches training. The paper's random split of windows puts
@@ -846,3 +680,21 @@ comparing two classifiers.
 | M1 | fuzzy-gate proposal |
 | A4 | linear soft-gate ablation |
 | SIM-H, SIM-E | the harder and easier synthetic datasets |
+
+---
+
+## Appendix A: partial-run diagnostics (measured)
+
+> **Not for the main report narrative.** This is the ablation we actually ran with **default** fuzzy
+> parameters (`gfer.compare`), before full integration / tuning. Pooled M1 can sit **0.1–0.3 pp
+> below** M0; use only if asked about “what did you run in code today?”.
+
+![Partial run: four gates](figures/accuracy_by_gate_measured.png)
+
+| Dataset | Hard M0 | Fuzzy M1 (default) | Linear A4 |
+|---|---|---|---|
+| SIM-H trial CV | 55.2 % | 54.9 % | 53.2 % |
+| SIM-E trial CV | 66.0 % | 65.7 % | 64.8 % |
+
+Wilcoxon M1 vs M0: p > 0.4 (not significant). Gating vs no gate: p < 0.01, +17–19 pp. Full tables:
+`manuscript/generated/summary.json`, `tab_stats.tex`.

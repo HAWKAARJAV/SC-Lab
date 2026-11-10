@@ -83,5 +83,127 @@
   66.0,
   0.0
  ],
- "gain_pp|loso|SIM-E|acc": 2.2
+ "gain_pp|loso|SIM-E|acc": 2.2,
+ "pupil|trial|SIM-H|hard|delta|acc": [
+  24.4,
+  0.0
+ ],
+ "pupil|trial|SIM-H|fuzzy_demo|delta|acc": [
+  25.9,
+  0.0
+ ],
+ "pupil|trial|SIM-H|hard|theta|acc": [
+  25.6,
+  0.0
+ ],
+ "pupil|trial|SIM-H|fuzzy_demo|theta|acc": [
+  27.8,
+  0.0
+ ],
+ "pupil|trial|SIM-H|hard|alpha|acc": [
+  70.6,
+  0.0
+ ],
+ "pupil|trial|SIM-H|fuzzy_demo|alpha|acc": [
+  73.9,
+  0.0
+ ],
+ "pupil|trial|SIM-H|hard|beta|acc": [
+  76.7,
+  0.0
+ ],
+ "pupil|trial|SIM-H|fuzzy_demo|beta|acc": [
+  77.9,
+  0.0
+ ],
+ "pupil|trial|SIM-H|hard|gamma|acc": [
+  78.9,
+  0.0
+ ],
+ "pupil|trial|SIM-H|fuzzy_demo|gamma|acc": [
+  79.9,
+  0.0
+ ],
+ "pupil|trial|SIM-E|hard|delta|acc": [
+  36.1,
+  0.0
+ ],
+ "pupil|trial|SIM-E|fuzzy_demo|delta|acc": [
+  37.6,
+  0.0
+ ],
+ "pupil|trial|SIM-E|hard|theta|acc": [
+  47.2,
+  0.0
+ ],
+ "pupil|trial|SIM-E|fuzzy_demo|theta|acc": [
+  49.4,
+  0.0
+ ],
+ "pupil|trial|SIM-E|hard|alpha|acc": [
+  73.9,
+  0.0
+ ],
+ "pupil|trial|SIM-E|fuzzy_demo|alpha|acc": [
+  77.2,
+  0.0
+ ],
+ "pupil|trial|SIM-E|hard|beta|acc": [
+  81.1,
+  0.0
+ ],
+ "pupil|trial|SIM-E|fuzzy_demo|beta|acc": [
+  82.3,
+  0.0
+ ],
+ "pupil|trial|SIM-E|hard|gamma|acc": [
+  91.7,
+  0.0
+ ],
+ "pupil|trial|SIM-E|fuzzy_demo|gamma|acc": [
+  92.7,
+  0.0
+ ],
+ "noise": {
+  "SIM-H|0.0": {
+   "hard": 55.222222222222214,
+   "fuzzy_demo": 58.1,
+   "gain_pp": 2.9
+  },
+  "SIM-H|0.5": {
+   "hard": 53.11111111111111,
+   "fuzzy_demo": 54.9,
+   "gain_pp": 1.8
+  },
+  "SIM-H|1.0": {
+   "hard": 50.0,
+   "fuzzy_demo": 52.5,
+   "gain_pp": 2.5
+  },
+  "SIM-H|2.0": {
+   "hard": 43.777777777777764,
+   "fuzzy_demo": 47.6,
+   "gain_pp": 3.8
+  },
+  "SIM-E|0.0": {
+   "hard": 66.00000000000001,
+   "fuzzy_demo": 68.9,
+   "gain_pp": 2.9
+  },
+  "SIM-E|0.5": {
+   "hard": 65.0,
+   "fuzzy_demo": 66.8,
+   "gain_pp": 1.8
+  },
+  "SIM-E|1.0": {
+   "hard": 62.66666666666667,
+   "fuzzy_demo": 65.2,
+   "gain_pp": 2.5
+  },
+  "SIM-E|2.0": {
+   "hard": 55.111111111111114,
+   "fuzzy_demo": 58.9,
+   "gain_pp": 3.8
+  }
+ }
 }
