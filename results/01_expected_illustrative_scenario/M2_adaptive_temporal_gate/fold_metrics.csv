@@ -1,0 +1,11 @@
+dataset,model,fold,accuracy,macro_f1,n_test
+SEED-IV_reference_scale,M2,1,96.0,96.06792563314302,100
+SEED-IV_reference_scale,M2,2,95.0,95.0431414504641,100
+SEED-IV_reference_scale,M2,3,96.0,96.46850354397525,100
+SEED-IV_reference_scale,M2,4,94.0,93.683611379755,100
+SEED-IV_reference_scale,M2,5,95.0,94.57678464945907,100
+MAHNOB_reference_scale,M2,1,87.0,86.684429233461,100
+MAHNOB_reference_scale,M2,2,86.0,85.65835564582203,100
+MAHNOB_reference_scale,M2,3,83.0,82.95709793351304,100
+MAHNOB_reference_scale,M2,4,90.0,90.02251367480478,100
+MAHNOB_reference_scale,M2,5,84.0,83.85635066915599,100

@@ -87,7 +87,12 @@ gfer/                     pipeline package
   fuzzy.py                entropy discretisation, triangular MFs, Sugeno FIS, Wang–Mendel mining
   ga.py                   GA rule-base tuning
   evaluate.py, run.py     baseline pipeline (window-level, original protocol)
-  compare.py              M0 / M1 / A1 / A4 comparison at trial level (+ gate-noise option)
+  gates.py                shared hard/fuzzy gate (M0/M1)
+  adaptive_eye.py         adaptive temporal fuzzy gate (M2)
+  fusion.py               per-band classifiers + probability fusion (M3)
+  integrated.py           M4: M2 gate + M3 fusion end-to-end CLI
+  illustrative_models.py  illustrative M0–M4 teaching package (not training)
+  compare.py              M0 / M1 / M2 / A1 / A4 comparison at trial level (+ gate-noise option)
   analyze_sim.py          builds every results table and figure of the paper
   analyze_noise.py        noise-robustness table and figure
   plots.py                plotting helpers

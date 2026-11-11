@@ -34,3 +34,32 @@ def mrmr(X, y, k=None, n_bins=10):
         scores.append(float(score.max()))
         remaining.discard(best)
     return np.array(order), np.array(scores), rel
+
+
+def _wmi(a, b, w):
+    P = np.zeros((a.max() + 1, b.max() + 1))
+    np.add.at(P, (a, b), w)
+    P /= P.sum()
+    pa, pb = P.sum(1, keepdims=True), P.sum(0, keepdims=True)
+    nz = P > 0
+    return float((P[nz] * np.log(P[nz] / (pa @ pb)[nz])).sum())
+
+
+def mrmr_weighted(X, y, w, k=3, n_bins=10):
+    """mRMR with sample weights (positive-weight windows only)."""
+    pos = np.asarray(w, dtype=float) > 0
+    X, y, w = X[pos], y[pos], np.asarray(w, dtype=float)[pos]
+    Xd = _discretize(np.nan_to_num(X), n_bins)
+    rel = np.array([_wmi(Xd[:, j], y, w) for j in range(X.shape[1])])
+    order = [int(np.argmax(rel))]
+    red = np.zeros(X.shape[1])
+    remaining = set(range(X.shape[1])) - set(order)
+    while len(order) < k:
+        last = order[-1]
+        for j in remaining:
+            red[j] += _wmi(Xd[:, j], Xd[:, last], w)
+        cand = np.array(sorted(remaining))
+        best = int(cand[np.argmax(rel[cand] - red[cand] / len(order))])
+        order.append(best)
+        remaining.discard(best)
+    return np.array(order)

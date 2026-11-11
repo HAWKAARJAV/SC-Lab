@@ -1,0 +1,6 @@
+dataset,frequency_band,accuracy_percent,reported_in_paper,source
+MAHNOB-HCI,alpha,85.2,yes,Sec. IV results text
+MAHNOB-HCI,beta,82.92,yes,Sec. IV results text
+MAHNOB-HCI,gamma,79.05,yes,Sec. IV results text
+MAHNOB-HCI,theta,,no_numeric_value,Sec. IV results text
+MAHNOB-HCI,delta,,no_numeric_value,Sec. IV results text

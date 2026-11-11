@@ -1,0 +1,29 @@
+{
+  "purpose": "illustrative_teaching_scenario",
+  "random_seed": 20261110,
+  "n_samples_per_dataset": 500,
+  "n_folds": 5,
+  "class_names": [
+    "sadness",
+    "happiness",
+    "fear",
+    "neutrality"
+  ],
+  "target_accuracy_percent": {
+    "SEED-IV_reference_scale": {
+      "M0": 94.42,
+      "M1": 94.75,
+      "M2": 95.25,
+      "M3": 95.4,
+      "M4": 95.95
+    },
+    "MAHNOB_reference_scale": {
+      "M0": 85.2,
+      "M1": 85.55,
+      "M2": 86.05,
+      "M3": 86.2,
+      "M4": 86.75
+    }
+  },
+  "not_experimental": true
+}

@@ -17,7 +17,8 @@ import numpy as np
 from . import plots
 from .config import Config
 from .data import load_dataset
-from .evaluate import apply_gate, roc_points, run_band, select_gate_feature
+from .evaluate import (apply_gate, roc_points, run_band, run_band_weighted,
+                       select_gate_feature, window_gate_weights)
 from .fuzzy import LEVEL_NAMES  # noqa: F401  (re-exported for report readers)
 
 
@@ -49,6 +50,8 @@ def parse_args():
     ap.add_argument("--features", default=None,
                     help="'auto' (mRMR) or comma list e.g. PhEn-FP2,SampEn-T8,PermEn-T7")
     ap.add_argument("--no-ablation", action="store_true")
+    ap.add_argument("--gate-variant", default=None,
+                    help="weighted gate: hard,fuzzy,adaptive,adaptive_nosmooth,adaptive_causal")
     ap.add_argument("--seed", type=int, default=0)
     return ap.parse_args()
 
@@ -78,8 +81,14 @@ def main():
 
     # 3 ------------------------------------------------------------------
     gate_name, ranking, _ = select_gate_feature(F, cfg)
-    keep = apply_gate(F, cfg, gate_name)
-    print(f"Gate feature: {gate_name}; kept {keep.sum()}/{len(keep)} windows", flush=True)
+    if a.gate_variant:
+        w_preview = window_gate_weights(F, gate_name, np.ones(len(F["label"]), bool), a.gate_variant)
+        keep = w_preview > 0
+        print(f"Gate feature: {gate_name}; variant {a.gate_variant}; "
+              f"mean weight {w_preview.mean():.3f}", flush=True)
+    else:
+        keep = apply_gate(F, cfg, gate_name)
+        print(f"Gate feature: {gate_name}; kept {keep.sum()}/{len(keep)} windows", flush=True)
     plots.eye_ranking(ranking, os.path.join(fig_dir, "eye_mrmr_ranking.png"))
     gate_check = _gate_check(F, keep, a.data, cfg, fig_dir, gate_name, trials)
 
@@ -88,7 +97,10 @@ def main():
     results = {}
     for L in cfg.n_levels:
         for band in cfg.bands:
-            r = run_band(F, keep, band, cfg, C, L, rng)
+            if a.gate_variant:
+                r = run_band_weighted(F, band, cfg, C, L, rng, gate_name, a.gate_variant)
+            else:
+                r = run_band(F, keep, band, cfg, C, L, rng)
             results[(L, band)] = r
             s = r["summary"]
             print(f"  levels={L} {band:5s}  acc={s['accuracy']['mean']:.3f}±{s['accuracy']['std']:.3f}  "

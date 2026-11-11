@@ -1,0 +1,9 @@
+rank,feature,mrmr_score_note,source
+1,mean_pupil_diameter_Y,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)
+2,mean_pupil_diameter_X,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)
+3,mean_fixation_duration,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)
+4,std_pupil_diameter_Y,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)
+5,std_pupil_diameter_X,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)
+6,fixation_frequency,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)
+7,max_fixation_duration,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)
+8,std_fixation_duration,top bar Fig. 7 ~0.0157272 (SEED-IV) / ~0.0202258 (MAHNOB) if rank=1 else not_given,Fig. 7 caption order (p. 10)

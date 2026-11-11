@@ -1,0 +1,11 @@
+rule_id,if_part,then_class,source
+1,If PhEn-FP2 is low and Perm-FP2 is high,happy,TABLE 6 (Set E)
+2,If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low,happy,TABLE 6 (Set E)
+3,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium,fear,TABLE 6 (Set E)
+4,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is low,happy,TABLE 6 (Set E)
+5,If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium,sad,TABLE 6 (Set E)
+6,If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is low,fear,TABLE 6 (Set E)
+7,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium,happy,TABLE 6 (Set E)
+8,If PhEn-FP2 is medium and SampEn-T8 is medium,sad,TABLE 6 (Set E)
+9,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low,neutral,TABLE 6 (Set E)
+10,If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is high,fear,TABLE 6 (Set E)

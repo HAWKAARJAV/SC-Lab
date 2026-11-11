@@ -1,0 +1,9 @@
+ref,dataset,method,evaluation,classes,accuracy
+[60],MAHNOB-HCI,"PSD, RFE, GNB",10-fold CV,"arousal, valence","66.7 (arousal), 80 (valence)"
+[61],MAHNOB-HCI,"Power spectrum, SVM",LOSO CV,"arousal, valence","55.72 (valence), 60.23 (arousal)"
+[62],MAHNOB-HCI,"SP, KNN, SVM",LOSO CV,"arousal, valence","63 (valence), 65.1 (arousal)"
+[63],SEED-IV,"Granger causality, Transfer entropy, KNN",LOSO CV,"sad, happy, fear, neutral",90
+[24],SEED-IV,Multi-branch EEG and eye feature fusion,5-fold CV,"sad, happy, fear, neutral",87.32
+[7],SEED-IV,"PSD, DE; eye + multimodal deep learning, FLF",Hold out CV,"happy, sad, fear, neutral",85.11
+[27],SEED-IV,1-D convolution; eye SOFNN,5-fold CV,"sad, happy, fear, neutral",86.27
+Ours (2024),"SEED-IV, MAHNOB-HCI","Wavelet transform, entropies, mRMR, S-FIS-GA",5-fold CV,"4 (sad, happy, fear, neutral)","94.42 (SEED-IV), 85.20 (MAHNOB-HCI)"

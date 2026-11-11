@@ -1,0 +1,11 @@
+rule_id,if_part,then_class
+1,illustrative_rule_1,happiness
+2,illustrative_rule_2,fear
+3,illustrative_rule_3,neutrality
+4,illustrative_rule_4,sadness
+5,illustrative_rule_5,happiness
+6,illustrative_rule_6,fear
+7,illustrative_rule_7,neutrality
+8,illustrative_rule_8,sadness
+9,illustrative_rule_9,happiness
+10,illustrative_rule_10,fear

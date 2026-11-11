@@ -24,18 +24,17 @@ from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
 
+from .adaptive_eye import GATE_VARIANTS as ADAPTIVE_GATE_VARIANTS, compute_gate_weights
 from .config import Config
 from .data import load_npz
 from .evaluate import band_matrix, zscore_by_subject
 from .features import extract_all
 from .fuzzy import SugenoFIS
 from .ga import tune_rules
-from .mrmr import _discretize, mrmr
+from .gates import FUZZY, HARD_Q, fuzzy_weights, gate_weights, normalise_within_trial
+from .mrmr import mrmr, mrmr_weighted
 
-# gate parameters (design values fixed a priori, not tuned)
-FUZZY = dict(a1=0.2, c=0.5, b2=0.8, r=(0.1, 0.5, 1.0))
-HARD_Q = 0.6
-VARIANTS = ["none", "hard", "fuzzy", "linear"]
+VARIANTS = ["none", "hard", "fuzzy", "linear", "adaptive", "adaptive_nosmooth", "adaptive_causal"]
 # second round (parameters fixed before any result was seen; appended so seeds of the above are unchanged)
 EXTRA_VARIANTS = ["fuzzy_sharp", "fuzzy_tuned", "hard_tuned"]
 ALL_VARIANTS = VARIANTS + EXTRA_VARIANTS
@@ -67,84 +66,16 @@ def load_features(root, cfg):
     return _CACHE[root]
 
 
-# ------------------------------------------------------------------ gates
-def normalise_within_trial(v, trial):
-    z = np.full(len(v), 0.5)
-    for t in np.unique(trial):
-        m = trial == t
-        x = v[m]
-        ok = np.isfinite(x)
-        if ok.sum() < 2:
-            continue
-        lo, hi = np.percentile(x[ok], [5, 95])
-        zz = np.clip((x - lo) / max(hi - lo, 1e-12), 0, 1)
-        zz[~ok] = 0.5
-        z[m] = zz
-    return z
-
-
-def fuzzy_memberships(z, a1=0.2, c=0.5, b2=0.8):
-    muL = np.clip((c - z) / (c - a1), 0, 1)
-    muH = np.clip((z - c) / (b2 - c), 0, 1)
-    muM = np.clip(np.minimum((z - a1) / (c - a1), (b2 - z) / (b2 - c)), 0, 1)
-    return muL, muM, muH
-
-
-def hard_weights(z, trial, q):
-    w = np.zeros(len(z))
-    for t in np.unique(trial):
-        m = np.where(trial == t)[0]
-        w[m[z[m] >= np.quantile(z[m], q)]] = 1.0
-    return w
-
-
-def fuzzy_weights(z, P):
-    muL, muM, muH = fuzzy_memberships(z, P["a1"], P["c"], P["b2"])
-    rL, rM, rH = P["r"]
-    return (muL * rL + muM * rM + muH * rH) / (muL + muM + muH)
-
-
-def gate_weights(z, trial, variant):
-    if variant == "none":
-        return np.ones(len(z))
-    if variant == "hard":
-        return hard_weights(z, trial, HARD_Q)
-    if variant == "fuzzy":
-        return fuzzy_weights(z, FUZZY)
+# ------------------------------------------------------------------ gates (see gates.py; M2 via compute_gate_weights)
+def _window_weights(v, trial, window, subjects, train_win, variant):
+    if variant in ADAPTIVE_GATE_VARIANTS and variant not in ("none", "hard", "fuzzy", "linear"):
+        return compute_gate_weights(v, subjects, trial, window, train_win, variant)
+    z = normalise_within_trial(v, trial)
     if variant == "fuzzy_sharp":
         return fuzzy_weights(z, FUZZY_SHARP)
-    if variant == "linear":
-        return np.maximum(FUZZY["r"][0], z)
-    raise ValueError(variant)
-
-
-# ------------------------------------------------------------------ weighted mRMR
-def _wmi(a, b, w):
-    P = np.zeros((a.max() + 1, b.max() + 1))
-    np.add.at(P, (a, b), w)
-    P /= P.sum()
-    pa, pb = P.sum(1, keepdims=True), P.sum(0, keepdims=True)
-    nz = P > 0
-    return float((P[nz] * np.log(P[nz] / (pa @ pb)[nz])).sum())
-
-
-def mrmr_weighted(X, y, w, k=3, n_bins=10):
-    pos = w > 0
-    X, y, w = X[pos], y[pos], w[pos]
-    Xd = _discretize(np.nan_to_num(X), n_bins)
-    rel = np.array([_wmi(Xd[:, j], y, w) for j in range(X.shape[1])])
-    order = [int(np.argmax(rel))]
-    red = np.zeros(X.shape[1])
-    remaining = set(range(X.shape[1])) - set(order)
-    while len(order) < k:
-        last = order[-1]
-        for j in remaining:
-            red[j] += _wmi(Xd[:, j], Xd[:, last], w)
-        cand = np.array(sorted(remaining))
-        best = int(cand[np.argmax(rel[cand] - red[cand] / len(order))])
-        order.append(best)
-        remaining.discard(best)
-    return np.array(order)
+    if variant == "hard_tuned":
+        raise RuntimeError("hard_tuned handled in run_task")
+    return gate_weights(z, trial, variant)
 
 
 # ------------------------------------------------------------------ folds (trial level)
@@ -209,9 +140,9 @@ def run_task(task):
             nr = np.random.default_rng(10_000 + seed)
             sd = np.array([np.nanstd(v[F["subject"] == s_]) for s_ in F["subject"]])
             v = v + nr.standard_normal(len(v)) * noise * sd
-        z = normalise_within_trial(v, trial)
         chosen = None
         if variant in ("fuzzy_tuned", "hard_tuned"):
+            z = normalise_within_trial(v, trial)
             # nested selection: inner stratified 3-fold CV over TRAINING trials only
             grid = FUZZY_GRID if variant == "fuzzy_tuned" else HARD_GRID
             make = (lambda P: fuzzy_weights(z, P)) if variant == "fuzzy_tuned" else (lambda q: hard_weights(z, trial, q))
@@ -229,7 +160,7 @@ def run_task(task):
             chosen = int(np.argmax(scores))
             w = make(grid[chosen])
         else:
-            w = gate_weights(z, trial, variant)
+            w = _window_weights(v, trial, F["window"], F["subject"], tr, variant)
         preds, info = fit_predict(X, y, trial, tr, te, w, cfg, C, names, rng)
         info.update({"fold": fi, "gate_feature": g, "trial_preds": preds, "tuned_choice": chosen})
         folds_out.append(info)

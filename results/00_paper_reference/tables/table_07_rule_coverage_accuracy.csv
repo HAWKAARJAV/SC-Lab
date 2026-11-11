@@ -1,0 +1,13 @@
+emotion,rule,coverage_pct,accuracy_pct
+sadness,If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is medium,57,75.78
+sadness,If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium,44,73.9
+sadness,"If phT7 Is medium, sampT8 Medium",43,72.45
+happiness,If PhEn-FP2 is high and PermEn-T7 is high,58,82.65
+happiness,If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is high,41,84.25
+happiness,If PhEn-FP2 is low and PeFP2 is high,40,79.65
+happiness,If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low,30,75.45
+fear,"If PhEn-T7 is Low, sampEn-T8 Medium, PHFP2 is Medium",55,72.29
+fear,"If PhEn-T7 is medium, sampT8 Medium, PHFP2 is Medium",52,70.42
+neutrality,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is high,55,75.23
+neutrality,If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is medium,45,70.45
+neutrality,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low,43,74.25

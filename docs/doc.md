@@ -575,6 +575,34 @@ datasets (SEED-IV, ZuCo); luminance-corrected pupil; multi-input fuzzy gate.
 
 ---
 
+## 10b. Model extensions (M2–M4) — implemented in code
+
+| Model | Module | Role |
+|---|---|---|
+| **M2** Adaptive temporal fuzzy gate | `gfer/adaptive_eye.py` | Participant pupil baselines (train-only), adaptive L/M/H thresholds, optional symmetric or **causal** temporal smoothing; integrates via weighted mRMR/FIS/GA in `gfer/compare.py` and fold-wise in `gfer/evaluate.run_band_weighted`. |
+| **M3** Multi-band fusion | `gfer/fusion.py` | One Sugeno classifier per band; **equal** or **validation-learned** fusion weights (inner training trials only). |
+| **M4** Integrated pipeline | `gfer/integrated.py` | M2 gate → per-band classifiers → M3 fusion → trial vote. |
+
+Shared M0/M1 helpers live in `gfer/gates.py`. Illustrative teaching numbers for M0–M4 (not training targets) are in `gfer/illustrative_models.py`.
+
+```bash
+# Gate ablation including M2 variants (trial-level CV)
+.venv/bin/python -m gfer.compare --variants none,hard,fuzzy,adaptive,adaptive_nosmooth,adaptive_causal ...
+
+# Weighted gate on the baseline window-level pipeline
+.venv/bin/python -m gfer.run --data data/demo --gate-variant adaptive
+
+# M4 integrated run (measured on synthetic data)
+.venv/bin/python -m gfer.integrated --data data/demo --experiment five_learned --gate adaptive
+
+# Illustrative M0–M4 package (hypothetical)
+.venv/bin/python -m gfer.illustrative_models
+```
+
+Unit tests: `python3 -m pytest tests/test_m2_m3_m4.py`.
+
+---
+
 ## 11. How to run everything
 
 ```bash

@@ -5,3 +5,4 @@ PyWavelets>=1.6
 matplotlib>=3.9
 h5py>=3.11
 pandas>=2.2
+pytest>=8.0
