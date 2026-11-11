@@ -36,7 +36,7 @@ MET = os.path.join(OUT, "reference_metrics")
 
 # Printed page number → 0-based index; crop = union of embedded image rects above header/logo.
 FIGURE_SPECS = {
-    "figure_07_eye_mrmr_ranking.png": (9, (149, 150, 151)),
+    "figure_07_eye_mrmr_ranking.png": (9, (150, 151)),
     "figure_08_sugeno_fis_architecture.png": (10, (154,)),
     "figure_09_ga_convergence.png": (10, (155,)),
     "figure_10_seed_iv_confusion_matrices.png": (13, (162, 163, 164, 165, 166)),
@@ -203,12 +203,57 @@ def main():
     write_csv(os.path.join(TAB, "table_08_previous_research_comparison.csv"), TABLE_8_COMPARISON,
               ["ref", "dataset", "method", "evaluation", "classes", "accuracy"])
 
-    auc_note = [
-        {"dataset": "SEED-IV", "note": PAPER["auc_summary_approximate"]["SEED-IV"], "per_class_numeric": "not_transcribed"},
-        {"dataset": "MAHNOB-HCI", "note": PAPER["auc_summary_approximate"]["MAHNOB-HCI"], "per_class_numeric": "not_transcribed"},
-    ]
-    write_csv(os.path.join(MET, "seed_iv_auc.csv"), auc_note, ["dataset", "note", "per_class_numeric"])
-    write_csv(os.path.join(MET, "mahnob_auc.csv"), auc_note, ["dataset", "note", "per_class_numeric"])
+    cls_auc_rows = []
+    fig_map = {"SEED-IV": ("figure_11_seed_iv_roc_curves.png", 14),
+               "MAHNOB-HCI": ("figure_13_mahnob_roc_curves.png", 16)}
+    for ds, summary in PAPER["auc_summary_approximate"].items():
+        if ds.startswith("note"):
+            continue
+        for emo in CLASSES:
+            cls_auc_rows.append({
+                "dataset": ds,
+                "frequency_band": "pooled_per_paper_text",
+                "emotion": emo,
+                "auc": summary.get("per_class", ">0.9"),
+                "approximation_status": "qualitative_text_only",
+                "source_figure": fig_map.get(ds, ("", ""))[0],
+                "source_page": fig_map.get(ds, ("", ""))[1],
+            })
+    write_csv(os.path.join(MET, "seed_iv_auc_per_class.csv"),
+              [r for r in cls_auc_rows if r["dataset"] == "SEED-IV"],
+              ["dataset", "frequency_band", "emotion", "auc", "approximation_status",
+               "source_figure", "source_page"])
+    write_csv(os.path.join(MET, "mahnob_auc_per_class.csv"),
+              [r for r in cls_auc_rows if r["dataset"] == "MAHNOB-HCI"],
+              ["dataset", "frequency_band", "emotion", "auc", "approximation_status",
+               "source_figure", "source_page"])
+
+    cm_template = []
+    for ds, fig, pg in [
+        ("SEED-IV", "figure_10_seed_iv_confusion_matrices.png", 13),
+        ("MAHNOB-HCI", "figure_12_mahnob_confusion_matrices.png", 15),
+    ]:
+        for band in ("delta", "theta", "alpha", "beta", "gamma"):
+            for actual in CLASSES:
+                for pred in CLASSES:
+                    cm_template.append({
+                        "dataset": ds,
+                        "frequency_band": band,
+                        "actual_class": actual,
+                        "predicted_class": pred,
+                        "value": "",
+                        "exact_or_estimated": "not_digitised",
+                        "source_figure": fig,
+                        "source_page": pg,
+                    })
+    write_csv(os.path.join(MET, "seed_iv_confusion_matrices.csv"),
+              [r for r in cm_template if r["dataset"] == "SEED-IV"],
+              ["dataset", "frequency_band", "actual_class", "predicted_class", "value",
+               "exact_or_estimated", "source_figure", "source_page"])
+    write_csv(os.path.join(MET, "mahnob_confusion_matrices.csv"),
+              [r for r in cm_template if r["dataset"] == "MAHNOB-HCI"],
+              ["dataset", "frequency_band", "actual_class", "predicted_class", "value",
+               "exact_or_estimated", "source_figure", "source_page"])
 
     readme = """# Paper reference results (`00_paper_reference`)
 

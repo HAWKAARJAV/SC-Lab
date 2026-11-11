@@ -280,33 +280,48 @@ def fusion_strategy_compare(labels, accs, path, title):
 
 def architecture_e28(path):
     _style()
-    fig, ax = plt.subplots(figsize=(11, 6))
+    from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
     ax.axis("off")
-    lines = [
-        "E28 — Combined model architecture (illustrative diagram)",
-        "",
-        "Eye track + EEG  →  4 s windows",
-        "  M1/M2: 8 eye features → pupil baseline norm → temporal smooth → adaptive fuzzy gate",
-        "  M3: EEG preprocess → wavelet → 5 bands → 4 entropy features → mRMR → 5× Sugeno FIS",
-        "  Fusion: validation-learned band weights → 4-class emotion probabilities",
-        "  M4: M2 gate + M3 fusion → final sadness / happiness / fear / neutrality",
-    ]
-    y = 0.88
-    for line in lines:
-        weight = "bold" if line.startswith("E28") else "normal"
-        ax.text(0.03, y, line, fontsize=11 if "E28" in line else 9, weight=weight, family="monospace")
-        y -= 0.08
-    boxes = [
-        (0.05, 0.42, "M0 Hard gate", "#fde8e0"),
-        (0.28, 0.42, "M1 Fuzzy gate", "#e8f4e8"),
-        (0.51, 0.42, "M2 Adaptive gate", "#e8eef8"),
-        (0.05, 0.18, "M3 Multi-band fusion", "#f0e8f8"),
-        (0.42, 0.18, "M4 Combined", "#fff6da"),
-    ]
-    for x, yb, txt, col in boxes:
-        rect = plt.Rectangle((x, yb), 0.2, 0.12, facecolor=col, edgecolor=MUTED)
-        ax.add_patch(rect)
-        ax.text(x + 0.01, yb + 0.04, txt, fontsize=8)
+
+    def box(xy, w, h, text, fc):
+        p = FancyBboxPatch(xy, w, h, boxstyle="round,pad=0.02", linewidth=1.2,
+                           edgecolor=MUTED, facecolor=fc)
+        ax.add_patch(p)
+        ax.text(xy[0] + w / 2, xy[1] + h / 2, text, ha="center", va="center", fontsize=8, wrap=True)
+
+    def arrow(p0, p1):
+        ax.add_patch(FancyArrowPatch(p0, p1, arrowstyle="->", mutation_scale=12, lw=1.2, color=INK))
+
+    ax.text(0.02, 0.96, "E28 — M4 combined architecture (illustrative)", fontsize=11, weight="bold", ha="left")
+    # Eye branch (M2)
+    box((0.03, 0.72), 0.18, 0.12, "Eye track\n8 features", "#fde8e0")
+    box((0.24, 0.72), 0.18, 0.12, "mRMR eye\n(M1/M2)", "#fde8e0")
+    box((0.45, 0.72), 0.20, 0.12, "Subject baseline\n+ norm z(t)", "#fde8e0")
+    box((0.68, 0.72), 0.16, 0.12, "Temporal\nsmooth S(t)", "#fde8e0")
+    box((0.86, 0.72), 0.11, 0.12, "Adaptive\nfuzzy gate", "#eb6834")
+    for x0, x1 in [(0.21, 0.24), (0.42, 0.45), (0.65, 0.68), (0.84, 0.86)]:
+        arrow((x0, 0.78), (x1, 0.78))
+    # EEG branch
+    box((0.03, 0.48), 0.15, 0.14, "EEG 4s\npreprocess", "#e8eef8")
+    box((0.21, 0.48), 0.15, 0.14, "DWT\n5 bands", "#e8eef8")
+    box((0.39, 0.48), 0.17, 0.14, "Entropy\n4 types", "#e8eef8")
+    box((0.59, 0.48), 0.14, 0.14, "mRMR\n3 feats", "#e8eef8")
+    box((0.76, 0.44), 0.21, 0.22, "5× Sugeno FIS\n(δ,θ,α,β,γ)", "#2a78d6")
+    for x0, x1 in [(0.18, 0.21), (0.36, 0.39), (0.56, 0.59), (0.73, 0.76)]:
+        arrow((x0, 0.55), (x1, 0.55))
+    arrow((0.915, 0.72), (0.87, 0.66))
+    ax.text(0.88, 0.68, "gate w(t)", fontsize=7, color=MUTED)
+    # M3 fusion
+    box((0.22, 0.22), 0.56, 0.16, "Weighted fusion  P(c)=Σ_b w_b·P_b(c)   (weights from validation)", "#fff6da")
+    arrow((0.865, 0.44), (0.50, 0.38))
+    box((0.32, 0.05), 0.36, 0.12, "4-class output\nsadness · happiness · fear · neutrality", "#1baf7a")
+    arrow((0.50, 0.22), (0.50, 0.17))
+    ax.text(0.03, 0.35, "M2 module", fontsize=8, color=SERIES[1])
+    ax.text(0.03, 0.42, "M3 module", fontsize=8, color=SERIES[0])
     _save(fig, path)
 
 

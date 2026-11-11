@@ -1,0 +1,5 @@
+dataset,frequency_band,emotion,auc,approximation_status,source_figure,source_page
+SEED-IV,pooled_per_paper_text,sadness,>0.9,qualitative_text_only,figure_11_seed_iv_roc_curves.png,14
+SEED-IV,pooled_per_paper_text,happiness,>0.9,qualitative_text_only,figure_11_seed_iv_roc_curves.png,14
+SEED-IV,pooled_per_paper_text,fear,>0.9,qualitative_text_only,figure_11_seed_iv_roc_curves.png,14
+SEED-IV,pooled_per_paper_text,neutrality,>0.9,qualitative_text_only,figure_11_seed_iv_roc_curves.png,14

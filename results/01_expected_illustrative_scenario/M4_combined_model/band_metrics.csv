@@ -1,0 +1,11 @@
+dataset,band,accuracy_pct
+SEED-IV_reference_scale,delta,42.8
+SEED-IV_reference_scale,theta,49.0
+SEED-IV_reference_scale,alpha,91.4
+SEED-IV_reference_scale,beta,74.8
+SEED-IV_reference_scale,gamma,63.4
+MAHNOB_reference_scale,delta,35.0
+MAHNOB_reference_scale,theta,40.8
+MAHNOB_reference_scale,alpha,70.19999999999999
+MAHNOB_reference_scale,beta,56.8
+MAHNOB_reference_scale,gamma,43.8

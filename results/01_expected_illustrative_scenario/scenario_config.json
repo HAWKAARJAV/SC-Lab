@@ -1,15 +1,19 @@
 {
   "purpose": "illustrative_teaching_scenario",
-  "random_seed": 20261110,
+  "master_seed": 20261110,
+  "dataset_seeds": {
+    "SEED-IV_reference_scale": 1629683609,
+    "MAHNOB_reference_scale": 1960580282
+  },
+  "seed_derivation": "hashlib.sha256 over master:dataset:labels",
   "n_samples_per_dataset": 500,
-  "n_folds": 5,
   "class_names": [
     "sadness",
     "happiness",
     "fear",
     "neutrality"
   ],
-  "target_accuracy_percent": {
+  "reference_accuracy_percent": {
     "SEED-IV_reference_scale": {
       "M0": 94.42,
       "M1": 94.75,
@@ -25,5 +29,6 @@
       "M4": 86.75
     }
   },
-  "not_experimental": true
+  "not_experimental": true,
+  "generator_assumptions": "See SCENARIO_ASSUMPTIONS.md"
 }
