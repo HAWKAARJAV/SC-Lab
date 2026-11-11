@@ -27,7 +27,8 @@ from gfer.paper_reference_data import (  # noqa: E402
 )
 
 OUT = os.path.join(ROOT, "results", "00_paper_reference")
-DEFAULT_PDF = os.path.join(ROOT, "Recognition_of_emotional_categories_using_mined_fu (1).pdf")
+DEFAULT_PDF = os.path.join(ROOT, "Recognition_of_emotional_categories_using_mined_fu (2).pdf")
+_FALLBACK_PDF = os.path.join(ROOT, "Recognition_of_emotional_categories_using_mined_fu (1).pdf")
 FIG = os.path.join(OUT, "figures")
 SRC = os.path.join(OUT, "source_pages")
 TAB = os.path.join(OUT, "tables")
@@ -136,17 +137,27 @@ def write_figure_manifest(figures_written: list[str]) -> None:
         f.write(f"\nGenerated files this run: {len(figures_written)}\n")
 
 
+def resolve_pdf_path(cli_or_env: str) -> str:
+    if os.path.isfile(cli_or_env):
+        return cli_or_env
+    for candidate in (DEFAULT_PDF, _FALLBACK_PDF):
+        if os.path.isfile(candidate):
+            return candidate
+    return cli_or_env
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pdf", default=os.environ.get("PAPER_PDF", DEFAULT_PDF))
     a = ap.parse_args()
+    pdf_path = resolve_pdf_path(a.pdf)
     for d in (OUT, FIG, SRC, TAB, MET):
         os.makedirs(d, exist_ok=True)
 
     with open(os.path.join(OUT, "paper_parameters.json"), "w", encoding="utf-8") as f:
         json.dump({"paper": PAPER, "classes_order": CLASSES, "provenance": "transcription"}, f, indent=2)
 
-  # reported accuracies
+    # reported accuracies
     acc_rows = []
     for ds in ("SEED-IV", "MAHNOB-HCI"):
         key = "SEED-IV" if ds == "SEED-IV" else "MAHNOB-HCI"
@@ -272,9 +283,9 @@ mRMR selects **PhEn-FP2, SampEn-T8, PermEn-T7** for the S-FIS.
     with open(os.path.join(OUT, "paper_methodology.md"), "w", encoding="utf-8") as f:
         f.write(meth)
 
-    written = export_pdf_figures(a.pdf)
+    written = export_pdf_figures(pdf_path)
     write_figure_manifest(written)
-    print("wrote", OUT, f"({len(written)} figures)")
+    print("wrote", OUT, f"({len(written)} figures from {os.path.basename(pdf_path)})")
 
 
 if __name__ == "__main__":

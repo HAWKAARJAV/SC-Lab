@@ -1,6 +1,7 @@
 """Transcribed values from Farhadi Sedehi et al., IEEE Access 2024 (DOI 10.1109/ACCESS.2024.3430934).
 
-Source PDF: ``Recognition_of_emotional_categories_using_mined_fu (1).pdf`` (repo root).
+Source PDF: ``Recognition_of_emotional_categories_using_mined_fu (2).pdf`` (repo root;
+``(1).pdf`` accepted as fallback).
 Do NOT mix these records with illustrative teaching data.
 """
 from __future__ import annotations
@@ -13,7 +14,7 @@ PAPER = {
         "journal": "IEEE Access",
         "year": 2024,
         "doi": "10.1109/ACCESS.2024.3430934",
-        "source_file": "Recognition_of_emotional_categories_using_mined_fu (1).pdf",
+        "source_file": "Recognition_of_emotional_categories_using_mined_fu (2).pdf",
     },
     "eye_features_order": [
         "mean_pupil_diameter_Y",
