@@ -2,20 +2,22 @@
 """Build results/00_paper_reference/ from gfer/paper_reference_data.py and the IEEE Access PDF.
 
     .venv/bin/python scripts/build_paper_reference.py
+    PAPER_PDF=/path/to/paper.pdf .venv/bin/python scripts/build_paper_reference.py
 
 Does not modify other results/ folders.
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import os
-import shutil
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
+from gfer.paper_figures_method import figure_A4_membership, figure_A5_rule_grid  # noqa: E402
 from gfer.paper_reference_data import (  # noqa: E402
     CLASSES,
     PAPER,
@@ -25,10 +27,22 @@ from gfer.paper_reference_data import (  # noqa: E402
 )
 
 OUT = os.path.join(ROOT, "results", "00_paper_reference")
-PDF = os.path.join(ROOT, "Recognition_of_emotional_categories_using_mined_fu (1).pdf")
+DEFAULT_PDF = os.path.join(ROOT, "Recognition_of_emotional_categories_using_mined_fu (1).pdf")
 FIG = os.path.join(OUT, "figures")
+SRC = os.path.join(OUT, "source_pages")
 TAB = os.path.join(OUT, "tables")
 MET = os.path.join(OUT, "reference_metrics")
+
+# Printed page number → 0-based index; crop = union of embedded image rects above header/logo.
+FIGURE_SPECS = {
+    "figure_07_eye_mrmr_ranking.png": (9, (149, 150, 151)),
+    "figure_08_sugeno_fis_architecture.png": (10, (154,)),
+    "figure_09_ga_convergence.png": (10, (155,)),
+    "figure_10_seed_iv_confusion_matrices.png": (13, (162, 163, 164, 165, 166)),
+    "figure_11_seed_iv_roc_curves.png": (14, (169, 170, 171, 172, 173)),
+    "figure_12_mahnob_confusion_matrices.png": (15, (176, 177, 178, 179, 180)),
+    "figure_13_mahnob_roc_curves.png": (16, (183, 184, 185, 186, 187)),
+}
 
 
 def write_csv(path, rows, fieldnames):
@@ -40,35 +54,93 @@ def write_csv(path, rows, fieldnames):
             w.writerow(r)
 
 
-def export_pdf_figures():
-    """Rasterise published figure pages from the PDF (reference images, not re-run experiments)."""
+def _union_rect(page, xrefs):
+    import fitz
+    rects = []
+    for xref in xrefs:
+        for r in page.get_image_rects(xref):
+            rects.append(r)
+    if not rects:
+        return page.rect
+    x0 = min(r.x0 for r in rects)
+    y0 = min(r.y0 for r in rects)
+    x1 = max(r.x1 for r in rects)
+    y1 = max(r.y1 for r in rects)
+    return fitz.Rect(x0, y0, x1, y1)
+
+
+def export_pdf_figures(pdf_path: str) -> list[str]:
+    """Crop individual paper figures; save full pages under source_pages/."""
     try:
         import fitz  # pymupdf
     except ImportError:
-        print("pymupdf not installed — skip figure rasterisation")
-        return
-    if not os.path.exists(PDF):
-        print("PDF missing", PDF)
-        return
-    mapping = {
-        9: "figure_07_eye_mrmr_ranking.png",
-        8: "figure_08_sugeno_fis_architecture.png",
-        10: "figure_09_ga_convergence.png",
-        12: "figure_10_seed_iv_confusion_matrices.png",
-        13: "figure_11_seed_iv_roc_curves.png",
-        14: "figure_12_mahnob_confusion_matrices.png",
-        15: "figure_13_mahnob_roc_curves.png",
-    }
-    doc = fitz.open(PDF)
-    for page_1idx, name in mapping.items():
-        page = doc[page_1idx - 1]
-        pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-        pix.save(os.path.join(FIG, name))
+        print("ERROR: pymupdf required — pip install pymupdf")
+        return []
+    if not os.path.exists(pdf_path):
+        print(f"ERROR: paper PDF not found: {pdf_path}")
+        print("Set PAPER_PDF or pass --pdf")
+        return []
+    os.makedirs(SRC, exist_ok=True)
+    doc = fitz.open(pdf_path)
+    pages_saved = set()
+    written = []
+    mat = fitz.Matrix(3, 3)
+    for name, (printed_page, xrefs) in FIGURE_SPECS.items():
+        pidx = printed_page - 1
+        page = doc[pidx]
+        if printed_page not in pages_saved:
+            full = page.get_pixmap(matrix=mat)
+            full.save(os.path.join(SRC, f"page_{printed_page:02d}.png"))
+            pages_saved.add(printed_page)
+        clip = _union_rect(page, xrefs)
+        pix = page.get_pixmap(matrix=mat, clip=clip)
+        out = os.path.join(FIG, name)
+        pix.save(out)
+        written.append(out)
     doc.close()
+    figure_A4_membership(os.path.join(FIG, "figure_A4_fuzzy_membership_functions.png"))
+    figure_A5_rule_grid(os.path.join(FIG, "figure_A5_fuzzy_rule_distribution.png"))
+    written.extend([
+        os.path.join(FIG, "figure_A4_fuzzy_membership_functions.png"),
+        os.path.join(FIG, "figure_A5_fuzzy_rule_distribution.png"),
+    ])
+    return written
+
+
+def write_figure_manifest(figures_written: list[str]) -> None:
+    rows = []
+    for name, (pg, _) in FIGURE_SPECS.items():
+        rows.append({
+            "id": name.replace("figure_", "").replace(".png", ""),
+            "path": f"figures/{name}",
+            "status": "generated_cropped" if os.path.exists(os.path.join(FIG, name)) else "missing",
+            "printed_page": pg,
+            "provenance": "published_paper_pdf_crop",
+            "data_source": "n/a (image transcription)",
+        })
+    for aid, fn in [("A4", "figure_A4_fuzzy_membership_functions.png"), ("A5", "figure_A5_fuzzy_rule_distribution.png")]:
+        rows.append({
+            "id": aid,
+            "path": f"figures/{fn}",
+            "status": "generated",
+            "printed_page": "",
+            "provenance": "derived_methodology_diagram",
+            "data_source": "gfer/paper_figures_method.py",
+        })
+    with open(os.path.join(OUT, "FIGURES_MANIFEST.md"), "w", encoding="utf-8") as f:
+        f.write("# Paper reference figure manifest\n\n")
+        f.write("| ID | Path | Page | Status | Provenance |\n|---|---|---:|---|---|\n")
+        for r in rows:
+            f.write(f"| {r['id']} | `{r['path']}` | {r['printed_page']} | {r['status']} | {r['provenance']} |\n")
+        f.write(f"\nFull pages: `source_pages/page_XX.png`. PDF: configured at build time.\n")
+        f.write(f"\nGenerated files this run: {len(figures_written)}\n")
 
 
 def main():
-    for d in (OUT, FIG, TAB, MET):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pdf", default=os.environ.get("PAPER_PDF", DEFAULT_PDF))
+    a = ap.parse_args()
+    for d in (OUT, FIG, SRC, TAB, MET):
         os.makedirs(d, exist_ok=True)
 
     with open(os.path.join(OUT, "paper_parameters.json"), "w", encoding="utf-8") as f:
@@ -200,8 +272,9 @@ mRMR selects **PhEn-FP2, SampEn-T8, PermEn-T7** for the S-FIS.
     with open(os.path.join(OUT, "paper_methodology.md"), "w", encoding="utf-8") as f:
         f.write(meth)
 
-    export_pdf_figures()
-    print("wrote", OUT)
+    written = export_pdf_figures(a.pdf)
+    write_figure_manifest(written)
+    print("wrote", OUT, f"({len(written)} figures)")
 
 
 if __name__ == "__main__":

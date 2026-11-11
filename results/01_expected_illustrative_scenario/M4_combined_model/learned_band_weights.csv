@@ -1,6 +1,11 @@
-band,weight
-delta,0.45249999977375
-theta,0.1549999999225
-alpha,0.13249999993375
-beta,0.1249999999375
-gamma,0.1349999999325
+dataset,band,weight_equal,weight_learned
+SEED-IV_reference_scale,delta,0.2,0.2
+SEED-IV_reference_scale,theta,0.2,0.2
+SEED-IV_reference_scale,alpha,0.2,0.2
+SEED-IV_reference_scale,beta,0.2,0.2
+SEED-IV_reference_scale,gamma,0.2,0.2
+MAHNOB_reference_scale,delta,0.2,0.2
+MAHNOB_reference_scale,theta,0.2,0.2
+MAHNOB_reference_scale,alpha,0.2,0.2
+MAHNOB_reference_scale,beta,0.2,0.2
+MAHNOB_reference_scale,gamma,0.2,0.2

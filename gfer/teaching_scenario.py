@@ -13,80 +13,92 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-)
 
 from . import teaching_plots as tp
-from .gates import FUZZY, fuzzy_memberships, fuzzy_weights, hard_weights, normalise_within_trial
 from .adaptive_eye import temporal_smooth_weights
-BANDS = ["delta", "theta", "alpha", "beta", "gamma"]
-
-
-def _fuse_probs(band_probs: dict, weights: dict) -> np.ndarray:
-    w = np.array([weights[b] for b in BANDS], dtype=float)
-    w /= w.sum()
-    return (w[:, None, None] * np.stack([band_probs[b] for b in BANDS], 0)).sum(0)
-
-
-def _learn_band_weights(val_probs: dict, y_val: np.ndarray) -> dict:
-    acc = {b: float((val_probs[b].argmax(1) == y_val).mean()) for b in BANDS}
-    s = sum(acc.values()) + 1e-9
-    return {b: acc[b] / s for b in BANDS}
+from .gates import FUZZY, fuzzy_weights, hard_weights, normalise_within_trial
+from .teaching_data import (
+    BANDS,
+    CLASSES,
+    band_accuracy_with_gate,
+    build_fusion_dataset,
+    emotion_head_from_fusion,
+    fusion_accuracy_for_bands,
+    fuse_band_probs,
+    gate_ablation_band_table,
+    noise_gate_sweep,
+)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "results", "01_expected_illustrative_scenario")
 SEED = 20261110
 N_PER_DATASET = 500
 N_FOLDS = 5
-CLASSES = ["sadness", "happiness", "fear", "neutrality"]
 
 TARGET_ACC = {
     "SEED-IV_reference_scale": {"M0": 94.42, "M1": 94.75, "M2": 95.25, "M3": 95.40, "M4": 95.95},
     "MAHNOB_reference_scale": {"M0": 85.20, "M1": 85.55, "M2": 86.05, "M3": 86.20, "M4": 86.75},
 }
 
+# A1–E33 manifest entries written at end
+FIGURE_REGISTRY: list[dict] = []
+
+
+def _reg(fig_id: str, name: str, path: str, status: str, source: str, provenance: str):
+    FIGURE_REGISTRY.append({
+        "id": fig_id, "name": name, "path": path, "status": status,
+        "data_source": source, "provenance": provenance,
+    })
+
+
+def _dataset_seed(ds: str, extra: int = 0) -> int:
+    return SEED + (hash(ds) % 10_000) + extra
+
 
 @dataclass
-class SimResult:
+class Pooled:
     y: np.ndarray
     y_pred: np.ndarray
     proba: np.ndarray
     folds: list[dict]
 
 
-def _simulate(n: int, target_acc: float, seed: int) -> SimResult:
-    rng = np.random.default_rng(seed)
-    y = rng.integers(0, 4, n)
-    n_ok = int(round(target_acc / 100.0 * n))
-    y_pred = y.copy()
-    wrong = rng.choice(n, size=n - n_ok, replace=False)
-    for i in wrong:
-        opts = [c for c in range(4) if c != y[i]]
-        y_pred[i] = int(rng.choice(opts))
-    proba = rng.dirichlet([1.2, 1.2, 1.2, 1.2], size=n)
-    proba[np.arange(n), y_pred] += 2.5
-    proba /= proba.sum(axis=1, keepdims=True)
-
-    folds = []
-    idx = np.arange(n)
-    rng.shuffle(idx)
-    for f in range(N_FOLDS):
-        te = idx[f * n // N_FOLDS : (f + 1) * n // N_FOLDS]
-        folds.append({
-            "fold": f + 1,
-            "accuracy": accuracy_score(y[te], y_pred[te]) * 100,
-            "macro_f1": f1_score(y[te], y_pred[te], average="macro", zero_division=0) * 100,
-            "n_test": len(te),
-        })
-    return SimResult(y, y_pred, proba, folds)
+def _ensure_model_dir(name: str) -> str:
+    d = os.path.join(OUT, name)
+    os.makedirs(os.path.join(d, "figures"), exist_ok=True)
+    return d
 
 
-def _metrics(y, y_pred, proba) -> dict:
+def _write_predictions(path, y, y_pred, proba, dataset: str, model: str):
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["sample_id", "dataset", "model", "y_true", "y_pred"] + [f"p_{c}" for c in CLASSES])
+        for i in range(len(y)):
+            w.writerow([i, dataset, model, int(y[i]), int(y_pred[i]), *proba[i].tolist()])
+
+
+def _write_band_probs(path, dataset: str, y, band_probs: np.ndarray):
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        header = ["sample_id", "dataset", "y_true"]
+        for b in BANDS:
+            header += [f"p_{b}_{c}" for c in CLASSES]
+        w.writerow(header)
+        for i in range(len(y)):
+            row = [i, dataset, int(y[i])]
+            for b in range(len(BANDS)):
+                row.extend(band_probs[i, b].tolist())
+            w.writerow(row)
+
+
+def _metrics_from_arrays(y, y_pred, proba) -> dict:
+    from sklearn.metrics import (
+        accuracy_score,
+        f1_score,
+        precision_score,
+        recall_score,
+        roc_auc_score,
+    )
     return {
         "accuracy_pct": accuracy_score(y, y_pred) * 100,
         "macro_precision_pct": precision_score(y, y_pred, average="macro", zero_division=0) * 100,
@@ -97,132 +109,299 @@ def _metrics(y, y_pred, proba) -> dict:
     }
 
 
-def _write_predictions(path, res: SimResult, dataset: str, model: str):
-    with open(path, "w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
-        w.writerow(["sample_id", "dataset", "model", "y_true", "y_pred"] + [f"p_{c}" for c in CLASSES])
-        for i in range(len(res.y)):
-            w.writerow([i, dataset, model, res.y[i], res.y_pred[i], *res.proba[i].tolist()])
+def build_classifier_models():
+    """M0–M2: same synthetic labels; emotion metrics from consistent fusion head."""
+    worlds = {}
+    for ds in TARGET_ACC:
+        worlds[ds] = build_fusion_dataset(N_PER_DATASET, TARGET_ACC[ds]["M3"], _dataset_seed(ds))
+
+    for model_key, folder, label in [
+        ("M0", "M0_original", "Original hard-gated baseline"),
+        ("M1", "M1_fuzzy_gate", "Fuzzy eye gate"),
+        ("M2", "M2_adaptive_temporal_gate", "Adaptive temporal fuzzy gate"),
+    ]:
+        d = _ensure_model_dir(folder)
+        summaries, folds_all = [], []
+        py, pyh, pp = [], [], []
+        pred_rows = []
+        for ds in TARGET_ACC:
+            world = worlds[ds]
+            target = TARGET_ACC[ds][model_key]
+            proba, y_pred = emotion_head_from_fusion(world, target, _dataset_seed(ds, ord(model_key[1]) * 17))
+            m = _metrics_from_arrays(world["y"], y_pred, proba)
+            m.update({"dataset": ds, "model": model_key, "target_accuracy_pct": target})
+            summaries.append(m)
+            for fd in world["folds"]:
+                folds_all.append({"dataset": ds, "model": model_key, **fd})
+            py.append(world["y"])
+            pyh.append(y_pred)
+            pp.append(proba)
+            for i in range(len(world["y"])):
+                pred_rows.append(
+                    [i, ds, model_key, int(world["y"][i]), int(y_pred[i]), *proba[i].tolist()]
+                )
+        with open(os.path.join(d, "predictions.csv"), "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["sample_id", "dataset", "model", "y_true", "y_pred"] + [f"p_{c}" for c in CLASSES])
+            w.writerows(pred_rows)
+
+        pd.DataFrame(summaries).to_csv(os.path.join(d, "summary.csv"), index=False)
+        pd.DataFrame(folds_all).to_csv(os.path.join(d, "fold_metrics.csv"), index=False)
+        figd = os.path.join(d, "figures")
+        y = np.concatenate(py)
+        yh = np.concatenate(pyh)
+        p = np.vstack(pp)
+        tp.confusion_fig(y, yh, os.path.join(figd, "confusion_matrix.png"), f"{model_key} pooled (illustrative)")
+        tp.roc_fig(p, y, os.path.join(figd, "roc_curves.png"), f"{model_key} pooled ROC")
+
+        world0 = worlds["SEED-IV_reference_scale"]
+        g = world0["gates"]
+        t = np.arange(min(60, N_PER_DATASET))
+
+        if model_key == "M0":
+            pd.DataFrame([
+                {"feature": "mean_pupil_diameter_Y", "rank": 1, "role": "gate (paper)"},
+                {"feature": "mean_pupil_diameter_X", "rank": 2},
+            ]).to_csv(os.path.join(d, "selected_eye_features.csv"), index=False)
+            pd.DataFrame([
+                {"feature": "PhEn-FP2", "rank": 1}, {"feature": "SampEn-T8", "rank": 2},
+                {"feature": "PermEn-T7", "rank": 3},
+            ]).to_csv(os.path.join(d, "selected_eeg_features.csv"), index=False)
+            gens = np.arange(1, 451)
+            fit = 0.72 + 0.22 * (1 - np.exp(-gens / 80))
+            pd.DataFrame({"generation": gens, "best_fitness": fit, "mean_fitness": fit - 0.03}).to_csv(
+                os.path.join(d, "ga_history.csv"), index=False)
+
+        if model_key == "M1":
+            pd.DataFrame({
+                "window": t,
+                "z_norm": g["pupil_norm"][: len(t)],
+                "w_hard": g["w_hard"][: len(t)],
+                "w_fuzzy": g["w_fuzzy"][: len(t)],
+            }).to_csv(os.path.join(d, "gate_weights.csv"), index=False)
+            tp.gate_timeline(
+                t, g["w_hard"][: len(t)], g["w_fuzzy"][: len(t)], g["w_adaptive"][: len(t)],
+                os.path.join(figd, "10_hard_vs_fuzzy_timeline.png"),
+                "B10 — Hard vs fuzzy gate (synthetic excerpt)",
+            )
+            _reg("B10", "Hard vs fuzzy timeline", f"{folder}/figures/10_hard_vs_fuzzy_timeline.png",
+                 "generated", "gate_weights.csv", "synthetic_teaching")
+            tp.membership_m1(os.path.join(figd, "11_fuzzy_membership_functions.png"))
+            _reg("B11", "M1 membership functions", f"{folder}/figures/11_fuzzy_membership_functions.png",
+                 "generated", "n/a (FUZZY params)", "synthetic_teaching")
+            wf = g["w_fuzzy"]
+            tp.gate_weight_histogram(wf, os.path.join(figd, "12_gate_weight_distribution.png"))
+            pd.DataFrame({"w_fuzzy": wf}).describe().to_csv(os.path.join(d, "gate_weight_summary.csv"))
+            _reg("B12", "Gate weight histogram", f"{folder}/figures/12_gate_weight_distribution.png",
+                 "generated", "gate_weights.csv", "synthetic_teaching")
+            abl = gate_ablation_band_table(world0["band_probs"], world0["y"], g)
+            tp.gate_ablation_bands(
+                BANDS,
+                {k: [abl[k][b] for b in BANDS] for k in abl},
+                os.path.join(figd, "13_gate_ablation_by_band.png"),
+            )
+            pd.DataFrame(abl).to_csv(os.path.join(d, "gate_ablation_by_band.csv"))
+            _reg("B13", "Gate ablation by band", f"{folder}/figures/13_gate_ablation_by_band.png",
+                 "generated", "gate_ablation_by_band.csv", "synthetic_teaching")
+            gq = {k: world0["gate_quality"][k] for k in ("none", "hard", "fuzzy")}
+            tp.gate_quality_bars(
+                gq, os.path.join(figd, "14_gate_precision_recall_f1.png"),
+                "B14 — Gate selection precision / recall / F1",
+            )
+            _reg("B14", "Gate P/R/F1", f"{folder}/figures/14_gate_precision_recall_f1.png",
+                 "generated", "synthetic episode mask", "synthetic_teaching")
+
+        if model_key == "M2":
+            w0 = fuzzy_weights(g["pupil_norm"], FUZZY)
+            trial = np.zeros(len(g["pupil_raw"]), dtype=int)
+            w1 = temporal_smooth_weights(w0, trial, np.arange(len(w0)), mode="symmetric", span=1)
+            pd.DataFrame({
+                "t": np.arange(len(t)),
+                "pupil_raw": g["pupil_raw"][: len(t)],
+                "pupil_norm": g["pupil_norm"][: len(t)],
+                "w_no_smooth": w0[: len(t)],
+                "w_temporal_smooth": w1[: len(t)],
+                "w_adaptive": g["w_adaptive"][: len(t)],
+            }).to_csv(os.path.join(d, "temporal_gate_scores.csv"), index=False)
+            tp.pupil_raw_norm(
+                np.arange(len(t)), g["pupil_raw"][: len(t)], g["pupil_norm"][: len(t)],
+                os.path.join(figd, "15_raw_vs_normalised_pupil.png"),
+            )
+            _reg("C15", "Raw vs normalised pupil", f"{folder}/figures/15_raw_vs_normalised_pupil.png",
+                 "generated", "temporal_gate_scores.csv", "synthetic_teaching")
+            tp.smoothing_effect(
+                np.arange(len(t)), w0[: len(t)], w1[: len(t)],
+                os.path.join(figd, "16_temporal_smoothing.png"),
+            )
+            _reg("C16", "Temporal smoothing", f"{folder}/figures/16_temporal_smoothing.png",
+                 "generated", "temporal_gate_scores.csv", "synthetic_teaching")
+            tp.adaptive_timeline_panel(
+                np.arange(len(t)),
+                g["pupil_raw"][: len(t)],
+                g["pupil_norm"][: len(t)],
+                w1[: len(t)],
+                g["w_adaptive"][: len(t)],
+                os.path.join(figd, "17_adaptive_gate_components.png"),
+            )
+            _reg("C17", "Adaptive gate components", f"{folder}/figures/17_adaptive_gate_components.png",
+                 "generated", "temporal_gate_scores.csv", "synthetic_teaching")
+            tp.gate_timeline(
+                np.arange(len(t)),
+                g["w_hard"][: len(t)],
+                g["w_fuzzy"][: len(t)],
+                g["w_adaptive"][: len(t)],
+                os.path.join(figd, "18_hard_fuzzy_adaptive_comparison.png"),
+                "C18 — Hard vs fuzzy vs adaptive on same series",
+            )
+            _reg("C18", "Gate mechanism comparison", f"{folder}/figures/18_hard_fuzzy_adaptive_comparison.png",
+                 "generated", "temporal_gate_scores.csv", "synthetic_teaching")
+            tp.gate_quality_extended(world0["gate_quality"], os.path.join(figd, "19_gate_quality_comparison.png"))
+            _reg("C19", "Gate quality", f"{folder}/figures/19_gate_quality_comparison.png",
+                 "generated", "episode mask in teaching_data", "synthetic_teaching")
+            sigmas = [0.0, 0.05, 0.1, 0.15, 0.2, 0.3]
+            _, gf1, emo = noise_gate_sweep(N_PER_DATASET, _dataset_seed(ds="noise"), sigmas)
+            tp.noise_sensitivity_dual(sigmas, gf1, emo, os.path.join(figd, "20_noise_sensitivity.png"))
+            _reg("C20", "Noise sensitivity", f"{folder}/figures/20_noise_sensitivity.png",
+                 "generated", "noise_gate_sweep()", "synthetic_teaching")
+
+        with open(os.path.join(d, "report.md"), "w", encoding="utf-8") as f:
+            f.write(f"# {model_key}\n\n{label}. Synthetic data — see ../SCENARIO_NOTICE.md.\n")
 
 
-def _ensure_model_dir(name: str) -> str:
-    d = os.path.join(OUT, name)
-    os.makedirs(os.path.join(d, "figures"), exist_ok=True)
-    return d
-
-
-def _report_md(model: str, role: str) -> str:
-    return f"""# {model} — illustrative scenario report
-
-**{role}** — data in this folder are **synthetic** (see `../SCENARIO_NOTICE.md`).
-
-## Files
-
-| File | Meaning |
-|------|---------|
-| `summary.csv` | Pooled metrics per reference-scale dataset |
-| `fold_metrics.csv` | 5-fold CV-style fold scores |
-| `predictions.csv` | Labels + class probabilities (source for CM / ROC) |
-| `figures/` | Plots generated from the CSVs above |
-
-## Interpretation
-
-Confusion matrices and ROC curves are computed from `predictions.csv`. Accuracy in `summary.csv`
-is the arithmetic match to those predictions—not a re-run of SEED-IV or MAHNOB-HCI.
-"""
-
-
-def build_model(model_key: str, folder: str, label: str):
+def build_fusion_model(folder: str, model_key: str, pred_file: str, *, m3_panel: bool, m4_panel: bool):
     d = _ensure_model_dir(folder)
     summaries, folds_all = [], []
-    pooled_y, pooled_yh, pooled_p = [], [], []
-    for ds, targets in TARGET_ACC.items():
-        res = _simulate(N_PER_DATASET, targets[model_key], SEED + hash(model_key + ds) % 10000)
-        m = _metrics(res.y, res.y_pred, res.proba)
-        m.update({"dataset": ds, "model": model_key, "target_accuracy_pct": targets[model_key]})
+    py, pyh, pp = [], [], []
+    world_ref = None
+    pred_rows: list = []
+    band_rows: list = []
+    weight_rows: list = []
+    for ds in TARGET_ACC:
+        target = TARGET_ACC[ds][model_key]
+        world = build_fusion_dataset(N_PER_DATASET, target, _dataset_seed(ds, 90 + ord(model_key[1])))
+        if world_ref is None:
+            world_ref = world
+        y, y_pred, proba = world["y"], world["y_pred"], world["proba_fused"]
+        for i in range(len(y)):
+            pred_rows.append([i, ds, model_key, int(y[i]), int(y_pred[i]), *proba[i].tolist()])
+        for i in range(len(y)):
+            row = [i, ds, int(y[i])]
+            for b in range(len(BANDS)):
+                row.extend(world["band_probs"][i, b].tolist())
+            band_rows.append(row)
+        for i, b in enumerate(BANDS):
+            weight_rows.append({
+                "dataset": ds,
+                "band": b,
+                "weight_equal": world["weights_equal"][i],
+                "weight_learned": world["weights_learned"][i],
+            })
+
+        m = world["metrics"]
+        m.update({"dataset": ds, "model": model_key, "target_accuracy_pct": target})
         summaries.append(m)
-        for fd in res.folds:
+        for fd in world["folds"]:
             folds_all.append({"dataset": ds, "model": model_key, **fd})
-        pooled_y.append(res.y)
-        pooled_yh.append(res.y_pred)
-        pooled_p.append(res.proba)
-        pred_name = "final_predictions.csv" if folder == "M4_combined_model" else "predictions.csv"
-        if folder == "M3_multiband_fusion":
-            pred_name = "fusion_predictions.csv"
-        _write_predictions(os.path.join(d, pred_name), res, ds, model_key)
+        py.append(y)
+        pyh.append(y_pred)
+        pp.append(proba)
+
+    with open(os.path.join(d, pred_file), "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["sample_id", "dataset", "model", "y_true", "y_pred"] + [f"p_{c}" for c in CLASSES])
+        w.writerows(pred_rows)
+    with open(os.path.join(d, "band_probabilities.csv"), "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        header = ["sample_id", "dataset", "y_true"] + [f"p_{b}_{c}" for b in BANDS for c in CLASSES]
+        w.writerow(header)
+        w.writerows(band_rows)
+    pd.DataFrame(weight_rows).to_csv(os.path.join(d, "learned_band_weights.csv"), index=False)
 
     pd.DataFrame(summaries).to_csv(os.path.join(d, "summary.csv"), index=False)
     pd.DataFrame(folds_all).to_csv(os.path.join(d, "fold_metrics.csv"), index=False)
-
-    if folder == "M0_original":
-        pd.DataFrame([
-            {"feature": "mean_pupil_diameter_Y", "rank": 1, "role": "gate (paper)"},
-            {"feature": "mean_pupil_diameter_X", "rank": 2},
-        ]).to_csv(os.path.join(d, "selected_eye_features.csv"), index=False)
-        pd.DataFrame([
-            {"feature": "PhEn-FP2", "rank": 1}, {"feature": "SampEn-T8", "rank": 2},
-            {"feature": "PermEn-T7", "rank": 3},
-        ]).to_csv(os.path.join(d, "selected_eeg_features.csv"), index=False)
-        pd.DataFrame([{"rule_id": i, "if_part": f"illustrative_rule_{i}", "then_class": CLASSES[i % 4]}
-                      for i in range(1, 11)]).to_csv(os.path.join(d, "fuzzy_rules.csv"), index=False)
-        gens = np.arange(1, 451)
-        fit = 0.72 + 0.22 * (1 - np.exp(-gens / 80))
-        pd.DataFrame({"generation": gens, "best_fitness": fit, "mean_fitness": fit - 0.03}).to_csv(
-            os.path.join(d, "ga_history.csv"), index=False)
-    with open(os.path.join(d, "report.md"), "w", encoding="utf-8") as f:
-        f.write(_report_md(model_key, label))
-
-    y = np.concatenate(pooled_y)
-    yh = np.concatenate(pooled_yh)
-    p = np.vstack(pooled_p)
     figd = os.path.join(d, "figures")
-    tp.confusion_fig(y, yh, os.path.join(figd, "confusion_matrix.png"),
-                     f"{model_key} pooled (illustrative)")
+    y = np.concatenate(py)
+    yh = np.concatenate(pyh)
+    p = np.vstack(pp)
+
+    if m3_panel:
+        w = world_ref["weights_learned"]
+        per_band = [world_ref["per_band_acc"][b] for b in BANDS]
+        tp.bar_compare(BANDS, per_band, os.path.join(figd, "21_individual_band_accuracy.png"),
+                       "D21 — Per-band argmax accuracy (synthetic)")
+        _reg("D21", "Individual band accuracy", f"{folder}/figures/21_individual_band_accuracy.png",
+             "generated", "band_probabilities.csv", "synthetic_teaching")
+        tp.band_weights_bar(BANDS, w.tolist(), os.path.join(figd, "22_learned_band_weights.png"))
+        _reg("D22", "Learned band weights", f"{folder}/figures/22_learned_band_weights.png",
+             "generated", "learned_band_weights.csv", "synthetic_teaching")
+        y0 = world_ref["y"]
+        bp = world_ref["band_probs"]
+        acc_alpha = fusion_accuracy_for_bands(bp, y0, ["alpha"], np.array([1.0]))
+        acc_multi = float((world_ref["proba_fused"].argmax(1) == y0).mean() * 100)
+        tp.fusion_strategy_compare(
+            ["Alpha only", "5-band fused (learned)"],
+            [acc_alpha, acc_multi],
+            os.path.join(figd, "23_alpha_vs_multiband.png"),
+            "D23 — Alpha-only vs multiband fusion",
+        )
+        _reg("D23", "Alpha vs multiband", f"{folder}/figures/23_alpha_vs_multiband.png",
+             "generated", "band_probabilities.csv", "synthetic_teaching")
+        two = fusion_accuracy_for_bands(bp, y0, ["alpha", "beta"], world_ref["weights_learned"])
+        three = fusion_accuracy_for_bands(bp, y0, ["alpha", "beta", "gamma"], world_ref["weights_learned"])
+        tp.fusion_strategy_compare(
+            ["α+β", "α+β+γ", "All 5"],
+            [two, three, acc_multi],
+            os.path.join(figd, "24_fusion_band_count.png"),
+            "D24 — Two- vs three- vs five-band fusion",
+        )
+        _reg("D24", "Band-count fusion", f"{folder}/figures/24_fusion_band_count.png",
+             "generated", "band_probabilities.csv", "synthetic_teaching")
+        acc_eq = float((world_ref["y_pred_equal"] == y0).mean() * 100)
+        acc_lr = float((world_ref["y_pred"] == y0).mean() * 100)
+        tp.fusion_strategy_compare(
+            ["Equal weights", "Validation-learned"],
+            [acc_eq, acc_lr],
+            os.path.join(figd, "25_equal_vs_learned_fusion.png"),
+            "D25 — Equal vs learned fusion weights",
+        )
+        _reg("D25", "Equal vs learned", f"{folder}/figures/25_equal_vs_learned_fusion.png",
+             "generated", "learned_band_weights.csv", "synthetic_teaching")
+        tp.confusion_fig(y, yh, os.path.join(figd, "26_fused_confusion_matrix.png"),
+                         "D26 — M3 fused predictions (illustrative)")
+        _reg("D26", "Fused confusion matrix", f"{folder}/figures/26_fused_confusion_matrix.png",
+             "generated", pred_file, "synthetic_teaching")
+        tp.roc_fig(p, y, os.path.join(figd, "27_fused_roc_curves.png"), "D27 — M3 fused one-vs-rest ROC")
+        _reg("D27", "Fused ROC", f"{folder}/figures/27_fused_roc_curves.png",
+             "generated", pred_file, "synthetic_teaching")
+
+    tp.confusion_fig(y, yh, os.path.join(figd, "confusion_matrix.png"), f"{model_key} pooled CM")
     tp.roc_fig(p, y, os.path.join(figd, "roc_curves.png"), f"{model_key} pooled ROC")
 
-    if model_key == "M1":
-        rng = np.random.default_rng(SEED)
-        nwin = 30
-        z = np.clip(rng.normal(0.5, 0.2, nwin), 0, 1)
-        muL, muM, muH = fuzzy_memberships(z, FUZZY["a1"], FUZZY["c"], FUZZY["b2"])
-        rL, rM, rH = FUZZY["r"]
-        wf = (muL * rL + muM * rM + muH * rH) / (muL + muM + muH)
-        wh = (z >= 0.6).astype(float)
-        t = np.arange(nwin)
-        tp.gate_timeline(t, wh, wf, wf, os.path.join(figd, "10_hard_vs_fuzzy_timeline.png"))
-        pd.DataFrame({"window": t, "z_norm": z, "w_hard": wh, "w_fuzzy": wf}).to_csv(
-            os.path.join(d, "gate_weights.csv"), index=False)
-
-    if model_key == "M2":
-        rng = np.random.default_rng(SEED + 2)
-        pupil = rng.normal(4.0, 0.3, 40)
-        trial = np.zeros(40, dtype=int)
-        zn = normalise_within_trial(
-            (pupil - pupil[:5].mean()) / (pupil[:5].std() + 1e-6), trial)
-        w0 = fuzzy_weights(zn, FUZZY)
-        w1 = temporal_smooth_weights(w0, trial, np.arange(40), mode="symmetric", span=1)
-        pd.DataFrame({"t": np.arange(len(pupil)), "pupil_raw": pupil, "pupil_norm": zn,
-                      "w_no_smooth": w0, "w_temporal_smooth": w1}).to_csv(
-            os.path.join(d, "temporal_gate_scores.csv"), index=False)
-        tp.gate_timeline(np.arange(len(pupil)), (zn > 0.6).astype(float), w0, w1,
-                         os.path.join(figd, "18_adaptive_gate_timeline.png"))
-
-    if model_key in ("M3", "M4"):
-        rng = np.random.default_rng(SEED + 3)
-        band_acc = {b: 90 + rng.uniform(0, 4) for b in BANDS}
-        tp.bar_compare(BANDS, [band_acc[b] for b in BANDS],
-                       os.path.join(figd, "21_individual_band_accuracy.png"),
-                       "Per-band illustrative accuracy (%)")
-        val_probs = {b: _simulate(200, band_acc[b], SEED + i).proba for i, b in enumerate(BANDS)}
-        yv = np.concatenate([_simulate(200, 94, SEED).y for _ in BANDS])[:200]
-        wlearn = _learn_band_weights(val_probs, yv)
-        pd.DataFrame([{"band": b, "weight": wlearn[b]} for b in BANDS]).to_csv(
-            os.path.join(d, "learned_band_weights.csv"), index=False)
-        fused = _fuse_probs(val_probs, wlearn)
-        yf = yv[: len(fused)]
-        yhat = fused.argmax(axis=1)
-        tp.confusion_fig(yf, yhat, os.path.join(figd, "26_fused_confusion_matrix.png"),
-                         "Fused band probabilities")
+    if m4_panel:
+        g = world_ref["gates"]
+        tt = np.arange(min(80, len(g["w_adaptive"])))
+        tp.m4_gate_timeline(tt, g["w_adaptive"][: len(tt)], os.path.join(figd, "29_m4_adaptive_gate.png"))
+        _reg("E29", "M4 adaptive gate", f"{folder}/figures/29_m4_adaptive_gate.png",
+             "generated", "band_probabilities.csv + gates", "synthetic_teaching")
+        mean_bp = world_ref["band_probs"][: len(tt)].mean(axis=0)
+        w = world_ref["weights_learned"]
+        tp.m4_band_contribution(BANDS, w, mean_bp, os.path.join(figd, "30_m4_band_contributions.png"))
+        _reg("E30", "M4 band contributions", f"{folder}/figures/30_m4_band_contributions.png",
+             "generated", "learned_band_weights.csv", "synthetic_teaching")
+        tp.architecture_e28(os.path.join(figd, "28_combined_architecture.png"))
+        _reg("E28", "Combined architecture", f"{folder}/figures/28_combined_architecture.png",
+             "generated", "n/a (diagram)", "synthetic_teaching")
+        tp.classwise_grouped(y, yh, os.path.join(figd, "33_classwise_precision_recall_f1.png"))
+        _reg("E33", "Class-wise metrics", f"{folder}/figures/33_classwise_precision_recall_f1.png",
+             "generated", "final_predictions.csv", "synthetic_teaching")
+        # E31/E32 alias pooled CM and ROC with explicit IDs
+        tp.confusion_fig(y, yh, os.path.join(figd, "31_final_confusion_matrix.png"),
+                         "E31 — M4 final confusion (from final_predictions.csv)")
+        tp.roc_fig(p, y, os.path.join(figd, "32_final_roc_curves.png"), "E32 — M4 final ROC")
+        _reg("E31", "Final CM", f"{folder}/figures/31_final_confusion_matrix.png",
+             "generated", "final_predictions.csv", "synthetic_teaching")
+        _reg("E32", "Final ROC", f"{folder}/figures/32_final_roc_curves.png",
+             "generated", "final_predictions.csv", "synthetic_teaching")
 
 
 def comparison_figure():
@@ -299,48 +478,64 @@ Shared comparison charts: `comparison_figures/`
 """)
 
 
-def main():
-    write_root_docs()
-    build_model("M0", "M0_original", "Original hard-gated baseline (reference-scale labels)")
-    build_model("M1", "M1_fuzzy_gate", "Existing fuzzy eye gate improvement")
-    build_model("M2", "M2_adaptive_temporal_gate", "Adaptive temporal fuzzy eye gate (proposed)")
-    build_model("M3", "M3_multiband_fusion", "Multi-band weighted EEG fusion (proposed)")
-    build_model("M4", "M4_combined_model", "M2 + M3 combined (proposed)")
-    comparison_figure()
-    _write_figure_manifest()
-    shutil_copy_scenario_generator()
-    print("wrote", OUT)
+def _paper_figure_registry():
+    """A1–A9: published / derived methodology figures in 00_paper_reference."""
+    base = "00_paper_reference/figures"
+    mapping = [
+        ("A1", "Paper Fig. 7 eye mRMR", f"{base}/figure_07_eye_mrmr_ranking.png", "eye_mrmr_ranking.csv"),
+        ("A2", "Paper Fig. 8 Sugeno FIS", f"{base}/figure_08_sugeno_fis_architecture.png", "n/a"),
+        ("A3", "Paper Fig. 9 GA convergence", f"{base}/figure_09_ga_convergence.png", "n/a"),
+        ("A4", "Derived triangular MFs", f"{base}/figure_A4_fuzzy_membership_functions.png", "paper_figures_method.py"),
+        ("A5", "Derived rule space", f"{base}/figure_A5_fuzzy_rule_distribution.png", "paper_figures_method.py"),
+        ("A6", "Paper Fig. 10 SEED-IV CM", f"{base}/figure_10_seed_iv_confusion_matrices.png", "n/a"),
+        ("A7", "Paper Fig. 11 SEED-IV ROC", f"{base}/figure_11_seed_iv_roc_curves.png", "n/a"),
+        ("A8", "Paper Fig. 12 MAHNOB CM", f"{base}/figure_12_mahnob_confusion_matrices.png", "n/a"),
+        ("A9", "Paper Fig. 13 MAHNOB ROC", f"{base}/figure_13_mahnob_roc_curves.png", "n/a"),
+    ]
+    for fid, name, path, src in mapping:
+        full = os.path.join(ROOT, "results", path)
+        status = "generated" if os.path.isfile(full) else "missing"
+        _reg(fid, name, path, status, src, "published_paper_or_derived_methodology")
 
 
 def _write_figure_manifest():
-    manifest = """# Figure manifest (illustrative scenario)
-
-Figures are generated from CSVs in each model folder. Additional methodology panels
-reuse `results/00_paper_reference/figures/` for the **published baseline** (not M1–M4 runs).
-
-| ID | Path | Status |
-|----|------|--------|
-| A1–A9 | See `00_paper_reference/figures/` | Published paper raster |
-| B10 | `M1_fuzzy_gate/figures/10_hard_vs_fuzzy_timeline.png` | Generated |
-| B11–B14 | See `M1_fuzzy_gate/figures/` + comparison_figures | Partial / extend in code |
-| C15–C20 | `M2_adaptive_temporal_gate/figures/` | C18 generated |
-| D21–D27 | `M3_multiband_fusion/figures/` | D21,D26 generated |
-| E28–E33 | `M4_combined_model/figures/` | Confusion + ROC generated |
-"""
+    _paper_figure_registry()
+    lines = [
+        "# Figure manifest (illustrative + paper reference)",
+        "",
+        "**Provenance:** A1–A9 → `00_paper_reference/` (published crops + derived A4–A5). "
+        "B10–E33 → `01_expected_illustrative_scenario/` (synthetic teaching data).",
+        "",
+        "| ID | Name | Path | Status | Data source | Provenance |",
+        "|----|------|------|--------|-------------|------------|",
+    ]
+    for r in sorted(FIGURE_REGISTRY, key=lambda x: x["id"]):
+        lines.append(
+            f"| {r['id']} | {r['name']} | `{r['path']}` | {r['status']} | {r['data_source']} | {r['provenance']} |"
+        )
     with open(os.path.join(OUT, "FIGURES_MANIFEST.md"), "w", encoding="utf-8") as f:
-        f.write(manifest)
+        f.write("\n".join(lines) + "\n")
 
 
 def shutil_copy_scenario_generator():
-    """Expose scenario_generator.py at package root (symlink content)."""
     src = os.path.abspath(__file__)
     dst = os.path.join(OUT, "scenario_generator.py")
-    with open(src, encoding="utf-8") as f:
-        body = f.read()
     with open(dst, "w", encoding="utf-8") as f:
         f.write('"""Entry point — run: python scenario_generator.py from this folder."""\n')
         f.write("import runpy\n")
         f.write("runpy.run_module('gfer.teaching_scenario', run_name='__main__')\n")
+
+
+def main():
+    FIGURE_REGISTRY.clear()
+    write_root_docs()
+    build_classifier_models()
+    build_fusion_model("M3_multiband_fusion", "M3", "fusion_predictions.csv", m3_panel=True, m4_panel=False)
+    build_fusion_model("M4_combined_model", "M4", "final_predictions.csv", m3_panel=False, m4_panel=True)
+    comparison_figure()
+    _write_figure_manifest()
+    shutil_copy_scenario_generator()
+    print("wrote", OUT, f"({len(FIGURE_REGISTRY)} manifest entries)")
 
 
 if __name__ == "__main__":
