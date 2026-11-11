@@ -30,6 +30,12 @@ SEED_IV_CHANNELS = [
     "TP8", "P7", "P5", "P3", "P1", "PZ", "P2", "P4", "P6", "P8", "PO7", "PO5", "PO3", "POZ",
     "PO4", "PO6", "PO8", "CB1", "O1", "OZ", "O2", "CB2",
 ]
+# 32-channel BIOPAC montage (MAHNOB-HCI teaching layout; names normalised to match SEED-style caps)
+MAHNOB_CHANNELS = [
+    "FP1", "FP2", "F7", "F3", "FZ", "F4", "F8", "FC5", "FC1", "FC2", "FC6", "T7", "C3", "CZ",
+    "C4", "T8", "CP5", "CP1", "CP2", "CP6", "P7", "P3", "PZ", "P4", "P8", "PO3", "PO4", "O1",
+    "OZ", "O2", "AF3", "AF4",
+]
 CLASS_NAMES = ["sad", "happy", "fear", "neutral"]          # SEED-IV order differs; label ids are ours
 
 # channels that carry the emotional signature (paper's selected channels and neighbours)
@@ -98,16 +104,26 @@ def _graded_intensity(dur, rng, knot_s=1.0, smooth_s=3.0, slope=1.5):
     return tk, 1.0 / (1.0 + np.exp(-slope * 2.0 * sm))
 
 
-def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, eye_fs=60.0,
-               signal_strength=1.0, graded=False):
+def _common_average_ref(eeg: np.ndarray) -> np.ndarray:
+    return eeg - eeg.mean(axis=0, keepdims=True)
+
+
+def _target_weights(ch_names):
+    return {ch: w for ch, w in TARGET_CHANNELS.items() if ch in ch_names}
+
+
+def make_trial(subject, trial_id, label, subj_params, rng, ch_names=None, dur=60.0, fs=200.0,
+               eye_fs=60.0, signal_strength=1.0, graded=False, common_average_ref=False):
+    ch_names = ch_names or SEED_IV_CHANNELS
     n = int(dur * fs)
-    C = len(SEED_IV_CHANNELS)
+    C = len(ch_names)
     mix, pupil_base, gain = subj_params["mix"], subj_params["pupil_base"], subj_params["gain"]
+    targets = _target_weights(ch_names)
 
     # --- background EEG ---
     src = np.stack([_pink(n, rng) for _ in range(mix.shape[1])])
     eeg = mix @ src * 15.0
-    post = np.array([1.0 if ch.startswith(("O", "PO", "P", "CB")) else 0.3 for ch in SEED_IV_CHANNELS])
+    post = np.array([1.0 if ch.startswith(("O", "PO", "P", "CB")) else 0.3 for ch in ch_names])
     eeg += np.outer(post, _bandnoise(n, fs, 9, 11, rng)) * 8.0
     eeg += rng.standard_normal((C, n)) * 3.0
     t = np.arange(n) / fs
@@ -115,6 +131,7 @@ def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, e
     eeg += rng.normal(0, 20, (C, 1))                                           # DC offsets
 
     # --- episodes ---
+    tk, ik = np.array([0.0]), np.array([0.0])
     episodes = _episodes(dur, rng, n_ep=3)
     distractors = _episodes(dur, rng, n_ep=2, len_range=(3, 5))
     emask = _smooth_mask(n, fs, episodes)
@@ -139,14 +156,17 @@ def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, e
 
     bw, amp, burst = CLASS_SIG[label]
     if amp > 0:
-        for ch, w in TARGET_CHANNELS.items():
-            ci = SEED_IV_CHANNELS.index(ch)
+        for ch, w in targets.items():
+            ci = ch_names.index(ch)
             for band, (fc, hw, strength) in BANDS.items():
                 half = max(hw * bw, 0.15)
                 comp = _bandnoise(n, fs, fc - half, fc + half, rng)
                 if burst > 0:
                     comp *= 1 + burst * np.sin(2 * np.pi * rng.uniform(2, 4) * t)
                 eeg[ci] += emask * comp * amp * strength * w * gain * 6.0 * signal_strength
+
+    if common_average_ref:
+        eeg = _common_average_ref(eeg)
 
     # --- pupil (mm) ---
     ne = int(dur * eye_fs)
@@ -176,16 +196,18 @@ def make_trial(subject, trial_id, label, subj_params, rng, dur=60.0, fs=200.0, e
         tt += d / 1000.0 + rng.uniform(0.02, 0.06)
     fixations = np.array(fix)
 
-    tr = Trial(subject, trial_id, label, eeg.astype(np.float32), fs, SEED_IV_CHANNELS, pupil, fixations)
+    tr = Trial(subject, trial_id, label, eeg.astype(np.float32), fs, list(ch_names), pupil, fixations)
     if graded:
         return tr, episodes, [float(v) for v in ik]
     return tr, episodes
 
 
-def generate(out, n_subjects=5, trials_per_class=3, dur=60.0, seed=0, signal_strength=1.0, graded=False):
+def generate(out, n_subjects=5, trials_per_class=3, dur=60.0, seed=0, signal_strength=1.0, graded=False,
+             ch_names=None, dataset_name="synthetic-demo", common_average_ref=False, eeg_fs=200.0):
+    ch_names = ch_names or SEED_IV_CHANNELS
     rng = np.random.default_rng(seed)
     os.makedirs(out, exist_ok=True)
-    C = len(SEED_IV_CHANNELS)
+    C = len(ch_names)
     truth = {}
     for s in range(n_subjects):
         subj = f"S{s + 1:02d}"
@@ -194,18 +216,20 @@ def generate(out, n_subjects=5, trials_per_class=3, dur=60.0, seed=0, signal_str
         labels = np.repeat(np.arange(4), trials_per_class)
         rng.shuffle(labels)
         for i, lab in enumerate(labels):
-            res = make_trial(subj, f"T{i + 1:02d}", int(lab), params, rng, dur=dur,
-                             signal_strength=signal_strength, graded=graded)
+            res = make_trial(subj, f"T{i + 1:02d}", int(lab), params, rng, ch_names=ch_names, dur=dur,
+                             fs=eeg_fs, signal_strength=signal_strength, graded=graded,
+                             common_average_ref=common_average_ref)
             tr, eps = res[0], res[1]
             save_npz(tr, out)
             truth[f"{subj}/{tr.trial_id}"] = {"label": int(lab), "episodes": eps}
             if graded:
                 truth[f"{subj}/{tr.trial_id}"]["intensity_1hz"] = res[2]
         print(f"  {subj}: {len(labels)} trials", flush=True)
-    meta = {"dataset": "synthetic-demo", "class_names": CLASS_NAMES, "eeg_fs": 200.0,
-            "eye_fs": 60.0, "ch_names": SEED_IV_CHANNELS, "line_hz": 50.0, "signal_strength": signal_strength,
-            "seed": seed, "graded": graded,
-            "note": "SYNTHETIC data for pipeline testing only"}
+    meta = {"dataset": dataset_name, "class_names": CLASS_NAMES, "eeg_fs": eeg_fs,
+            "eye_fs": 60.0, "ch_names": ch_names, "line_hz": 50.0, "signal_strength": signal_strength,
+            "seed": seed, "graded": graded, "common_average_ref": common_average_ref,
+            "synthetic": True,
+            "note": "SYNTHETIC teaching demo — NOT the official SEED-IV or MAHNOB-HCI release."}
     with open(os.path.join(out, "meta.json"), "w") as f:
         json.dump(meta, f, indent=1)
     with open(os.path.join(out, "ground_truth_episodes.json"), "w") as f:

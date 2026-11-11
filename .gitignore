@@ -6,8 +6,9 @@ cache/
 .DS_Store
 .preview/
 
-# datasets (regenerate or download; see README)
-data/
+# datasets (regenerate or download; see data/README.md)
+data/*
+!data/README.md
 
 # copyrighted reference papers (cited by DOI in README)
 *.pdf
