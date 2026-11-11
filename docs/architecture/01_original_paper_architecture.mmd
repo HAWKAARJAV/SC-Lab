@@ -1,0 +1,21 @@
+---
+config:
+  theme: neutral
+---
+flowchart LR
+  subgraph EYE["Eye branch (paper M0)"]
+    E1[8 eye features / 4s window] --> E2[mRMR]
+    E2 --> E3[mean pupil Y]
+    E3 --> E4[Hard gate 0/1]
+  end
+  subgraph EEG["EEG branch"]
+    G1[Multichannel EEG] --> G2[4s segment]
+    G2 --> G3[Filter + notch + CAR + 128 Hz]
+    G3 --> G4[DWT db4]
+    G4 --> G5[5 bands δ θ α β γ]
+    G5 --> G6[4 entropies × channels]
+    G6 --> G7[mRMR → 3 features]
+    G7 --> G8[S-FIS 27 combos + GA]
+    G8 --> G9[Per-band emotion class]
+  end
+  E4 -.->|gate masks window| G2

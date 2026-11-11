@@ -1,0 +1,2 @@
+model,eye_gate,eeg_classification,multiband_fusion,eeg_rule_source,eye_rule_source,ga_optimisation,difference_vs_m0,provenance
+M0,Hard quantile gate (q=0.6),Per-band S-FIS; evaluate bands separately,None,Published Tables 2–6 per-band S-FIS+GA (same rule schema as paper),hard threshold,Paper GA on 27-population rule chromosomes (gfer/ga.py tune_rules),Same EEG rules as paper; gate/fusion per column,documented_architecture

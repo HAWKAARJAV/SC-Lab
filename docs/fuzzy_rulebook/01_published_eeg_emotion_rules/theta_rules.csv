@@ -1,0 +1,11 @@
+rule_id,dataset,frequency_band,rule_rank,phEn_fp2,sampEn_t8,permEn_t7,consequent_emotion,source_table,source_page,provenance,source_note,if_text_original
+T01,SEED-IV (paper Tables 2–6),theta,1,medium,is,,sadness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium
+T02,SEED-IV (paper Tables 2–6),theta,2,medium,is,low,sadness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is low
+T03,SEED-IV (paper Tables 2–6),theta,3,medium,is,medium,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is medium
+T04,SEED-IV (paper Tables 2–6),theta,4,medium,is,high,happiness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is high
+T05,SEED-IV (paper Tables 2–6),theta,5,low,,high,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is low and PermEn-T7 is high
+T06,SEED-IV (paper Tables 2–6),theta,6,low,is,low,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is high and PermEn-T7 is low
+T07,SEED-IV (paper Tables 2–6),theta,7,medium,,medium,happiness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and PermEn-T7 is medium
+T08,SEED-IV (paper Tables 2–6),theta,8,,is,,neutrality,Table 3,11,published_paper_transcription,,If SampEn-T8 is high
+T09,SEED-IV (paper Tables 2–6),theta,9,medium,is,medium,happiness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium
+T10,SEED-IV (paper Tables 2–6),theta,10,high,is,medium,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is medium

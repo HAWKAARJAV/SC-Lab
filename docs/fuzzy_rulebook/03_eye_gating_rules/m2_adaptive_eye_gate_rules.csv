@@ -1,0 +1,4 @@
+rule_id,input_feature,linguistic_level,membership_note,then_gate_weight,provenance,system
+1,baseline-normalised & temporally smoothed pupil feature S(t),Low,"triangular MF a1=0.2, c=0.5, b2=0.8",0.1,gfer/adaptive_eye.py + gfer/gates.py,eye_gating_not_emotion
+2,baseline-normalised & temporally smoothed pupil feature S(t),Medium,see μM triangular overlap,0.5,gfer/adaptive_eye.py + gfer/gates.py,eye_gating_not_emotion
+3,baseline-normalised & temporally smoothed pupil feature S(t),High,see μH triangular overlap,1.0,gfer/adaptive_eye.py + gfer/gates.py,eye_gating_not_emotion

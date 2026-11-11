@@ -1,0 +1,4 @@
+rule_id,input_feature,linguistic_level,membership_note,then_gate_weight,provenance,system
+1,mean_pupil_diameter_Y (trial-normalised z),Low,"triangular MF a1=0.2, c=0.5, b2=0.8",0.1,gfer/gates.py FUZZY,eye_gating_not_emotion
+2,mean_pupil_diameter_Y (trial-normalised z),Medium,see μM triangular overlap,0.5,gfer/gates.py FUZZY,eye_gating_not_emotion
+3,mean_pupil_diameter_Y (trial-normalised z),High,see μH triangular overlap,1.0,gfer/gates.py FUZZY,eye_gating_not_emotion

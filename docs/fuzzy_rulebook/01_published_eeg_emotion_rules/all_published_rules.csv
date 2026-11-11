@@ -1,0 +1,51 @@
+rule_id,dataset,frequency_band,rule_rank,phEn_fp2,sampEn_t8,permEn_t7,consequent_emotion,source_table,source_page,provenance,source_note,if_text_original
+D01,SEED-IV (paper Tables 2–6),delta,1,medium,is,high,neutrality,Table 2,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is high
+D02,SEED-IV (paper Tables 2–6),delta,2,medium,is,medium,sadness,Table 2,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is medium
+D03,SEED-IV (paper Tables 2–6),delta,3,medium,is,,neutrality,Table 2,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is high
+D04,SEED-IV (paper Tables 2–6),delta,4,low,,low,sadness,Table 2,11,published_paper_transcription,,If PhEn-FP2 is low and PermEn-T7 is low
+D05,SEED-IV (paper Tables 2–6),delta,5,medium,is,medium,neutrality,Table 2,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium
+D06,SEED-IV (paper Tables 2–6),delta,6,low,is,medium,fear,Table 2,11,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium
+D07,SEED-IV (paper Tables 2–6),delta,7,high,,high,happiness,Table 2,11,published_paper_transcription,,If PhEn-FP2 is high and PermEn-T7 is high
+D08,SEED-IV (paper Tables 2–6),delta,8,,is,high,sadness,Table 2,11,published_paper_transcription,,If SampEn-T8 is high and PermEn-T7 is high
+D09,SEED-IV (paper Tables 2–6),delta,9,low,is,,sadness,Table 2,11,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is high
+D10,SEED-IV (paper Tables 2–6),delta,10,,is,,happiness,Table 2,11,published_paper_transcription,,If SampEn-T8 is medium
+T01,SEED-IV (paper Tables 2–6),theta,1,medium,is,,sadness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium
+T02,SEED-IV (paper Tables 2–6),theta,2,medium,is,low,sadness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is low
+T03,SEED-IV (paper Tables 2–6),theta,3,medium,is,medium,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is medium
+T04,SEED-IV (paper Tables 2–6),theta,4,medium,is,high,happiness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is high
+T05,SEED-IV (paper Tables 2–6),theta,5,low,,high,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is low and PermEn-T7 is high
+T06,SEED-IV (paper Tables 2–6),theta,6,low,is,low,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is high and PermEn-T7 is low
+T07,SEED-IV (paper Tables 2–6),theta,7,medium,,medium,happiness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and PermEn-T7 is medium
+T08,SEED-IV (paper Tables 2–6),theta,8,,is,,neutrality,Table 3,11,published_paper_transcription,,If SampEn-T8 is high
+T09,SEED-IV (paper Tables 2–6),theta,9,medium,is,medium,happiness,Table 3,11,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium
+T10,SEED-IV (paper Tables 2–6),theta,10,high,is,medium,neutrality,Table 3,11,published_paper_transcription,,If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is medium
+A01,SEED-IV (paper Tables 2–6),alpha,1,high,is,low,happiness,Table 4,12,published_paper_transcription,,If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low
+A02,SEED-IV (paper Tables 2–6),alpha,2,low,,high,happiness,Table 4,12,published_paper_transcription,,If PhEn-FP2 is low and PermEn-T7 is high
+A03,SEED-IV (paper Tables 2–6),alpha,3,medium,is,medium,fear,Table 4,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium
+A04,SEED-IV (paper Tables 2–6),alpha,4,medium,is,low,happiness,Table 4,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is low
+A05,SEED-IV (paper Tables 2–6),alpha,5,low,is,medium,sadness,Table 4,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium
+A06,SEED-IV (paper Tables 2–6),alpha,6,medium,is,low,fear,Table 4,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is low
+A07,SEED-IV (paper Tables 2–6),alpha,7,low,is,medium,happiness,Table 4,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium
+A08,SEED-IV (paper Tables 2–6),alpha,8,medium,is,,sadness,Table 4,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium
+A09,SEED-IV (paper Tables 2–6),alpha,9,high,,medium,fear,Table 4,12,published_paper_transcription,,If PhEn-FP2 is high and PermEn-T7 is medium
+A10,SEED-IV (paper Tables 2–6),alpha,10,low,is,low,neutrality,Table 4,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low
+B01,SEED-IV (paper Tables 2–6),beta,1,high,is,low,happiness,Table 5,12,published_paper_transcription,,If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low
+B02,SEED-IV (paper Tables 2–6),beta,2,low,,high,happiness,Table 5,12,published_paper_transcription,,If PhEn-FP2 is low and PermEn-T7 is high
+B03,SEED-IV (paper Tables 2–6),beta,3,medium,is,medium,fear,Table 5,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium
+B04,SEED-IV (paper Tables 2–6),beta,4,medium,is,low,happiness,Table 5,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is low
+B05,SEED-IV (paper Tables 2–6),beta,5,low,is,medium,sadness,Table 5,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium
+B06,SEED-IV (paper Tables 2–6),beta,6,medium,is,low,fear,Table 5,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is low
+B07,SEED-IV (paper Tables 2–6),beta,7,low,is,medium,happiness,Table 5,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium
+B08,SEED-IV (paper Tables 2–6),beta,8,medium,is,,sadness,Table 5,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium
+B09,SEED-IV (paper Tables 2–6),beta,9,high,is,medium,fear,Table 5,12,published_paper_transcription,,If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is medium
+B10,SEED-IV (paper Tables 2–6),beta,10,low,is,low,neutrality,Table 5,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low
+G01,SEED-IV (paper Tables 2–6),gamma,1,low,,high,happiness,Table 6,12,published_paper_transcription,Paper gamma rule uses Perm-FP2 (not PermEn-T7).,If PhEn-FP2 is low and Perm-FP2 is high
+G02,SEED-IV (paper Tables 2–6),gamma,2,high,is,low,happiness,Table 6,12,published_paper_transcription,,If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low
+G03,SEED-IV (paper Tables 2–6),gamma,3,medium,is,medium,fear,Table 6,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium
+G04,SEED-IV (paper Tables 2–6),gamma,4,medium,is,low,happiness,Table 6,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is low
+G05,SEED-IV (paper Tables 2–6),gamma,5,low,is,medium,sadness,Table 6,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium
+G06,SEED-IV (paper Tables 2–6),gamma,6,medium,is,low,fear,Table 6,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is low
+G07,SEED-IV (paper Tables 2–6),gamma,7,low,is,medium,happiness,Table 6,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium
+G08,SEED-IV (paper Tables 2–6),gamma,8,medium,is,,sadness,Table 6,12,published_paper_transcription,,If PhEn-FP2 is medium and SampEn-T8 is medium
+G09,SEED-IV (paper Tables 2–6),gamma,9,low,is,low,neutrality,Table 6,12,published_paper_transcription,,If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low
+G10,SEED-IV (paper Tables 2–6),gamma,10,high,is,high,fear,Table 6,12,published_paper_transcription,,If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is high

@@ -1,0 +1,16 @@
+---
+config:
+  theme: neutral
+---
+flowchart TB
+  subgraph EYE2["M2 eye branch"]
+    EYE2a[Eye track] --> EYE2b[Baseline + smooth]
+    EYE2b --> EYE2c[Adaptive fuzzy w]
+  end
+  subgraph EEG2["M3 EEG branch"]
+    EEG2a[EEG] --> EEG2b[5× S-FIS+GA]
+    EEG2b --> EEG2c[Band probabilities]
+  end
+  EYE2c -.->|window weight| EEG2b
+  EEG2c --> FUSE2[Learned fusion]
+  FUSE2 --> OUT2[Emotion output]

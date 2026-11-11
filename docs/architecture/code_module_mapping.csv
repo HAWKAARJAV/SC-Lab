@@ -1,0 +1,14 @@
+architecture_stage,model_version,python_module,function_name,responsibility,status
+Eye feature extraction,M0–M4,gfer/eye.py,eye_window_features,8 eye features per 4s window,implemented
+Eye mRMR / gate feature,M0–M4,gfer/mrmr.py,mrmr_weighted,Select gate-driving feature,implemented
+Hard eye gate,"M0, M3",gfer/gates.py,hard_weights,Binary window gate,implemented
+Fuzzy eye gate,M1,gfer/gates.py,fuzzy_weights,Continuous gate weight,implemented
+Adaptive temporal gate,"M2, M4",gfer/adaptive_eye.py,compute_gate_weights,Baseline + smooth + fuzzy,implemented
+EEG preprocessing,M0–M4,gfer/signal.py,preprocess,"Filter, notch, DWT bands",implemented
+Entropy features,M0–M4,gfer/entropy.py,band_entropies,"SampEn, PermEn, etc.",implemented
+Sugeno FIS,M0–M4,gfer/fuzzy.py,SugenoFIS,27-candidate + Wang-Mendel,implemented
+GA rule tuning,M0–M4,gfer/ga.py,tune_rules,Optimise rule base,implemented
+Multiband fusion,"M3, M4",gfer/fusion.py,fuse_weighted,P(c)=Σ w_b P_b(c),implemented
+End-to-end compare,all,gfer/compare.py,main,Trial-level M0/M1/M2 runs,implemented
+Illustrative scenario,teaching,gfer/teaching_scenario.py,main,Synthetic CSVs/figures,illustrative_only
+Illustrative predictions,teaching,gfer/teaching_data.py,TeachingWorld,Not experimental,illustrative_only

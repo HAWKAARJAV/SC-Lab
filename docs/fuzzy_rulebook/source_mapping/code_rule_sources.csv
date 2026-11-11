@@ -1,0 +1,8 @@
+module,artifact,rule_type,status
+gfer/fuzzy.py,SugenoFIS.wang_mendel,EEG emotion (mined),implemented
+gfer/ga.py,tune_rules,GA rule optimisation,implemented
+gfer/gates.py,fuzzy_weights,Eye gate Sugeno outputs,implemented
+gfer/adaptive_eye.py,compute_gate_weights,M2 adaptive gate,implemented
+gfer/fusion.py,fuse_weighted,M3/M4 fusion (not FIS rules),implemented
+gfer/teaching_scenario.py,fuzzy_rules.csv,Illustrative placeholder rules,illustrative_only
+gfer/paper_reference_data.py,RULE_SETS,Published transcription,reference_data

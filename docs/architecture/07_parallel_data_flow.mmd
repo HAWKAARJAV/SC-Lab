@@ -1,0 +1,15 @@
+---
+config:
+  theme: neutral
+---
+sequenceDiagram
+  participant Eye
+  participant EEG
+  participant Sync
+  Eye->>Sync: timestamps / 4s windows
+  EEG->>Sync: aligned segments
+  Sync->>Eye: eye features + gate w(t)
+  Sync->>EEG: preprocess + band FIS
+  Note over Eye,EEG: Gate weights conceptually modulate window evidence; code may still extract features then weight samples
+  EEG->>Sync: band probabilities
+  Sync->>Sync: weighted fusion (M3/M4)

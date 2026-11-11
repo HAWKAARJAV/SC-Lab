@@ -1,0 +1,51 @@
+rule_id,source_type,source_location,if_text,then_emotion
+delta-1,published_table,"Table 2, p.11",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is high,neutrality
+delta-2,published_table,"Table 2, p.11",If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is medium,sadness
+delta-3,published_table,"Table 2, p.11",If PhEn-FP2 is medium and SampEn-T8 is high,neutrality
+delta-4,published_table,"Table 2, p.11",If PhEn-FP2 is low and PermEn-T7 is low,sadness
+delta-5,published_table,"Table 2, p.11",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium,neutrality
+delta-6,published_table,"Table 2, p.11",If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium,fear
+delta-7,published_table,"Table 2, p.11",If PhEn-FP2 is high and PermEn-T7 is high,happiness
+delta-8,published_table,"Table 2, p.11",If SampEn-T8 is high and PermEn-T7 is high,sadness
+delta-9,published_table,"Table 2, p.11",If PhEn-FP2 is low and SampEn-T8 is high,sadness
+delta-10,published_table,"Table 2, p.11",If SampEn-T8 is medium,happiness
+theta-1,published_table,"Table 3, p.11",If PhEn-FP2 is medium and SampEn-T8 is medium,sadness
+theta-2,published_table,"Table 3, p.11",If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is low,sadness
+theta-3,published_table,"Table 3, p.11",If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is medium,neutrality
+theta-4,published_table,"Table 3, p.11",If PhEn-FP2 is medium and SampEn-T8 is low and PermEn-T7 is high,happiness
+theta-5,published_table,"Table 3, p.11",If PhEn-FP2 is low and PermEn-T7 is high,neutrality
+theta-6,published_table,"Table 3, p.11",If PhEn-FP2 is low and SampEn-T8 is high and PermEn-T7 is low,neutrality
+theta-7,published_table,"Table 3, p.11",If PhEn-FP2 is medium and PermEn-T7 is medium,happiness
+theta-8,published_table,"Table 3, p.11",If SampEn-T8 is high,neutrality
+theta-9,published_table,"Table 3, p.11",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium,happiness
+theta-10,published_table,"Table 3, p.11",If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is medium,neutrality
+alpha-1,published_table,"Table 4, p.12",If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low,happiness
+alpha-2,published_table,"Table 4, p.12",If PhEn-FP2 is low and PermEn-T7 is high,happiness
+alpha-3,published_table,"Table 4, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium,fear
+alpha-4,published_table,"Table 4, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is low,happiness
+alpha-5,published_table,"Table 4, p.12",If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium,sadness
+alpha-6,published_table,"Table 4, p.12",If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is low,fear
+alpha-7,published_table,"Table 4, p.12",If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium,happiness
+alpha-8,published_table,"Table 4, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium,sadness
+alpha-9,published_table,"Table 4, p.12",If PhEn-FP2 is high and PermEn-T7 is medium,fear
+alpha-10,published_table,"Table 4, p.12",If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low,neutrality
+beta-1,published_table,"Table 5, p.12",If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low,happiness
+beta-2,published_table,"Table 5, p.12",If PhEn-FP2 is low and PermEn-T7 is high,happiness
+beta-3,published_table,"Table 5, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium,fear
+beta-4,published_table,"Table 5, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is low,happiness
+beta-5,published_table,"Table 5, p.12",If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium,sadness
+beta-6,published_table,"Table 5, p.12",If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is low,fear
+beta-7,published_table,"Table 5, p.12",If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium,happiness
+beta-8,published_table,"Table 5, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium,sadness
+beta-9,published_table,"Table 5, p.12",If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is medium,fear
+beta-10,published_table,"Table 5, p.12",If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low,neutrality
+gamma-1,published_table,"Table 6, p.12",If PhEn-FP2 is low and Perm-FP2 is high,happiness
+gamma-2,published_table,"Table 6, p.12",If PhEn-FP2 is high and SampEn-T8 is medium and PermEn-T7 is low,happiness
+gamma-3,published_table,"Table 6, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is medium,fear
+gamma-4,published_table,"Table 6, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium and PermEn-T7 is low,happiness
+gamma-5,published_table,"Table 6, p.12",If PhEn-FP2 is low and SampEn-T8 is low and PermEn-T7 is medium,sadness
+gamma-6,published_table,"Table 6, p.12",If PhEn-FP2 is medium and SampEn-T8 is high and PermEn-T7 is low,fear
+gamma-7,published_table,"Table 6, p.12",If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is medium,happiness
+gamma-8,published_table,"Table 6, p.12",If PhEn-FP2 is medium and SampEn-T8 is medium,sadness
+gamma-9,published_table,"Table 6, p.12",If PhEn-FP2 is low and SampEn-T8 is medium and PermEn-T7 is low,neutrality
+gamma-10,published_table,"Table 6, p.12",If PhEn-FP2 is high and SampEn-T8 is low and PermEn-T7 is high,fear

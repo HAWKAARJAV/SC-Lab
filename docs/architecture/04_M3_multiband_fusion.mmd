@@ -1,0 +1,13 @@
+---
+config:
+  theme: neutral
+---
+flowchart TB
+  G[Hard eye gate] --> EEG[5-band preprocessing]
+  EEG --> C1[δ FIS+GA]
+  EEG --> C2[θ FIS+GA]
+  EEG --> C3[α FIS+GA]
+  EEG --> C4[β FIS+GA]
+  EEG --> C5[γ FIS+GA]
+  C1 & C2 & C3 & C4 & C5 --> FUSE["P(c)=Σ w_b P_b(c)"]
+  FUSE --> OUT[4 emotions]

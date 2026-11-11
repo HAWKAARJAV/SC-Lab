@@ -1,0 +1,11 @@
+---
+config:
+  theme: neutral
+---
+flowchart TB
+  P[Pupil raw] --> B[Train-only baseline]
+  B --> Z["z=scaled baseline-correct"]
+  Z --> S["Temporal smooth S(t)"]
+  S --> F[Fuzzy L/M/H]
+  F --> W[Adaptive w(t)]
+  W -.-> WIN[EEG windows]
