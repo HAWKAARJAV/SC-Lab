@@ -1,3 +1,0 @@
-# ILLUSTRATIVE SYNTHETIC DATA ONLY
-
-See `SCENARIO_ASSUMPTIONS.md` and `scenario_config.json`.

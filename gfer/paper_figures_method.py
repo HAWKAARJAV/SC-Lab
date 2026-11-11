@@ -49,7 +49,7 @@ def figure_A5_rule_grid(out_path: str, dpi: int = 300) -> None:
                 zs.append(k)
                 colors.append(idx / 27.0)
                 idx += 1
-    sc = ax.scatter(xs, ys, zs, c=colors, cmap="viridis", s=120, depthshade=True, edgecolors="white", linewidths=0.5)
+    #sc = ax.scatter(xs, ys, zs, c=colors, cmap="viridis", s=120, depthshade=True, edgecolors="white", linewidths=0.5)
     ax.set_xticks([0, 1, 2])
     ax.set_yticks([0, 1, 2])
     ax.set_zticks([0, 1, 2])
@@ -59,7 +59,7 @@ def figure_A5_rule_grid(out_path: str, dpi: int = 300) -> None:
     ax.set_xlabel("PhEn-FP2")
     ax.set_ylabel("SampEn-T8")
     ax.set_zlabel("PermEn-T7")
-    fig.colorbar(sc, ax=ax, shrink=0.5, label="Rule index (1–27)")
+    #fig.colorbar(sc, ax=ax, shrink=0.5, label="Rule index (1–27)")
     ax.set_title("A5 — 27 IF–THEN rule antecedents (3³); THEN → {sadness,happiness,fear,neutrality}\n"
                  "Explanatory diagram — consequents from GA (paper Tables 2–6)", fontsize=10, pad=12)
     ax.text2D(0.02, 0.02, "Not a published figure", transform=ax.transAxes, fontsize=8, color="#666")
