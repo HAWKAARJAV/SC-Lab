@@ -4,7 +4,7 @@ from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score, precisi
                              recall_score, roc_auc_score, roc_curve)
 from sklearn.model_selection import LeaveOneGroupOut, StratifiedGroupKFold, StratifiedKFold
 
-from .adaptive_eye import compute_gate_weights
+from .gates import gate_weights, normalise_within_trial
 from .mrmr import mrmr_weighted
 from .eye import gate_mask
 from .fuzzy import SugenoFIS
@@ -48,10 +48,10 @@ def apply_gate(F, cfg, gate_name):
 
 
 def window_gate_weights(F, gate_name, train_mask, variant="hard"):
-    """Continuous gate weights (M0–M2); training mask excludes test-fold statistics."""
+    """Window weights for M0 (hard) / M1 (fuzzy). Normalisation is within each trial and
+    label-free, so no test-fold statistics are used (train_mask kept for API compatibility)."""
     vals = F["eye"][:, F["eye_names"].index(gate_name)].astype(float)
-    return compute_gate_weights(vals, F["subject"], F["trial"], F["window"],
-                                train_mask, variant)
+    return gate_weights(normalise_within_trial(vals, F["trial"]), F["trial"], variant)
 
 
 # ---------------------------------------------------------------- folds

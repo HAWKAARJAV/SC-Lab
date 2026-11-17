@@ -16,6 +16,7 @@ class Config:
     notch_q: float = 30.0
     common_average_ref: bool = False     # paper: MAHNOB only
     target_fs: float = 128.0             # downsample
+    prefiltered: bool = False            # True when the loader already filtered + resampled (ZuCo)
 
     # ---------------- Wavelet (Sec. III-F.1) ----------------
     wavelet: str = "db4"
@@ -28,6 +29,7 @@ class Config:
     ent_m: int = 5                       # embedding dimension (SampEn, PermEn, SymbEn)
     ent_tau: int = 2                     # time delay
     sampen_r: float = 0.15               # x std
+    sampen_m: Optional[int] = None       # None = ent_m. Short windows need m=2 (else no matches)
     symben_c: int = 3                    # alphabet size
     phasen_k: int = 5                    # SODP sectors
 
@@ -65,6 +67,7 @@ class Config:
     ga_w_coverage: float = 0.2           # fitness = acc + w_cov*coverage - w_size*frac_rules
     ga_w_size: float = 0.01
     n_top_rules: int = 10
+    ga_balanced: bool = False            # True: class-balanced training weights + balanced-accuracy GA fitness
 
     # ---------------- Evaluation (Sec. III-H) ----------------
     protocol: str = "paper"              # "paper" (5-fold over segments) | "trial" | "loso"
@@ -75,6 +78,20 @@ class Config:
 
     def to_dict(self):
         return asdict(self)
+
+    @classmethod
+    def for_dataset(cls, meta, **kw):
+        """Defaults overridden by dataset meta.json (ZuCo: 1-s windows, pre-filtered EEG)."""
+        cfg = cls(**kw)
+        if "window_s" in meta:
+            cfg.window_s = float(meta["window_s"])
+        if meta.get("prefiltered"):
+            cfg.prefiltered = True
+        for k, v in meta.get("config", {}).items():     # dataset-specific overrides
+            if not hasattr(cfg, k):
+                raise KeyError(f"meta.json config key '{k}' is not a Config field")
+            setattr(cfg, k, v)
+        return cfg
 
 
 ENTROPIES = ["SampEn", "PermEn", "SymbEn", "PhEn"]

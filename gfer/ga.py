@@ -22,7 +22,14 @@ def _evaluate(fis, M, y, active, ant, cfg, sw=None):
     cons, w, F = fis.rule_consequents(M, y, ant[idx], sw)
     pred = fis.scores_from(F, cons, w).argmax(axis=1)
     sw_ = np.ones(len(y)) if sw is None else np.asarray(sw, dtype=float)
-    acc = (sw_ * (pred == y)).sum() / sw_.sum()                 # weighted accuracy (Eq. 14)
+    if getattr(cfg, "ga_balanced", False):
+        # mean per-class recall: a rule base that predicts one class scores 1/C, not the
+        # majority share, so the GA cannot win by collapsing to "always majority"
+        accs = [(sw_[y == c] * (pred[y == c] == c)).sum() / max(sw_[y == c].sum(), 1e-12)
+                for c in np.unique(y)]
+        acc = float(np.mean(accs))
+    else:
+        acc = (sw_ * (pred == y)).sum() / sw_.sum()             # weighted accuracy (Eq. 14)
     cov = (sw_ * ((F * w) > 0).any(axis=1)).sum() / sw_.sum()   # weighted coverage
     fit = acc + cfg.ga_w_coverage * cov - cfg.ga_w_size * idx.size / len(active)
     return fit, acc, cov

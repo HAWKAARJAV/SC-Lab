@@ -51,14 +51,15 @@ def parse_args():
                     help="'auto' (mRMR) or comma list e.g. PhEn-FP2,SampEn-T8,PermEn-T7")
     ap.add_argument("--no-ablation", action="store_true")
     ap.add_argument("--gate-variant", default=None,
-                    help="weighted gate: hard,fuzzy,adaptive,adaptive_nosmooth,adaptive_causal")
+                    help="weighted gate: hard (M0) or fuzzy (M1)", choices=["hard", "fuzzy"])
     ap.add_argument("--seed", type=int, default=0)
     return ap.parse_args()
 
 
 def main():
     a = parse_args()
-    cfg = Config(seed=a.seed)
+    meta_path = os.path.join(a.data, "meta.json")
+    cfg = Config.for_dataset(json.load(open(meta_path)) if os.path.exists(meta_path) else {}, seed=a.seed)
     if a.protocol: cfg.protocol = a.protocol
     if a.levels: cfg.n_levels = [int(v) for v in a.levels.split(",")]
     if a.bands: cfg.bands = a.bands.split(",")

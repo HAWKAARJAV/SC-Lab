@@ -12,6 +12,8 @@ def preprocess(eeg, fs, cfg):
     """Band-pass 1-60 Hz (Butterworth, order 4) -> notch -> optional CAR -> resample."""
     x = eeg.astype(np.float64)
     x = x - x.mean(axis=1, keepdims=True)
+    if getattr(cfg, "prefiltered", False) and fs == cfg.target_fs:
+        return x                         # loader filtered the continuous recording already
     hi = min(cfg.bandpass[1], 0.45 * fs)
     sos = butter(cfg.filter_order, [cfg.bandpass[0], hi], btype="bandpass", fs=fs, output="sos")
     x = sosfiltfilt(sos, x, axis=1)

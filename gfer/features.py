@@ -19,7 +19,7 @@ from .eye import eye_window_features
 from .signal import BAND_ORDER, preprocess, wavelet_bands
 
 _FEATURE_KEYS = ["bandpass", "filter_order", "notch_hz", "notch_q", "common_average_ref",
-                 "target_fs", "wavelet", "wavelet_level", "window_s", "ent_m", "ent_tau",
+                 "target_fs", "prefiltered", "wavelet", "wavelet_level", "window_s", "ent_m", "ent_tau", "sampen_m",
                  "sampen_r", "symben_c", "phasen_k"]
 
 
