@@ -61,6 +61,7 @@ def fetch(path, size, url, out):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="data/zuco")
+    ap.add_argument("--jobs", type=int, default=6, help="parallel downloads")
     args = ap.parse_args()
 
     # locate the Preprocessed subfolder of task 1
@@ -72,11 +73,14 @@ def main():
     total = sum(s for _, s, _ in jobs)
     print(f"{len(jobs)} files, {total / 1e9:.2f} GB", flush=True)
 
-    done = 0
-    for i, (p, s, u) in enumerate(jobs, 1):
-        status = fetch(p, s, u, args.out)
-        done += s
-        print(f"[{i}/{len(jobs)}] {status:4s} {p} ({done / total:.0%})", flush=True)
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    done, i = 0, 0
+    with ThreadPoolExecutor(max_workers=args.jobs) as ex:
+        futs = {ex.submit(fetch, p, s, u, args.out): (p, s) for p, s, u in jobs}
+        for fu in as_completed(futs):
+            p, s = futs[fu]
+            done += s; i += 1
+            print(f"[{i}/{len(jobs)}] {fu.result():4s} {p} ({done / total:.0%})", flush=True)
 
 
 if __name__ == "__main__":

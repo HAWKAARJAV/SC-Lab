@@ -99,7 +99,7 @@ def phase_entropy(x, k=5):
 def all_entropies(x, cfg):
     """Returns (4, C) in the order of config.ENTROPIES: SampEn, PermEn, SymbEn, PhEn."""
     return np.stack([
-        sample_entropy(x, cfg.ent_m, cfg.ent_tau, cfg.sampen_r),
+        sample_entropy(x, cfg.sampen_m or cfg.ent_m, cfg.ent_tau, cfg.sampen_r),
         permutation_entropy(x, cfg.ent_m, cfg.ent_tau),
         symbolic_dynamic_entropy(x, cfg.ent_m, cfg.ent_tau, cfg.symben_c),
         phase_entropy(x, cfg.phasen_k),

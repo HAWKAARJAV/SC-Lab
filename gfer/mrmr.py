@@ -20,9 +20,12 @@ def mrmr(X, y, k=None, n_bins=10):
     k = n_feat if k is None else min(k, n_feat)
     Xd = _discretize(X, n_bins)
     rel = np.array([mutual_info_score(Xd[:, j], y) for j in range(n_feat)])
+    const = np.nanstd(X, axis=0) < 1e-9          # e.g. a flat reference channel
+    rel[const] = -np.inf
     order, scores = [int(np.argmax(rel))], [float(rel.max())]
     red_sum = np.zeros(n_feat)
-    remaining = set(range(n_feat)) - set(order)
+    remaining = set(range(n_feat)) - set(order) - set(np.where(const)[0])
+    k = min(k, n_feat - int(const.sum()))
     while len(order) < k:
         last = order[-1]
         for j in remaining:
@@ -51,9 +54,12 @@ def mrmr_weighted(X, y, w, k=3, n_bins=10):
     X, y, w = X[pos], y[pos], np.asarray(w, dtype=float)[pos]
     Xd = _discretize(np.nan_to_num(X), n_bins)
     rel = np.array([_wmi(Xd[:, j], y, w) for j in range(X.shape[1])])
+    const = np.nanstd(X, axis=0) < 1e-9          # e.g. a flat reference channel
+    rel[const] = -np.inf
     order = [int(np.argmax(rel))]
     red = np.zeros(X.shape[1])
-    remaining = set(range(X.shape[1])) - set(order)
+    remaining = set(range(X.shape[1])) - set(order) - set(np.where(const)[0])
+    k = min(k, X.shape[1] - int(const.sum()))
     while len(order) < k:
         last = order[-1]
         for j in remaining:

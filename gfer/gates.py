@@ -20,6 +20,15 @@ def normalise_within_trial(v, trial):
     return z
 
 
+def normalise_within_subject(v, subject):
+    """Robust (P5, P95) scaling over all windows of each subject (label-free).
+
+    Short trials (ZuCo sentences: 2-11 windows) make within-trial scaling push most windows
+    to exactly 0 or 1, which turns the fuzzy gate into a near-binary one. Scaling against the
+    subject's own pupil range keeps the graded Low/Medium/High memberships meaningful."""
+    return normalise_within_trial(v, subject)
+
+
 def fuzzy_memberships(z, a1=0.2, c=0.5, b2=0.8):
     z = np.asarray(z, dtype=float)
     muL = np.clip((c - z) / max(c - a1, 1e-12), 0, 1)
