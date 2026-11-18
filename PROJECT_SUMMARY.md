@@ -1,5 +1,7 @@
 # Project summary: hard vs fuzzy eye-tracking gating for fuzzy EEG classification (ZuCo 1.0)
 
+> **Superseded:** the complete final report, which covers ZuCo **and SEED-IV**, is [`FINAL_REPORT.md`](FINAL_REPORT.md) (PDF: `manuscript/final_project_report/main.pdf`). This file keeps the detailed ZuCo-only write-up.
+
 Everything about the project is in this one file: goal, method, data, the defects we found and fixed, all results, conclusions, and how to reproduce them. The full write-up is `manuscript/zuco_report/main.pdf`.
 
 ---
