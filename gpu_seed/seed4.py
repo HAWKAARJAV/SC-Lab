@@ -37,6 +37,7 @@ SEED_CHANNELS = [
     "P6", "P8", "PO7", "PO5", "PO3", "POZ", "PO4", "PO6", "PO8", "CB1", "O1", "OZ", "O2", "CB2"]
 EEG_VAR = re.compile(r"^[A-Za-z0-9]+_eeg(\d+)$")
 EYE_VAR = re.compile(r"^eye_(\d+)$")
+DE_VAR = re.compile(r"^de_LDS(\d+)$")          # eeg_feature_smooth: differential entropy (LDS-smoothed)
 
 
 def mat_vars(path):
@@ -71,7 +72,7 @@ def _session_of(path, root):
 
 def discover(root):
     """Return (sessions, report). sessions: list of dicts with subject, session, eeg, eye paths."""
-    eeg, eye, other, report = {}, {}, [], []
+    eeg, eye, de, other, report = {}, {}, {}, [], []
     for dp, _, fns in os.walk(root):
         for fn in sorted(fns):
             if not fn.lower().endswith(".mat"):
@@ -86,6 +87,8 @@ def discover(root):
                 eeg[key] = (p, v)
             elif n_eye >= 1 and ses is not None:
                 eye[key] = (p, v)
+            elif ses is not None and sum(bool(DE_VAR.match(k)) for k in v) >= 1:
+                de[key] = (p, v)
             else:
                 other.append((p, sorted(v)[:6]))
     sessions = []
@@ -97,12 +100,33 @@ def discover(root):
             continue
         sessions.append({"subject": f"S{int(subj):02d}" if subj.isdigit() else subj, "session": ses,
                          "eeg": eeg[key][0], "eye": eye[key][0], "file": fn,
-                         "eeg_vars": eeg[key][1], "eye_vars": eye[key][1]})
+                         "eeg_vars": eeg[key][1], "eye_vars": eye[key][1],
+                         "de": de[key][0] if key in de else None,
+                         "de_vars": de[key][1] if key in de else {}})
     report.append(f"raw-EEG session files: {len(eeg)}; eye-feature session files: {len(eye)}; "
-                  f"paired sessions: {len(sessions)}; other .mat files: {len(other)}")
+                  f"DE-feature session files: {len(de)}; paired sessions: {len(sessions)} "
+                  f"({sum(s['de'] is not None for s in sessions)} with DE); other .mat files: {len(other)}")
     for p, v in other[:15]:
         report.append(f"  other: {os.path.relpath(p, root)}  vars={v}")
     return sessions, report
+
+
+def load_de(ses):
+    """{trial: (n_windows, 5 bands, n_channels)} from the session's eeg_feature_smooth file."""
+    if not ses.get("de"):
+        return {}
+    names = {int(DE_VAR.match(k).group(1)): k for k in ses["de_vars"] if DE_VAR.match(k)}
+    D = load_vars(ses["de"], list(names.values()))
+    out = {}
+    for t, k in names.items():
+        a = np.asarray(D[k], dtype=np.float32)
+        if a.ndim != 3:
+            continue
+        ch = int(np.argmax([s == 62 for s in a.shape])) if 62 in a.shape else int(np.argmax(a.shape[:2]))
+        bd = 2 if a.shape[2] == 5 else int([i for i, s in enumerate(a.shape) if s == 5 and i != ch][0])
+        win = [i for i in range(3) if i not in (ch, bd)][0]
+        out[t] = np.transpose(a, (win, bd, ch))
+    return out
 
 
 def infer_fs(n_samples, n_windows, win_s=4.0):

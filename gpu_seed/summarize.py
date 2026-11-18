@@ -9,9 +9,11 @@ import numpy as np
 from scipy.stats import binomtest, wilcoxon
 
 NAMES = {"none": "No gate", "hard": "M0 hard", "fuzzy": "M1 fuzzy", "adaptive": "M2 adaptive temporal",
-         "adaptive_nosmooth": "M2 adaptive only", "adaptive_causal": "M2 causal", "fuzzy_smooth": "M1+temporal"}
-BANDS = ["delta", "theta", "alpha", "beta", "gamma"]
-PROT = {"trial": "5-fold over trials", "loso": "leave-one-subject-out",
+         "adaptive_nosmooth": "M2 adaptive only", "adaptive_causal": "M2 causal", "fuzzy_smooth": "M1+temporal",
+         "ref_logreg": "Ref: logistic regr."}
+BANDS = ["delta", "theta", "alpha", "beta", "gamma", "all"]
+PROT = {"within": "per-person (subject-dependent), 5-fold over each subject's trials",
+        "trial": "5-fold over trials", "loso": "leave-one-subject-out",
         "paper": "paper protocol: 5-fold over pooled 4-s windows (optimistic)"}
 
 
@@ -40,7 +42,8 @@ def summarize(out):
     bands = [b for b in BANDS if any(r["band"] == b for r in R)]
     seeds = sorted({r["seed"] for r in R})
     n_trials = len(meta["trial_ids"])
-    L = [f"# SEED-IV: M0 vs M1 vs M2 (GPU run `{os.path.basename(out)}`)\n",
+    L = [f"# SEED-IV: M0 vs M1 vs M2 (GPU run `{os.path.basename(out)}`, preset "
+         f"`{meta.get('config', {}).get('preset', 'paper')}`)\n",
          f"- {n_trials} trials, {len(set(subj))} subjects, classes {', '.join(meta['class_names'])} "
          f"(chance {100 / C:.1f}%); device {meta.get('device')}",
          f"- finished tasks: {len(R)}; seeds {seeds}\n"]
@@ -72,7 +75,7 @@ def summarize(out):
             L.append(f"\n**Each gate minus M0** ({p}; over band × seed runs)\n")
             L.append("| model | mean Δ (pts) | runs ahead | McNemar p (pooled, seed 0) | Wilcoxon p (subjects) |")
             L.append("|---|---|---|---|---|")
-            for v in [v for v in variants if v not in ("none", "hard")]:
+            for v in [v for v in variants if v not in ("none", "hard", "ref_logreg")]:
                 d = [_acc(idx[(p, v, b, s)]) - _acc(idx[(p, "hard", b, s)])
                      for b in bands for s in seeds if (p, v, b, s) in idx and (p, "hard", b, s) in idx]
                 if not d:
@@ -107,7 +110,8 @@ def summarize(out):
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         col = {"none": "#9e9e9e", "hard": "#3b6ea8", "fuzzy": "#d9772b", "adaptive": "#2a9d6f",
-               "adaptive_nosmooth": "#8fd1b5", "adaptive_causal": "#5c7d6f", "fuzzy_smooth": "#a04f8f"}
+               "adaptive_nosmooth": "#8fd1b5", "adaptive_causal": "#5c7d6f", "fuzzy_smooth": "#a04f8f",
+               "ref_logreg": "#444444"}
         fig, axs = plt.subplots(1, len(prots), figsize=(4.2 * len(prots), 3.2), squeeze=False)
         for ax, p in zip(axs[0], prots):
             xw = 0.8 / len(variants)

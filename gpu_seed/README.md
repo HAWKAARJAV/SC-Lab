@@ -81,6 +81,29 @@ python -m gpu_seed --root D:/seed_iv
 2. Runs all experiments: 4 models × 5 EEG bands × 3 seeds × 3 evaluation protocols = **180 tasks**. Progress is printed and saved to `gpu_seed/results/full/log.txt`.
 3. Writes the summary.
 
+## 3b. Second run: improved accuracy (after the first run finishes)
+
+```bash
+git pull
+python -m gpu_seed --root D:/seed_iv --preset improved --quick   # ~2 min check
+python -m gpu_seed --root D:/seed_iv --preset improved           # results in gpu_seed/results/improved
+```
+
+This reuses the cached features, so there's no new feature extraction. It keeps the same M0/M1/M2 comparison but adds honest, standard ways to raise accuracy:
+
+| Addition | What it means |
+|---|---|
+| **Per-person models** (`within`) | Each subject is trained and tested on their own data, with whole trials held out (5-fold over the subject's 72 trials). This is the standard SEED-IV setting. |
+| **DE features** | The dataset's own differential-entropy features from `eeg_feature_smooth`, added next to our 4 entropies |
+| **Eye features as classifier inputs** | Not only used for gating |
+| **All 5 bands pooled** | The classifier picks its features from every band |
+| **4 fuzzy inputs** | Instead of 3 |
+| **Reference model** | A logistic regression on all features, to show how close the interpretable fuzzy models get |
+
+All settings were fixed in advance; nothing is tuned on test data.
+
+**Speed:** experiments run in parallel worker processes on the GPU (about 4 on an 8 GB card, chosen automatically), and feature extraction filters the EEG on several CPU cores. If you see "CUDA out of memory", add `--workers 2`. These changes don't alter the results: a full comparison against the previous version gave identical numbers.
+
 ## 4. Send the results back
 
 ```bash
@@ -127,6 +150,7 @@ The results folder contains:
 - `trial`: 5-fold over trials; no trial is split between training and test.
 - `loso`: leave-one-subject-out, 15 folds.
 - `paper`: the original paper's 5-fold over pooled windows. This is optimistic, because windows from one trial appear in both training and test; it's reported only to compare with the paper's numbers.
+- `within` (improved preset): per-person models, 5-fold over each subject's trials.
 
 **Useful options:**
 
@@ -136,5 +160,7 @@ The results folder contains:
 | `--protocols trial,loso` | skip the paper protocol |
 | `--seeds 0` | 1 seed instead of 3 (3× faster) |
 | `--device cpu` | run without a GPU (very slow) |
+| `--preset improved` | the improved feature set and protocols (see 3b) |
+| `--workers N` | parallel experiments (default auto; lower if GPU memory runs out) |
 
 **Checks:** `tests/test_gpu_seed.py` verifies that the GPU entropies, mRMR and GA fitness match the original NumPy code. Run it with `python -m pytest tests/test_gpu_seed.py`.

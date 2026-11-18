@@ -1,3 +1,4 @@
 from .run import main
 
-main()
+if __name__ == "__main__":     # guard needed: worker processes re-import this module
+    main()

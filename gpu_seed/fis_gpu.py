@@ -48,21 +48,42 @@ class GPUFIS:
         tot = S.sum(2, keepdim=True)
         return torch.where(tot > 0, S / torch.where(tot > 0, tot, torch.ones_like(tot)), self.prior)
 
-    def fitness(self, M, y, Yw, sw, active, ant, cfg):
-        """Batched version of gfer.ga._evaluate. active (P, R) bool, ant (P, R, n_in)."""
-        F = self.firing(M, ant) * active[:, None, :].float()
-        cons, w = self.consequents(F, Yw)
-        w = w * active.float()
-        pred = self.scores(F, cons, w).argmax(2)                                  # (P, n)
-        hit = (pred == y[None, :]).float() * sw[None, :]
+    def fitness(self, M, y, Yw, sw, active, ant, cfg, max_bytes=2.5e8):
+        """Batched version of gfer.ga._evaluate. active (P, R) bool, ant (P, R, n_in).
+        Processed in chunks of windows so memory stays bounded (two passes: consequents, then scores)."""
+        P, R = active.shape
+        n = M.shape[0]
+        step = max(1024, int(max_bytes / (4 * P * max(R, 1))))
+        act = active.float()
+        mass = torch.zeros(P, R, self.C, device=M.device)
+        for i in range(0, n, step):                                               # pass 1: rule consequents
+            F = self.firing(M[i:i + step], ant) * act[:, None, :]
+            mass += torch.einsum("pnr,nc->prc", F, Yw[i:i + step])
+        tot = mass.sum(2)
+        mx, cons = mass.max(2)
+        safe = torch.where(tot > 0, tot, torch.ones_like(tot))
+        conf = torch.where(tot > 0, mx / safe, torch.zeros_like(tot))
+        other = torch.where(tot > 0, (tot - mx) / safe, torch.zeros_like(tot))
+        w = (conf - other / max(self.C - 1, 1)).clamp(0, 1) * act
+        classes = torch.unique(y)
+        hit_c = torch.zeros(P, len(classes), device=M.device)
+        hit, covered = torch.zeros(P, device=M.device), torch.zeros(P, device=M.device)
+        for i in range(0, n, step):                                               # pass 2: predictions
+            F = self.firing(M[i:i + step], ant) * act[:, None, :]
+            pred = self.scores(F, cons, w).argmax(2)
+            yy, ss = y[i:i + step], sw[i:i + step]
+            h = (pred == yy[None, :]).float() * ss[None, :]
+            hit += h.sum(1)
+            for ci, c in enumerate(classes):
+                hit_c[:, ci] += h[:, yy == c].sum(1)
+            covered += (((F * w[:, None, :]) > 0).any(2).float() * ss[None, :]).sum(1)
         if cfg.ga_balanced:
-            accs = [hit[:, y == c].sum(1) / sw[y == c].sum().clamp_min(1e-12) for c in torch.unique(y)]
-            acc = torch.stack(accs).mean(0)
+            acc = (hit_c / torch.stack([sw[y == c].sum() for c in classes]).clamp_min(1e-12)[None, :]).mean(1)
         else:
-            acc = hit.sum(1) / sw.sum()
-        cov = (((F * w[:, None, :]) > 0).any(2).float() * sw[None, :]).sum(1) / sw.sum()
-        n_act = active.sum(1).float()
-        fit = acc + cfg.ga_w_coverage * cov - cfg.ga_w_size * n_act / active.shape[1]
+            acc = hit / sw.sum()
+        cov = covered / sw.sum()
+        n_act = act.sum(1)
+        fit = acc + cfg.ga_w_coverage * cov - cfg.ga_w_size * n_act / max(R, 1)
         fit = torch.where(n_act > 0, fit, torch.full_like(fit, -1.0))
         return fit, acc, cov
 

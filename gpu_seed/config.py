@@ -45,7 +45,23 @@ class GPUConfig:
     seeds: List[int] = field(default_factory=lambda: [0, 1, 2])
     n_folds: int = 5
     norm_group: str = "session"           # z-scoring / gate scaling per "session" or "subject"
-    sampen_chunk: int = 256               # signals per SampEn GPU batch (lower if out of memory)
+    sampen_chunk: int = 0                 # signals per SampEn GPU batch; 0 = auto from free GPU memory
+    # feature pool for the classifier (the "improved" preset turns these on)
+    use_de: bool = False                  # add the dataset's DE features (eeg_feature_smooth, de_LDS)
+    eye_in_classifier: bool = False       # let the classifier also select eye-movement features
+    preset: str = "paper"
+
 
     def to_dict(self):
         return asdict(self)
+
+
+PRESETS = {
+    # the paper's setup: 4 entropies per band, 3 fuzzy inputs, one band at a time
+    "paper": {},
+    # honest improvements fixed in advance (no tuning on test data): per-person protocol,
+    # DE + entropy + eye features pooled over all bands, 4 fuzzy inputs, logistic-regression reference
+    "improved": {"use_de": True, "eye_in_classifier": True, "bands": ["all"], "n_selected": 4,
+                 "protocols": ["within", "trial", "loso", "paper"],
+                 "variants": ["none", "hard", "fuzzy", "adaptive", "ref_logreg"]},
+}

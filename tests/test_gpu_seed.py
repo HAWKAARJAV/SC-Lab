@@ -74,3 +74,55 @@ def test_entropy_batch_uses_config():
     cfg = GPUConfig()
     out = G.entropy_batch(torch.tensor(_signals(5)), cfg, sampen_chunk=2)
     assert out.shape == (4, 5) and torch.isfinite(out).all()
+
+
+@pytest.mark.parametrize("seed", [0, 1, 2, 3])
+def test_fast_fis_matches_reference(seed):
+    from gfer.fuzzy import entropy_cuts as cuts_ref
+    from gpu_seed.fast_fis import build_fis, entropy_cuts
+    rng = np.random.default_rng(seed)
+    n = 3000
+    y = rng.integers(0, 4, n)
+    X = rng.normal(size=(n, 3)) + y[:, None] * rng.uniform(0, 0.8, 3)
+    sw = rng.uniform(0, 2, n); sw[rng.random(n) < 0.1] = 0
+    for j in range(3):
+        np.testing.assert_allclose(entropy_cuts(X[:, j], y, 3, sw=sw), cuts_ref(X[:, j], y, 3, sw=sw))
+    ref = SugenoFIS.fit_mfs(X, y, 3, 4, ["a", "b", "c"], sw=sw).wang_mendel(X, y, sw=sw)
+    got = build_fis(X, y, 3, 4, ["a", "b", "c"], sw)
+    np.testing.assert_array_equal(got.ant, ref.ant)
+    np.testing.assert_array_equal(got.cons, ref.cons)
+    np.testing.assert_allclose(got.weight, ref.weight, rtol=1e-10)
+    np.testing.assert_allclose(got.prior, ref.prior)
+
+
+def test_chunked_fitness_equals_single_pass():
+    rng = np.random.default_rng(7)
+    X = rng.normal(size=(5000, 4)); y = rng.integers(0, 4, 5000); X[:, 1] += y
+    sw = rng.uniform(0.1, 1, 5000)
+    fis = SugenoFIS.fit_mfs(X, y, 3, 4, None, sw=sw).wang_mendel(X, y, sw=sw)
+    cfg = types.SimpleNamespace(ga_w_coverage=0.2, ga_w_size=0.01, ga_balanced=True)
+    g = GPUFIS(fis, torch.device("cpu"))
+    yt, swt = torch.tensor(y), torch.tensor(sw, dtype=torch.float32)
+    Yw = torch.nn.functional.one_hot(yt, 4).float() * swt[:, None]
+    R = len(fis.ant)
+    A = torch.tensor(rng.random((5, R)) < 0.7)
+    N = torch.tensor(np.stack([fis.ant] * 5))
+    M = g.membership(X)
+    one = g.fitness(M, yt, Yw, swt, A, N, cfg, max_bytes=1e12)       # single chunk
+    many = g.fitness(M, yt, Yw, swt, A, N, cfg, max_bytes=1)         # 1024-window chunks
+    for a, b in zip(one, many):
+        np.testing.assert_allclose(a.numpy(), b.numpy(), atol=1e-5)
+
+
+def test_feature_matrix_improved_pool():
+    from gpu_seed.config import GPUConfig
+    from gpu_seed.run import feature_matrix
+    n = 10
+    F = {"eeg": np.zeros((n, 5, 4, 62), np.float32), "de": np.zeros((n, 5, 62), np.float32),
+         "eye": np.zeros((n, 31), np.float32), "label": np.zeros(n, int), "bands": ["delta", "theta", "alpha", "beta", "gamma"],
+         "entropies": ["SampEn", "PermEn", "SymbEn", "PhEn"], "ch_names": [f"c{i}" for i in range(62)],
+         "eye_names": [f"eye{i:02d}" for i in range(31)]}
+    X, names = feature_matrix(F, "alpha", GPUConfig())
+    assert X.shape == (n, 248) and len(names) == 248
+    X, names = feature_matrix(F, "all", GPUConfig(use_de=True, eye_in_classifier=True))
+    assert X.shape == (n, 5 * (248 + 62) + 31) and len(names) == X.shape[1]
