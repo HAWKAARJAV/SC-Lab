@@ -56,13 +56,17 @@ def prepare_trial(tr, cfg):
 
 
 def _prepare_session(args):
-    ses, labels, fs, cfg, skip = args
+    """Filter one session; each trial's windows go to a temporary .npy file (only the paths are
+    sent back: a whole session is ~1.5 GB, too large for a Windows inter-process pipe)."""
+    ses, labels, fs, cfg, skip, tmpdir = args
     out = []
     for tr in iter_trials(ses, labels, fs, cfg.window_s):
         if tr["trial_id"] in skip:
             continue
         segs, eye = prepare_trial(tr, cfg)
-        out.append((tr["trial_id"], segs, eye, tr["label"], tr["fs"]))
+        path = os.path.join(tmpdir, tr["trial_id"] + ".npy")
+        np.save(path, segs)
+        out.append((tr["trial_id"], path, eye, tr["label"], tr["fs"]))
     return out
 
 
@@ -82,7 +86,11 @@ def extract_all(root, cfg, cache_dir, device, labels, fs=None, subjects=None, lo
     chunk = auto_sampen_chunk(cfg, device)
     tid = lambda s, t: f"{s['subject']}_s{s['session']}_t{t:02d}"
     cached = {f[:-4] for f in os.listdir(cdir) if f.endswith(".npz")}
-    jobs = [(s, labels, fs, cfg, {tid(s, t) for t in range(1, 25) if tid(s, t) in cached})
+    tmpdir = os.path.join(cdir, "_tmp")
+    os.makedirs(tmpdir, exist_ok=True)
+    for f in os.listdir(tmpdir):                       # leftovers from an interrupted run
+        os.remove(os.path.join(tmpdir, f))
+    jobs = [(s, labels, fs, cfg, {tid(s, t) for t in range(1, 25) if tid(s, t) in cached}, tmpdir)
             for s in sessions if any(tid(s, t) not in cached for t in range(1, 25))]
     log(f"features: {len(sessions)} sessions, {len(jobs)} still to compute; "
         f"{cpu_workers} CPU workers, SampEn batch {chunk} on {device}")
@@ -90,9 +98,12 @@ def extract_all(root, cfg, cache_dir, device, labels, fs=None, subjects=None, lo
 
     def consume(results):
         nonlocal done
-        for trial_id, segs, eye, label, f in results:
+        for trial_id, path, eye, label, f in results:
+            segs = np.load(path)
             eeg = _gpu_entropies(segs, cfg, device, chunk)
             np.savez(os.path.join(cdir, trial_id + ".npz"), eeg=eeg, eye=eye, label=label, fs=f)
+            del segs
+            os.remove(path)
         done += 1
         log(f"  features: session {done}/{len(jobs)} done  [{time.time() - t0:.0f}s]")
 
@@ -100,9 +111,9 @@ def extract_all(root, cfg, cache_dir, device, labels, fs=None, subjects=None, lo
         ctx = mp.get_context("spawn")
         with ProcessPoolExecutor(cpu_workers, mp_context=ctx) as ex:
             pending, it = set(), iter(jobs)
-            for j in it:                                   # keep at most cpu_workers+1 sessions in flight
+            for j in it:                                   # keep at most cpu_workers sessions in flight
                 pending.add(ex.submit(_prepare_session, j))
-                if len(pending) > cpu_workers:
+                if len(pending) >= cpu_workers:
                     fin, pending = wait(pending, return_when=FIRST_COMPLETED)
                     for f in fin:
                         consume(f.result())
