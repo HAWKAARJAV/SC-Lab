@@ -154,9 +154,9 @@ def write_inventory(root, out_path, labels=SESSION_LABELS):
     for dp, _, fns in os.walk(root):                              # show any ReadMe for the labels
         for fn in fns:
             if "readme" in fn.lower() and fn.lower().endswith((".txt", ".md")):
-                L += ["", f"--- {os.path.join(dp, fn)} ---", open(os.path.join(dp, fn), errors="replace").read()[:4000]]
+                L += ["", f"--- {os.path.join(dp, fn)} ---", open(os.path.join(dp, fn), encoding="utf-8", errors="replace").read()[:4000]]
     L += ["", "labels used (0 neutral, 1 sad, 2 fear, 3 happy):", json.dumps(labels)]
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    with open(out_path, "w") as f:
+    with open(out_path, "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
     return sessions, "\n".join(L)

@@ -160,10 +160,14 @@ def main():
     run = a.run_name or ("quick" if a.quick else "full")
     out = os.path.join(a.out, run)
     os.makedirs(os.path.join(out, "tasks"), exist_ok=True)
-    logf = open(os.path.join(out, "log.txt"), "a")
+    logf = open(os.path.join(out, "log.txt"), "a", encoding="utf-8")
 
     def log(msg):
-        print(msg, flush=True); logf.write(msg + "\n"); logf.flush()
+        try:
+            print(msg, flush=True)
+        except UnicodeEncodeError:                         # old Windows consoles
+            print(msg.encode("ascii", "replace").decode(), flush=True)
+        logf.write(msg + "\n"); logf.flush()
 
     device = pick_device(a.device)
     log(f"=== {time.strftime('%Y-%m-%d %H:%M:%S')}  device={device}"

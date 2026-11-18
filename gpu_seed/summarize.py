@@ -96,11 +96,11 @@ def summarize(out):
                         wx = f"{wilcoxon(dd).pvalue:.3f} ({sum(x > 0 for x in dd)}/{len(dd)} helped)"
                 L.append(f"| {NAMES[v]} | {100 * np.mean(d):+.2f} | {sum(x > 0 for x in d)}/{len(d)} | {mc} | {wx} |")
         L.append("")
-    with open(os.path.join(out, "summary.csv"), "w", newline="") as f:
+    with open(os.path.join(out, "summary.csv"), "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["protocol", "band", "variant", "acc_mean", "acc_sd_over_seeds", "n_seeds"])
         w.writerows(rows)
-    with open(os.path.join(out, "report.md"), "w") as f:
+    with open(os.path.join(out, "report.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(L) + "\n")
     try:
         import matplotlib
@@ -123,7 +123,10 @@ def summarize(out):
         fig.tight_layout(); fig.savefig(os.path.join(out, "accuracy.png"), dpi=150)
     except Exception as e:                                       # figure is optional
         print("figure skipped:", e)
-    print("\n".join(L))
+    try:
+        print("\n".join(L))
+    except UnicodeEncodeError:                             # old Windows consoles
+        print("\n".join(L).encode("ascii", "replace").decode())
 
 
 if __name__ == "__main__":
