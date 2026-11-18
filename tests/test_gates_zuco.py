@@ -44,3 +44,25 @@ def test_zuco_labels_cover_all_400_sentences():
     ids, lab = sentence_labels("data/zuco/meta")
     assert len(lab) == 400 and np.isfinite(lab).sum() >= 399
     assert set(np.unique(lab[np.isfinite(lab)])) == {-1, 0, 1}
+
+
+def test_m2_adaptive_gate_is_label_free_graded_and_smoothed():
+    from gfer.adaptive_gate import m2_weights, smooth_within_trial
+    rng = np.random.default_rng(1)
+    trial = np.repeat(np.arange(12), 5)
+    window = np.tile(np.arange(5), 12)
+    subject = np.repeat(np.array(["A", "B"]), 30)
+    v = rng.normal(size=60) + np.where(subject == "A", 0.0, 50.0)   # very different baselines
+    v[3] = np.nan
+    for var in ("adaptive", "adaptive_nosmooth", "adaptive_causal"):
+        w = m2_weights(v, subject, trial, window, var)
+        assert np.all(np.isfinite(w)) and w.min() >= 0.1 - 1e-12 and w.max() <= 1.0
+    # per-subject adaptation: both subjects get a similar spread despite the 50-unit offset
+    w = m2_weights(v, subject, trial, window, "adaptive_nosmooth")
+    assert abs(w[subject == "A"].mean() - w[subject == "B"].mean()) < 0.15
+    # causal smoothing never looks ahead: changing the last window leaves earlier ones unchanged
+    x = rng.random(60)
+    a = smooth_within_trial(x, trial, window, "causal")
+    x2 = x.copy(); x2[4] = 5.0
+    b = smooth_within_trial(x2, trial, window, "causal")
+    assert np.allclose(a[:4], b[:4])
