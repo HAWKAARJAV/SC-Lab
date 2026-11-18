@@ -1,0 +1,11 @@
+protocol,band,variant,acc_mean,acc_sd_over_seeds,n_seeds
+within,all,none,0.6319,0.0000,1
+within,all,hard,0.6528,0.0000,1
+within,all,fuzzy,0.6319,0.0000,1
+within,all,adaptive,0.6736,0.0000,1
+within,all,ref_logreg,0.7847,0.0000,1
+trial,all,none,0.6806,0.0000,1
+trial,all,hard,0.6667,0.0000,1
+trial,all,fuzzy,0.6597,0.0000,1
+trial,all,adaptive,0.6875,0.0000,1
+trial,all,ref_logreg,0.7917,0.0000,1

@@ -1,0 +1,30 @@
+=== 2026-11-18 22:18:33  device=cuda (NVIDIA GeForce RTX 4070 Laptop GPU)  torch=2.11.0+cu128  python=3.14.2  os=Windows-11-10.0.26300-SP0
+SEED-IV inventory for C:\seed_iv
+ERROR: no SEED-IV EEG/eye session pairs found under --root. See dataset_inventory.txt.
+=== 2026-11-18 22:21:09  device=cuda (NVIDIA GeForce RTX 4070 Laptop GPU)  torch=2.11.0+cu128  python=3.14.2  os=Windows-11-10.0.26300-SP0
+SEED-IV inventory for ..\archive (1)
+quick mode: subjects ['S01', 'S02']
+  features 24/144 trials  [64s]
+  features 48/144 trials  [127s]
+  features 72/144 trials  [188s]
+  features 96/144 trials  [249s]
+  features 120/144 trials  [309s]
+  features 144/144 trials  [371s]
+features: 5010 windows, 144 trials, 2 subjects  [376s]
+4 tasks: protocols=['trial'] variants=['none', 'hard', 'fuzzy', 'adaptive'] bands=['alpha'] seeds=[0]
+  [1/4] trial No gate                alpha seed 0  1s  (total 6.3 min)
+  [2/4] trial M0 hard                alpha seed 0  1s  (total 6.3 min)
+  [3/4] trial M1 fuzzy               alpha seed 0  1s  (total 6.3 min)
+  [4/4] trial M2 adaptive temporal   alpha seed 0  1s  (total 6.3 min)
+=== 2026-11-18 22:35:06  device=cuda (NVIDIA GeForce RTX 4070 Laptop GPU)  torch=2.11.0+cu128  python=3.14.2  os=Windows-11-10.0.26300-SP0
+SEED-IV inventory for ..\archive (1)
+quick mode: subjects ['S01', 'S02']
+  features 24/144 trials  [0s]
+  features 48/144 trials  [0s]
+  features 72/144 trials  [0s]
+  features 96/144 trials  [0s]
+  features 120/144 trials  [0s]
+  features 144/144 trials  [0s]
+features: 5010 windows, 144 trials, 2 subjects  [4s]
+4 tasks: protocols=['trial'] variants=['none', 'hard', 'fuzzy', 'adaptive'] bands=['alpha'] seeds=[0]
+DONE. Results in C:\Users\LAKSH AGRAWAL\Desktop\VSCode\Clg\SC PROJECT\SC-Lab\gpu_seed\results\quick  (report.md, summary.csv, figures). Total 0.1 min

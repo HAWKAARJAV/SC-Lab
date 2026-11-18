@@ -1,0 +1,109 @@
+=== 2026-11-18 23:04:41  device=cuda (NVIDIA GeForce RTX 4070 Laptop GPU)  torch=2.11.0+cu128  python=3.14.2  os=Windows-11-10.0.26300-SP0
+SEED-IV inventory for ..\archive (1)
+features: 45 sessions, 39 still to compute; 8 CPU workers, SampEn batch 978 on cuda
+  features: session 1/39 done  [76s]
+  features: session 2/39 done  [132s]
+  features: session 3/39 done  [189s]
+  features: session 4/39 done  [246s]
+  features: session 5/39 done  [303s]
+  features: session 6/39 done  [360s]
+  features: session 7/39 done  [416s]
+  features: session 8/39 done  [473s]
+  features: session 9/39 done  [530s]
+  features: session 10/39 done  [588s]
+  features: session 11/39 done  [645s]
+  features: session 12/39 done  [701s]
+  features: session 13/39 done  [758s]
+  features: session 14/39 done  [815s]
+=== 2026-11-18 23:36:43  device=cuda (NVIDIA GeForce RTX 4070 Laptop GPU)  torch=2.11.0+cu128  python=3.14.2  os=Windows-11-10.0.26300-SP0
+SEED-IV inventory for ..\archive (1)
+features: 45 sessions, 25 still to compute; 8 CPU workers, SampEn batch 978 on cuda
+  features: session 1/25 done  [68s]
+  features: session 2/25 done  [124s]
+  features: session 3/25 done  [180s]
+  features: session 4/25 done  [236s]
+  features: session 5/25 done  [292s]
+  features: session 6/25 done  [348s]
+  features: session 7/25 done  [404s]
+  features: session 8/25 done  [460s]
+  features: session 9/25 done  [516s]
+  features: session 10/25 done  [572s]
+  features: session 11/25 done  [627s]
+  features: session 12/25 done  [683s]
+  features: session 13/25 done  [738s]
+  features: session 14/25 done  [794s]
+  features: session 15/25 done  [850s]
+  features: session 16/25 done  [905s]
+  features: session 17/25 done  [961s]
+  features: session 18/25 done  [1016s]
+  features: session 19/25 done  [1071s]
+  features: session 20/25 done  [1127s]
+  features: session 21/25 done  [1182s]
+  features: session 22/25 done  [1237s]
+  features: session 23/25 done  [1293s]
+  features: session 24/25 done  [1348s]
+  features: session 25/25 done  [1404s]
+DE features loaded from eeg_feature_smooth for 1080 trials
+features: 37575 windows, 1080 trials, 15 subjects  [1416s]
+60 tasks (60 to run) on 1 parallel workers: protocols=['within', 'trial', 'loso', 'paper'] variants=['none', 'hard', 'fuzzy', 'adaptive', 'ref_logreg'] bands=['all'] seeds=[0, 1, 2]
+  [1/60] loso  No gate                all   seed 0  28s  (elapsed 24.1 min, ~28 min left)
+  [2/60] loso  M0 hard                all   seed 0  18s  (elapsed 24.4 min, ~23 min left)
+  [3/60] loso  M1 fuzzy               all   seed 0  30s  (elapsed 24.9 min, ~24 min left)
+  [4/60] loso  M2 adaptive temporal   all   seed 0  36s  (elapsed 25.5 min, ~26 min left)
+  [5/60] loso  Reference: logistic regression all   seed 0  61s  (elapsed 26.5 min, ~32 min left)
+  [6/60] loso  No gate                all   seed 1  32s  (elapsed 27.1 min, ~31 min left)
+  [7/60] loso  M0 hard                all   seed 1  18s  (elapsed 27.4 min, ~28 min left)
+  [8/60] loso  M1 fuzzy               all   seed 1  30s  (elapsed 27.9 min, ~27 min left)
+  [9/60] loso  M2 adaptive temporal   all   seed 1  33s  (elapsed 28.4 min, ~27 min left)
+  [10/60] loso  Reference: logistic regression all   seed 1  63s  (elapsed 29.4 min, ~29 min left)
+  [11/60] loso  No gate                all   seed 2  32s  (elapsed 30.0 min, ~28 min left)
+  [12/60] loso  M0 hard                all   seed 2  16s  (elapsed 30.3 min, ~26 min left)
+  [13/60] loso  M1 fuzzy               all   seed 2  28s  (elapsed 30.7 min, ~26 min left)
+  [14/60] loso  M2 adaptive temporal   all   seed 2  34s  (elapsed 31.3 min, ~25 min left)
+  [15/60] loso  Reference: logistic regression all   seed 2  63s  (elapsed 32.3 min, ~26 min left)
+  [16/60] within No gate                all   seed 0  24s  (elapsed 32.7 min, ~25 min left)
+  [17/60] within M0 hard                all   seed 0  33s  (elapsed 33.3 min, ~24 min left)
+  [18/60] within M1 fuzzy               all   seed 0  24s  (elapsed 33.7 min, ~23 min left)
+  [19/60] within M2 adaptive temporal   all   seed 0  31s  (elapsed 34.2 min, ~23 min left)
+  [20/60] within Reference: logistic regression all   seed 0  11s  (elapsed 34.4 min, ~21 min left)
+  [21/60] within No gate                all   seed 1  20s  (elapsed 34.7 min, ~21 min left)
+  [22/60] within M0 hard                all   seed 1  33s  (elapsed 35.3 min, ~20 min left)
+  [23/60] within M1 fuzzy               all   seed 1  24s  (elapsed 35.6 min, ~19 min left)
+  [24/60] within M2 adaptive temporal   all   seed 1  29s  (elapsed 36.1 min, ~19 min left)
+  [25/60] within Reference: logistic regression all   seed 1  8s  (elapsed 36.3 min, ~18 min left)
+  [26/60] within No gate                all   seed 2  18s  (elapsed 36.6 min, ~17 min left)
+  [27/60] within M0 hard                all   seed 2  33s  (elapsed 37.1 min, ~16 min left)
+  [28/60] within M1 fuzzy               all   seed 2  24s  (elapsed 37.5 min, ~16 min left)
+  [29/60] within M2 adaptive temporal   all   seed 2  25s  (elapsed 37.9 min, ~15 min left)
+  [30/60] within Reference: logistic regression all   seed 2  16s  (elapsed 38.2 min, ~15 min left)
+  [31/60] paper No gate                all   seed 0  9s  (elapsed 38.3 min, ~14 min left)
+  [32/60] paper M0 hard                all   seed 0  5s  (elapsed 38.4 min, ~13 min left)
+  [33/60] paper M1 fuzzy               all   seed 0  7s  (elapsed 38.6 min, ~12 min left)
+  [34/60] paper M2 adaptive temporal   all   seed 0  13s  (elapsed 38.8 min, ~12 min left)
+  [35/60] paper Reference: logistic regression all   seed 0  54s  (elapsed 39.7 min, ~11 min left)
+  [36/60] paper No gate                all   seed 1  10s  (elapsed 39.8 min, ~11 min left)
+  [37/60] paper M0 hard                all   seed 1  5s  (elapsed 39.9 min, ~10 min left)
+  [38/60] paper M1 fuzzy               all   seed 1  10s  (elapsed 40.1 min, ~10 min left)
+  [39/60] paper M2 adaptive temporal   all   seed 1  11s  (elapsed 40.3 min, ~9 min left)
+  [40/60] paper Reference: logistic regression all   seed 1  20s  (elapsed 40.6 min, ~8 min left)
+  [41/60] paper No gate                all   seed 2  9s  (elapsed 40.7 min, ~8 min left)
+  [42/60] paper M0 hard                all   seed 2  5s  (elapsed 40.8 min, ~7 min left)
+  [43/60] paper M1 fuzzy               all   seed 2  8s  (elapsed 41.0 min, ~7 min left)
+  [44/60] paper M2 adaptive temporal   all   seed 2  11s  (elapsed 41.2 min, ~6 min left)
+  [45/60] paper Reference: logistic regression all   seed 2  20s  (elapsed 41.5 min, ~6 min left)
+  [46/60] trial No gate                all   seed 0  11s  (elapsed 41.7 min, ~5 min left)
+  [47/60] trial M0 hard                all   seed 0  4s  (elapsed 41.7 min, ~5 min left)
+  [48/60] trial M1 fuzzy               all   seed 0  8s  (elapsed 41.9 min, ~5 min left)
+  [49/60] trial M2 adaptive temporal   all   seed 0  8s  (elapsed 42.0 min, ~4 min left)
+  [50/60] trial Reference: logistic regression all   seed 0  18s  (elapsed 42.3 min, ~4 min left)
+  [51/60] trial No gate                all   seed 1  10s  (elapsed 42.5 min, ~3 min left)
+  [52/60] trial M0 hard                all   seed 1  5s  (elapsed 42.6 min, ~3 min left)
+  [53/60] trial M1 fuzzy               all   seed 1  9s  (elapsed 42.7 min, ~3 min left)
+  [54/60] trial M2 adaptive temporal   all   seed 1  11s  (elapsed 42.9 min, ~2 min left)
+  [55/60] trial Reference: logistic regression all   seed 1  20s  (elapsed 43.2 min, ~2 min left)
+  [56/60] trial No gate                all   seed 2  8s  (elapsed 43.4 min, ~1 min left)
+  [57/60] trial M0 hard                all   seed 2  5s  (elapsed 43.4 min, ~1 min left)
+  [58/60] trial M1 fuzzy               all   seed 2  10s  (elapsed 43.6 min, ~1 min left)
+  [59/60] trial M2 adaptive temporal   all   seed 2  9s  (elapsed 43.8 min, ~0 min left)
+  [60/60] trial Reference: logistic regression all   seed 2  19s  (elapsed 44.1 min, ~0 min left)
+DONE. Results in C:\Users\LAKSH AGRAWAL\Desktop\VSCode\Clg\SC PROJECT\SC-Lab\gpu_seed\results\improved  (report.md, summary.csv, figures). Total 44.1 min

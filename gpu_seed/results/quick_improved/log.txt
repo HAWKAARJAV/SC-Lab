@@ -1,0 +1,18 @@
+=== 2026-11-18 23:03:05  device=cuda (NVIDIA GeForce RTX 4070 Laptop GPU)  torch=2.11.0+cu128  python=3.14.2  os=Windows-11-10.0.26300-SP0
+SEED-IV inventory for ..\archive (1)
+quick mode: subjects ['S01', 'S02']
+features: 6 sessions, 0 still to compute; 8 CPU workers, SampEn batch 978 on cuda
+DE features loaded from eeg_feature_smooth for 144 trials
+features: 5010 windows, 144 trials, 2 subjects  [4s]
+10 tasks (10 to run) on 4 parallel workers: protocols=['within', 'trial'] variants=['none', 'hard', 'fuzzy', 'adaptive', 'ref_logreg'] bands=['all'] seeds=[0]
+  [1/10] within M2 adaptive temporal   all   seed 0  4s  (elapsed 0.2 min, ~1 min left)
+  [2/10] within No gate                all   seed 0  4s  (elapsed 0.2 min, ~0 min left)
+  [3/10] within M0 hard                all   seed 0  4s  (elapsed 0.2 min, ~0 min left)
+  [4/10] within M1 fuzzy               all   seed 0  4s  (elapsed 0.2 min, ~0 min left)
+  [5/10] trial No gate                all   seed 0  3s  (elapsed 0.2 min, ~0 min left)
+  [6/10] trial M0 hard                all   seed 0  3s  (elapsed 0.2 min, ~0 min left)
+  [7/10] trial M1 fuzzy               all   seed 0  5s  (elapsed 0.3 min, ~0 min left)
+  [8/10] trial M2 adaptive temporal   all   seed 0  4s  (elapsed 0.3 min, ~0 min left)
+  [9/10] within Reference: logistic regression all   seed 0  35s  (elapsed 0.8 min, ~0 min left)
+  [10/10] trial Reference: logistic regression all   seed 0  31s  (elapsed 0.8 min, ~0 min left)
+DONE. Results in C:\Users\LAKSH AGRAWAL\Desktop\VSCode\Clg\SC PROJECT\SC-Lab\gpu_seed\results\quick_improved  (report.md, summary.csv, figures). Total 0.8 min
