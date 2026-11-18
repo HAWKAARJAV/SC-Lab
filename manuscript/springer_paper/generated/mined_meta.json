@@ -1,0 +1,11 @@
+{
+ "windows": 384,
+ "kept": 144,
+ "gate": "fix_dur_mean",
+ "elapsed": 262.45256209373474,
+ "gate_check": {
+  "episode_rate_all_windows": 0.609375,
+  "episode_rate_kept_windows": 0.6458333333333334,
+  "episode_recall": 0.3974358974358974
+ }
+}

@@ -1,0 +1,39 @@
+Thu Nov 12 13:21:32 IST 2026
+ZAB: 379 trials  | block 1: 47 sentences; block 2: 47 sentences; block 3: 48 sentences; block 4: 48 sentences; block 5: 49 sentences; block 6: 46 sentences; block 7: 47 sentences; block 8: 47 sentences
+ZDM: 369 trials  | block 1: 46 sentences; block 2: 45 sentences; block 3: 47 sentences; block 4: 45 sentences; block 5: 47 sentences; block 6: 44 sentences; block 7: 48 sentences; block 8: 47 sentences
+ZDN: 278 trials  | block 1: 42 sentences; block 2: 46 sentences; block 3: 48 sentences; block 6: 46 sentences; block 7: 48 sentences; block 8: 48 sentences
+ZGW: 391 trials  | block 1: 48 sentences; block 2: 50 sentences; block 3: 50 sentences; block 4: 50 sentences; block 5: 51 sentences; block 6: 47 sentences; block 7: 49 sentences; block 8: 46 sentences
+ZJM: 390 trials  | block 1: 47 sentences; block 2: 50 sentences; block 3: 50 sentences; block 4: 48 sentences; block 5: 48 sentences; block 6: 48 sentences; block 7: 49 sentences; block 8: 50 sentences
+ZJN: 396 trials  | block 1: 49 sentences; block 2: 50 sentences; block 3: 49 sentences; block 4: 50 sentences; block 5: 51 sentences; block 6: 49 sentences; block 7: 48 sentences; block 8: 50 sentences
+ZJS: 362 trials  | block 1: 40 sentences; block 2: 46 sentences; block 3: 47 sentences; block 4: 44 sentences; block 5: 46 sentences; block 6: 45 sentences; block 7: 47 sentences; block 8: 47 sentences
+ZKB: 367 trials  | block 1: 47 sentences; block 2: 46 sentences; block 3: 50 sentences; block 4: 44 sentences; block 5: 47 sentences; block 6: 47 sentences; block 7: 43 sentences; block 8: 43 sentences
+ZKH: 384 trials  | block 1: 44 sentences; block 2: 47 sentences; block 3: 49 sentences; block 4: 48 sentences; block 5: 48 sentences; block 6: 49 sentences; block 7: 49 sentences; block 8: 50 sentences
+ZKW: 383 trials  | block 1: 46 sentences; block 2: 49 sentences; block 3: 48 sentences; block 4: 47 sentences; block 5: 51 sentences; block 6: 48 sentences; block 7: 47 sentences; block 8: 47 sentences
+ZMG: 358 trials  | block 1: 46 sentences; block 2: 45 sentences; block 3: 47 sentences; block 4: 44 sentences; block 5: 42 sentences; block 6: 45 sentences; block 7: 43 sentences; block 8: 46 sentences
+ZPH: 373 trials  | block 1: 48 sentences; block 2: 49 sentences; block 3: 50 sentences; block 4: 48 sentences; block 5: 48 sentences; block 6: 46 sentences; block 7: 44 sentences; block 8: 40 sentences
+-> data/zuco_npz  (4430 trials)
+Extracting features for 4430 trials on 8 processes (cache: cache/e91d0e7c84)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+/Users/aarjavjain/Desktop/Projects /Soft Computing/gfer/entropy.py:94: RuntimeWarning: invalid value encountered in divide
+  p = S / S.sum(axis=1, keepdims=True)
+  443/4430 trials
+  886/4430 trials
+  1329/4430 trials
+  1772/44/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/resource_tracker.py:324: UserWarning: resource_tracker: There appear to be 5 leaked semaphore objects to clean up at shutdown: {'/loky-55505-1j0rvb63', '/loky-55505-ksh9mfa2', '/loky-55505-4hivaz9g', '/loky-55505-h74tp1jl', '/loky-55505-txaahno_'}
+  warnings.warn(
+ in 808s -> results/zuco_full_m0m1/raw.json
+FULL_RUN_DONE
+Thu Nov 12 13:40:16 IST 2026

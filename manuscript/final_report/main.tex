@@ -1,0 +1,116 @@
+\documentclass[10pt,twoside]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[
+  paperwidth=155mm,
+  paperheight=235mm,
+  top=16mm,
+  bottom=17mm,
+  inner=16mm,
+  outer=14mm
+]{geometry}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,tabularx,array,multirow}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[section]{placeins}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{
+  {figures/}
+  {../../docs/architecture/}
+  {../../docs/fuzzy_rulebook/05_rule_visualisations/}
+  {../../results/00_paper_reference/figures/}
+  {../../results/01_Implemented_Model/M1_fuzzy_gate/figures/}
+  {../../results/01_Implemented_Model/M2_adaptive_temporal_gate/figures/}
+  {../../results/01_Implemented_Model/M3_multiband_fusion/figures/}
+  {../../results/01_Implemented_Model/M4_combined_model/figures/}
+  {../../results/01_Implemented_Model/comparison_figures/}
+}
+
+\definecolor{springerblue}{RGB}{0,72,112}
+\hypersetup{
+  pdftitle={Adaptive Eye-Tracking-Gated EEG Emotion Recognition with Fuzzy Temporal Weighting and Multi-Band Fusion},
+  pdfauthor={Author names to be completed},
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=springerblue,
+  urlcolor=springerblue
+}
+\captionsetup{font=small,labelfont=bf,labelsep=space}
+\setlength{\parindent}{1.1em}
+\setlength{\parskip}{0pt}
+\setlength{\textfloatsep}{9pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlist{nosep,leftmargin=1.5em}
+\renewcommand{\arraystretch}{1.08}
+\emergencystretch=1.5em
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0pt}{1.9ex plus .4ex}{.8ex}{\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0pt}{1.5ex plus .3ex}{.5ex}{\normalsize\bfseries}}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\small\itshape Adaptive eye-tracking-gated EEG emotion recognition}
+\fancyhead[RE,LO]{\small Author name(s)}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\begin{document}
+\thispagestyle{empty}
+
+\noindent{\small\bfseries The Journal of Supercomputing --- manuscript format}\\[-1mm]
+\noindent\rule{\linewidth}{0.4pt}
+
+\vspace{6mm}
+{\Large\bfseries Adaptive Eye-Tracking-Gated EEG Emotion Recognition with Fuzzy Temporal Weighting and Multi-Band Fusion\par}
+
+\vspace{5mm}
+{\large Author Name 1$^{1}$ \(\cdot\) Author Name 2$^{2}$\par}
+
+\vspace{3mm}
+{\small Received: [date] / Accepted: [date]\par}
+
+\vspace{5mm}
+\begin{abstract}
+\noindent
+This paper extends the hard eye-gated electroencephalography (EEG) emotion-recognition method of Farhadi Sedehi et al.\ with four transparent architectural variants. The reference pipeline (M0) applies minimum-redundancy maximum-relevance selection, discrete wavelet decomposition, entropy features and genetic-algorithm-refined Sugeno fuzzy rules, while a binary pupil gate selects four-second EEG windows. M1 replaces the binary decision with a continuous fuzzy weight; M2 adds subject-specific pupil baseline correction and temporal smoothing; M3 fuses five band-specific class-probability vectors with validation-learned weights; and M4 combines adaptive gating with fusion. The complete rule base, gate equations and model architecture are documented. Published SEED-IV and MAHNOB-HCI accuracies are included only as literature values. The M0--M4 comparison uses a deterministic synthetic teaching scenario with 500 windows per reference-scale setting and master seed 20261110; it is not an experiment on either public corpus. On the SEED-IV reference scale, M0--M4 achieved 91.4\%, 74.8\%, 93.6\%, 95.8\% and 96.0\% accuracy, respectively. On the MAHNOB-HCI reference scale, the corresponding values were 70.2\%, 56.8\%, 75.2\%, 79.0\% and 77.8\%. Thus, late fusion was the most consistent extension in the controlled scenario, while continuous gating alone was not sufficient to improve a weaker band head. Real-data, subject-independent validation is required before any empirical claim about the benchmark corpora.
+\end{abstract}
+
+\vspace{2mm}
+\noindent\textbf{Keywords}\quad EEG emotion recognition \(\cdot\) Eye tracking \(\cdot\) Fuzzy gating \(\cdot\) Sugeno inference \(\cdot\) Genetic algorithm \(\cdot\) Multi-band fusion
+
+\vspace{5mm}
+\noindent\begin{minipage}{0.88\linewidth}
+\small
+\textbf{Corresponding author}\quad Author name; email@example.com\\
+$^{1}$Department and institution, city, country\\
+$^{2}$Department and institution, city, country
+\end{minipage}
+
+\vspace{5mm}
+\noindent\fcolorbox{springerblue}{blue!3}{%
+\parbox{0.94\linewidth}{\small\textbf{Data notice.}
+All M0--M4 experimental figures and tables in this paper are generated from synthetic, deterministic teaching data. They are not measurements on SEED-IV or MAHNOB-HCI and must not be represented as benchmark results.}}
+
+\input{sections/body}
+
+\FloatBarrier
+\section*{Declarations}
+\noindent\textbf{Funding}\quad [To be completed by the authors.]\\
+\textbf{Conflict of interest}\quad [To be completed by the authors.]\\
+\textbf{Data availability}\quad No real participant recordings were used for the M0--M4 comparison. Synthetic scenario outputs and generation code are contained in the project repository.\\
+\textbf{Code availability}\quad \url{https://github.com/HAWKAARJAV/SC-Lab}\\
+\textbf{Author contributions}\quad [To be completed by the authors.]
+
+\clearpage
+\appendix
+\input{appendix/appendices}
+\input{references}
+\end{document}
