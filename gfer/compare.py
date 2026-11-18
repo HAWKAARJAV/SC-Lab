@@ -9,6 +9,9 @@ Variants (only the gate differs; everything else is shared):
     fuzzy  : zero-order Sugeno gate, Low/Medium/High on the gate feature scaled within
              each SUBJECT (M1, proposed)
     fuzzy_trialnorm : same gate, scaled within each trial (first version; ablation)
+    adaptive / adaptive_nosmooth / adaptive_causal : M2 adaptive temporal fuzzy gate
+             (full / without smoothing / causal smoothing), see adaptive_gate.py
+    fuzzy_smooth : M1 + M2's temporal smoothing (M1's fixed breakpoints, no adaptation)
 
 z~ is the gate feature normalised inside each trial with robust (P5, P95) scaling (label-free).
 Window weights enter (i) weighted mRMR, (ii) weighted entropy discretisation, (iii) weighted
@@ -32,10 +35,13 @@ from .evaluate import band_matrix, zscore_by_subject
 from .features import extract_all
 from .fuzzy import SugenoFIS
 from .ga import tune_rules
+from .adaptive_gate import M2_VARIANTS, m2_weights, smooth_within_trial
 from .gates import gate_weights, normalise_within_subject, normalise_within_trial
 from .mrmr import mrmr, mrmr_weighted
 
-VARIANTS = ["none", "hard", "fuzzy", "fuzzy_trialnorm"]
+# appended only: a variant's index seeds its RNG, so earlier variants keep identical results
+VARIANTS = ["none", "hard", "fuzzy", "fuzzy_trialnorm", "adaptive", "adaptive_nosmooth", "adaptive_causal",
+            "fuzzy_smooth"]
 
 _CACHE = {}
 
@@ -67,9 +73,14 @@ def load_features(root, cfg):
 
 
 # ------------------------------------------------------------------ gates (see gates.py)
-def _window_weights(v, trial, subject, variant):
+def _window_weights(v, trial, subject, variant, window=None):
+    if variant in M2_VARIANTS:
+        return m2_weights(v, subject, trial, window, variant)
     if variant == "fuzzy":
         return gate_weights(normalise_within_subject(v, subject), trial, "fuzzy")
+    if variant == "fuzzy_smooth":       # M1 + M2's temporal smoothing (fixed breakpoints)
+        return smooth_within_trial(gate_weights(normalise_within_subject(v, subject), trial, "fuzzy"),
+                                   trial, window, "symmetric")
     if variant == "fuzzy_trialnorm":
         return gate_weights(normalise_within_trial(v, trial), trial, "fuzzy")
     return gate_weights(normalise_within_trial(v, trial), trial, variant)
@@ -145,7 +156,7 @@ def run_task(task):
             nr = np.random.default_rng(10_000 + seed)
             sd = np.array([np.nanstd(v[F["subject"] == s_]) for s_ in F["subject"]])
             v = v + nr.standard_normal(len(v)) * noise * sd
-        w = _window_weights(v, trial, F["subject"], variant)
+        w = _window_weights(v, trial, F["subject"], variant, F["window"])
         preds, info = fit_predict(X, y, trial, tr, te, w, cfg, C, names, rng)
         info.update({"fold": fi, "gate_feature": g, "trial_preds": preds})
         folds_out.append(info)

@@ -1,0 +1,15 @@
+Wed Nov 18 15:54:29 IST 2026
+90 tasks on 8 processes
+  10/90 [317s]
+  20/90 [416s]
+  30/90 [595s]
+  40/90 [851s]
+  50/90 [1522s]
+  60/90 [2229s]
+  70/90 [3191s]
+  80/90 [3902s]
+  90/90 [4396s]
+Done in 4402s -> results/zuco_m2/m2_only/raw.json
+merged 60 + 90
+M2_RUN_DONE
+Wed Nov 18 17:08:08 IST 2026
